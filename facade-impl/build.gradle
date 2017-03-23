@@ -1,0 +1,22 @@
+description = "消息总线接收站API实现"
+
+jar {
+	baseName = 'mq-rabbit-receiver-facade-impl'
+	version = "${mqRabbitReceiverFacadeVersion}"
+}
+
+
+dependencies {
+	
+	compile(project(":mq-rabbit-common"))
+	compile(project(":mq-infrastructure"))
+	compile(project(":facade-interface"))
+
+	compile "com.alibaba:dubbo:${dubboxVersion}"
+
+	//ymatou
+    compile "com.ymatou.resteasy:resteasy-jaxrs:${resteasyJaxrsVersion}"
+    compile "com.ymatou.resteasy:resteasy-client:${resteasyJaxrsVersion}"
+}
+
+
