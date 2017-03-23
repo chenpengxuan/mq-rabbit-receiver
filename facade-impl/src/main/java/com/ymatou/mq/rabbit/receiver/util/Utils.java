@@ -6,9 +6,12 @@
 
 package com.ymatou.mq.rabbit.receiver.util;
 
+import com.google.common.base.Optional;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.charset.Charset;
@@ -27,6 +30,9 @@ public class Utils {
 
     private Utils() {};
 
+    public static String uuid() {
+        return new ObjectId().toHexString();
+    }
 
     public static String localIp() {
         if (localIp != null) {
@@ -78,5 +84,19 @@ public class Utils {
             LOGGER.error("Failed to read version. {}", e.getMessage(), e);
             return "Failed to read version:" + e.getMessage();
         }
+    }
+
+    /**
+     * 处理null问题
+     *
+     * @return
+     */
+    public static BigDecimal zeroIfNull(BigDecimal number) {
+        BigDecimal zero = BigDecimal.ZERO;
+        return optional(number, zero);
+    }
+
+    private static <T> T optional(T t, T defaultValue) {
+        return Optional.fromNullable(t).or(defaultValue);
     }
 }

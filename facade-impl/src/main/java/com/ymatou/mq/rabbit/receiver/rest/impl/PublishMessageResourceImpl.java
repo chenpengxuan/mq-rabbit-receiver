@@ -5,14 +5,14 @@
  *
  */
 
-package com.ymatou.mq.rabbit.receiver.facade.rest;
+package com.ymatou.mq.rabbit.receiver.rest.impl;
 
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.*;
 
-import com.ymatou.mq.rabbit.receiver.constants.Constants;
-import com.ymatou.mq.rabbit.receiver.facade.DemoFacade;
+import com.ymatou.mq.rabbit.receiver.util.Constants;
+import com.ymatou.mq.rabbit.receiver.rest.PublishMessageResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,19 +25,20 @@ import com.alibaba.dubbo.config.annotation.Service;
 @Produces({"application/json; charset=UTF-8"})
 @Service(protocol = "rest")
 @Path("/{api:(?i:api)}")
-public class DemoResourceImpl implements DemoResource {
+public class PublishMessageResourceImpl implements PublishMessageResource {
 
-    public static final Logger logger = LoggerFactory.getLogger(DemoResourceImpl.class);
+    public static final Logger logger = LoggerFactory.getLogger(PublishMessageResourceImpl.class);
 
     @Autowired
-    private DemoFacade demoFacade;
+    //private DemoFacade demoFacade;
 
 
     @GET
     @Path("/{sayHello:(?i:sayHello)}")
     @Override
     public String sayHello(@QueryParam("name") String name) {
-        return demoFacade.sayHello(name);
+        //return demoFacade.sayHello(name);
+        return null;
     }
 
     @GET

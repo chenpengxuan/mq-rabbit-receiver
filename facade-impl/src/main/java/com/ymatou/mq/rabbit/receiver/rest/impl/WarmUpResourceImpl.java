@@ -3,7 +3,7 @@
  * (C) Copyright 2016 Ymatou (http://www.ymatou.com/). All rights reserved.
  *
  */
-package com.ymatou.mq.rabbit.receiver.facade.rest;
+package com.ymatou.mq.rabbit.receiver.rest.impl;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.ymatou.mq.rabbit.receiver.rest.WarmUpResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

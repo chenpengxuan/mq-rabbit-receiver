@@ -5,7 +5,7 @@
  *
  */
 
-package com.ymatou.mq.rabbit.receiver.infrastructure;
+package com.ymatou.mq.rabbit.receiver.util;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;

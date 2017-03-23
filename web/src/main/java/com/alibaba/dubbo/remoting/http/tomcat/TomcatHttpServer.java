@@ -9,7 +9,7 @@ import com.alibaba.dubbo.remoting.http.servlet.ServletManager;
 import com.alibaba.dubbo.remoting.http.support.AbstractHttpServer;
 
 import com.ymatou.mq.rabbit.receiver.config.TomcatConfig;
-import com.ymatou.mq.rabbit.receiver.constants.Constants;
+import com.ymatou.mq.rabbit.receiver.util.Constants;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;

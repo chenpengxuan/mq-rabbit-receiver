@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-import com.ymatou.mq.rabbit.receiver.constants.Constants;
+import com.ymatou.mq.rabbit.receiver.util.Constants;
 
 
 

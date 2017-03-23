@@ -4,7 +4,7 @@
  *  All rights reserved.
  *
  */
-package com.ymatou.mq.rabbit.receiver.facade.rest;
+package com.ymatou.mq.rabbit.receiver.rest;
 
 /**
  * @author tuwenjie 2016年5月20日 上午10:51:44

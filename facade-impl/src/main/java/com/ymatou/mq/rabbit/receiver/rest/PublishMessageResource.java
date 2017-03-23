@@ -5,12 +5,12 @@
  *
  */
 
-package com.ymatou.mq.rabbit.receiver.facade.rest;
+package com.ymatou.mq.rabbit.receiver.rest;
 
 /**
  * @author luoshiqian 2016/8/31 14:12
  */
-public interface DemoResource {
+public interface PublishMessageResource {
 
     String sayHello(String name);
 

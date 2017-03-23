@@ -4,7 +4,7 @@
  *
  */
 
-package com.ymatou.mq.rabbit.receiver.constants;
+package com.ymatou.mq.rabbit.receiver.util;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
