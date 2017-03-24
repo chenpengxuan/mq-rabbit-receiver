@@ -11,6 +11,7 @@ public enum ErrorCode {
      */
     ILLEGAL_ARGUMENT(1000, "参数异常"),
 
+    QUEUE_CONFIG_NOT_EXIST(1001,"队列配置不存在."),
 
     /*
      * 业务逻辑错误 3000

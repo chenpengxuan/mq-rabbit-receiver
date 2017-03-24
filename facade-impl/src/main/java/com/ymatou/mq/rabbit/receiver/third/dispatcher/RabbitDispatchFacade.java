@@ -1,4 +1,4 @@
-package com.ymatou.mq.rabbit.receiver.third;
+package com.ymatou.mq.rabbit.receiver.third.dispatcher;
 
 import com.ymatou.mq.rabbit.receiver.model.Message;
 import org.springframework.stereotype.Component;
@@ -12,5 +12,6 @@ public class RabbitDispatchFacade {
 
     public void dispatchMessage(Message msg){
         //TODO
+
     }
 }

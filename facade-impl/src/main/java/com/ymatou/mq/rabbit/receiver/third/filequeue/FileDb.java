@@ -1,4 +1,4 @@
-package com.ymatou.mq.rabbit.receiver.third;
+package com.ymatou.mq.rabbit.receiver.third.filequeue;
 
 import com.ymatou.mq.rabbit.receiver.model.Message;
 

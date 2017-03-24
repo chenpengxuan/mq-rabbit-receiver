@@ -1,0 +1,31 @@
+package com.ymatou.mq.rabbit.receiver.task;
+
+import com.ymatou.mq.rabbit.receiver.service.MessageConfigService;
+import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+/**
+ * 消息配置定时刷新任务
+ * Created by zhangzhihua on 2017/3/24.
+ */
+public class MessageConfigRefreshTask extends TimerTask {
+
+    private static final Logger logger = LoggerFactory.getLogger(MessageConfigRefreshTask.class);
+
+    @Autowired
+    private MessageConfigService messageConfigService;
+
+    @Override
+    public void run() {
+        try {
+            messageConfigService.loadConfig();
+        } catch (Exception e) {
+            logger.error("load config executor error.",e);
+        }
+    }
+}

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component("messageRepository")
 public class MessageRepository {
 
-    public void saveMessage(Message msg){
+    public void save(Message msg){
         //TODO
     }
 }
