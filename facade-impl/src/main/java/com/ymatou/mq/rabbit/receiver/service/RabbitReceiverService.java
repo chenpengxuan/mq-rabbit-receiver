@@ -2,12 +2,13 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import com.ymatou.messagebus.facade.BizException;
 import com.ymatou.messagebus.facade.ErrorCode;
+import com.ymatou.mq.infrastructure.config.model.MessageConfig;
+import com.ymatou.mq.infrastructure.config.service.MessageConfigService;
 import com.ymatou.mq.rabbit.receiver.model.Message;
-import com.ymatou.mq.rabbit.receiver.model.QueueConfig;
 import com.ymatou.mq.rabbit.receiver.infrastructure.filequeue.FileDb;
 import com.ymatou.mq.rabbit.receiver.infrastructure.dispatcher.RabbitDispatchFacade;
-import com.ymatou.mq.rabbit.receiver.infrastructure.rabbit.RabbitProducer;
-import com.ymatou.mq.rabbit.receiver.infrastructure.rabbit.RabbitProducerFactory;
+import com.ymatou.mq.rabbit.RabbitProducer;
+import com.ymatou.mq.rabbit.RabbitProducerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,8 @@ public class RabbitReceiverService {
 
             //调rabbitmq发布消息
             RabbitProducer rabbitProducer = RabbitProducerFactory.createRabbitProducer(msg.getAppId(),msg.getBizCode());
-            rabbitProducer.publish(msg);
+            //TODO
+            rabbitProducer.publish(null);
 
             //若发MQ成功，则异步写消息到文件队列
             taskExecutor.execute(new Runnable() {
@@ -78,7 +80,7 @@ public class RabbitReceiverService {
      * 验证bizCode/队列有效性
      */
     void validQueue(String appId,String bizCode){
-        QueueConfig queueConfig = messageConfigService.getQueueConfig(appId,bizCode);
+        MessageConfig queueConfig = messageConfigService.getQueueConfig(appId,bizCode);
         if(queueConfig == null){
             throw new BizException(ErrorCode.QUEUE_CONFIG_NOT_EXIST,String.format("appId:{},bizCode:{} queue config not exist.",appId,bizCode));
         }

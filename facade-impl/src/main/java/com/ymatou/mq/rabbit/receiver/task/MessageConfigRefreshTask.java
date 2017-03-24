@@ -1,12 +1,9 @@
 package com.ymatou.mq.rabbit.receiver.task;
 
-import com.ymatou.mq.rabbit.receiver.service.MessageConfigService;
-import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Timer;
 import java.util.TimerTask;
 
 /**

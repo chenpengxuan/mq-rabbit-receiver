@@ -1,9 +1,10 @@
 package com.ymatou.mq.rabbit.receiver.service;
 
 import com.alibaba.dubbo.common.utils.CollectionUtils;
+import com.ymatou.mq.infrastructure.config.model.CallbackConfig;
+import com.ymatou.mq.infrastructure.config.service.MessageConfigService;
 import com.ymatou.mq.rabbit.receiver.model.Message;
 import com.ymatou.mq.rabbit.receiver.model.MessageDispatchDetail;
-import com.ymatou.mq.rabbit.receiver.model.SubscribleConfig;
 import com.ymatou.mq.rabbit.receiver.repository.MessageDispatchDetailRepository;
 import com.ymatou.mq.rabbit.receiver.repository.MessageRepository;
 import org.slf4j.Logger;
@@ -56,9 +57,9 @@ public class MessageService {
      */
     List<MessageDispatchDetail> buildMessageDispatchDetailList(Message msg){
         List<MessageDispatchDetail> detailList = new ArrayList<MessageDispatchDetail>();
-        List<SubscribleConfig> subscribleConfigList =  messageConfigService.getSubscribleConfigList(msg.getAppId(),msg.getBizCode());
+        List<CallbackConfig> subscribleConfigList =  messageConfigService.getSubscribleConfigList(msg.getAppId(),msg.getBizCode());
         if(CollectionUtils.isNotEmpty(subscribleConfigList)){
-            for(SubscribleConfig subscribleConfig:subscribleConfigList){
+            for(CallbackConfig subscribleConfig:subscribleConfigList){
                 MessageDispatchDetail detail = new MessageDispatchDetail();
                 //TODO
             }
