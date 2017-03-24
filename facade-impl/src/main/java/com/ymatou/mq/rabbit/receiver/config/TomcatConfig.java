@@ -9,6 +9,7 @@ package com.ymatou.mq.rabbit.receiver.config;
 
 import com.baidu.disconf.client.common.annotations.DisconfFile;
 import com.baidu.disconf.client.common.annotations.DisconfFileItem;
+import com.ymatou.messagebus.facade.PrintFriendliness;
 import org.springframework.stereotype.Component;
 
 /**

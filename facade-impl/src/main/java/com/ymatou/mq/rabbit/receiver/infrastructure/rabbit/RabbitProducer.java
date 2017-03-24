@@ -1,11 +1,10 @@
-package com.ymatou.mq.rabbit.receiver.third.rabbit;
+package com.ymatou.mq.rabbit.receiver.infrastructure.rabbit;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.ymatou.mq.rabbit.receiver.model.Message;
-import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

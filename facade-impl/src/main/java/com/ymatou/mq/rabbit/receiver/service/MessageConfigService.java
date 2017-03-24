@@ -44,9 +44,9 @@ public class MessageConfigService {
     public void loadConfig(){
         //TODO 优化加载操作
         //get app list
-        List<AppConfig> appConfigList = appConfigRepository.getAllAppConfig();
-        if(CollectionUtils.isNotEmpty(appConfigList)){
-            for(AppConfig appConfig:appConfigList){
+        List<AppConfig> newAppConfigList = appConfigRepository.getAllAppConfig();
+        if(CollectionUtils.isNotEmpty(newAppConfigList)){
+            for(AppConfig appConfig:newAppConfigList){
                 //get queue list
                 List<QueueConfig> queueConfigList = queueConfigRepository.getQueueConfigList(appConfig.getAppId());
                 if(CollectionUtils.isNotEmpty(queueConfigList)){
@@ -61,6 +61,9 @@ public class MessageConfigService {
                 }
             }
         }
+        //TODO 基于事件监听处理
+        //更新配置
+        this.appConfigList = newAppConfigList;
     }
 
     /**

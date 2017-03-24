@@ -1,6 +1,7 @@
 package com.ymatou.mq.rabbit.receiver.repository;
 
 import com.ymatou.mq.rabbit.receiver.model.AppConfig;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,6 +12,9 @@ import java.util.List;
  */
 @Component("appConfigRepository")
 public class AppConfigRepository {
+
+    //TODO 由固定方法切换db
+    MongoTemplate mongoTemplate;
 
     /**
      * 获取所有app配置列表

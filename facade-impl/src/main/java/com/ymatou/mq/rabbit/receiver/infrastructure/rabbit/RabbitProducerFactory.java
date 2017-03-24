@@ -1,6 +1,5 @@
-package com.ymatou.mq.rabbit.receiver.third.rabbit;
+package com.ymatou.mq.rabbit.receiver.infrastructure.rabbit;
 
-import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
 import org.jboss.netty.util.internal.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

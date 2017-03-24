@@ -24,8 +24,11 @@ public class MessageConfigRefreshTask extends TimerTask {
     public void run() {
         try {
             messageConfigService.loadConfig();
+            if(logger.isInfoEnabled()){
+                logger.info("reload config success...");
+            }
         } catch (Exception e) {
-            logger.error("load config executor error.",e);
+            logger.error("reload config failed...",e);
         }
     }
 }
