@@ -7,6 +7,7 @@ import com.ymatou.mq.infrastructure.model.QueueConfig;
 import com.ymatou.mq.infrastructure.service.MessageConfigService;
 import com.ymatou.mq.infrastructure.model.Message;
 
+import com.ymatou.mq.rabbit.receiver.config.RabbitConfig;
 import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
 import com.ymatou.mq.rabbit.RabbitProducer;
 import com.ymatou.mq.rabbit.RabbitProducerFactory;
@@ -17,6 +18,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Properties;
 
 /**
  * rabbitmq接收消息service
@@ -45,6 +47,9 @@ public class RabbitReceiverService {
     @Resource
     private TaskExecutor taskExecutor;
 
+    @Autowired
+    private RabbitConfig rabbitConfig;
+
     /**
      * 接收并发布消息
      * @param msg
@@ -58,13 +63,15 @@ public class RabbitReceiverService {
             //获取rabbit ack事件监听
             ConfirmListener confirmListener = rabbitAckHandlerService.getConfirmListener(msg.getAppId(),msg.getQueueCode());
             //调rabbitmq发布消息
-            RabbitProducer rabbitProducer = RabbitProducerFactory.createRabbitProducer(msg.getAppId(),msg.getQueueCode(),confirmListener);
-            rabbitProducer.publish(msg.getBody(),msg.getBizId(),msg.getId());
+            RabbitProducer rabbitProducer = RabbitProducerFactory.createRabbitProducer(msg.getAppId(),msg.getQueueCode(),confirmListener,this.getRabbitConfig());
+            rabbitProducer.publish(msg.getBody(),msg.getBizId(),msg.getId(), this.getRabbitConfig());
 
             //若发MQ成功，则异步写消息到文件队列
             fileQueueProcessorService.saveMessageToFileDb(msg);
         } catch (Exception e) {
-            logger.error("publish msg {} error",msg,e);
+            if(logger.isWarnEnabled()){
+                logger.warn("publish msg fail or rabbit is not open.",e);
+            }
             try {
                 //若发MQ失败，则直接调用dispatch分发站接口发送
                 rabbitDispatchFacade.dispatchMessage(msg);
@@ -74,6 +81,17 @@ public class RabbitReceiverService {
             }
         }
         return msg.getId();
+    }
+
+    /**
+     * 获取rabbit配置
+     * @return
+     */
+    Properties getRabbitConfig(){
+        Properties props = new Properties();
+        props.setProperty("masterEnable",String.valueOf(rabbitConfig.getMasterEnable()));
+        props.setProperty("slaveEnable",String.valueOf(rabbitConfig.getSlaveEnable()));
+        return  props;
     }
 
     /**
