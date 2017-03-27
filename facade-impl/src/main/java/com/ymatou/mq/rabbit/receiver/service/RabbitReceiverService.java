@@ -1,8 +1,8 @@
 package com.ymatou.mq.rabbit.receiver.service;
 
+import com.rabbitmq.client.ConfirmListener;
 import com.ymatou.messagebus.facade.BizException;
 import com.ymatou.messagebus.facade.ErrorCode;
-import com.ymatou.mq.infrastructure.filedb.FileDb;
 import com.ymatou.mq.infrastructure.model.QueueConfig;
 import com.ymatou.mq.infrastructure.service.MessageConfigService;
 import com.ymatou.mq.infrastructure.model.Message;
@@ -37,6 +37,9 @@ public class RabbitReceiverService {
     private FileQueueProcessorService fileQueueProcessorService;
 
     @Autowired
+    private RabbitAckHandlerService rabbitAckHandlerService;
+
+    @Autowired
     private RabbitDispatchFacade rabbitDispatchFacade;
 
     @Resource
@@ -52,8 +55,10 @@ public class RabbitReceiverService {
             //验证队列有效性
             this.validQueue(msg.getAppId(),msg.getQueueCode());
 
+            //获取rabbit ack事件监听
+            ConfirmListener confirmListener = rabbitAckHandlerService.getConfirmListener(msg.getAppId(),msg.getQueueCode());
             //调rabbitmq发布消息
-            RabbitProducer rabbitProducer = RabbitProducerFactory.createRabbitProducer(msg.getAppId(),msg.getQueueCode());
+            RabbitProducer rabbitProducer = RabbitProducerFactory.createRabbitProducer(msg.getAppId(),msg.getQueueCode(),confirmListener);
             rabbitProducer.publish(msg.getBody(),msg.getBizId(),msg.getId());
 
             //若发MQ成功，则异步写消息到文件队列
