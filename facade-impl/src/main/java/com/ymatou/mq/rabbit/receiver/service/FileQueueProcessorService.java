@@ -2,7 +2,7 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.ymatou.mq.infrastructure.model.Message;
-import com.ymatou.mq.rabbit.receiver.infrastructure.filequeue.FileDb;
+import com.ymatou.mq.rabbit.receiver.support.FileDb;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

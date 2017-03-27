@@ -5,8 +5,8 @@ import com.ymatou.messagebus.facade.ErrorCode;
 import com.ymatou.mq.infrastructure.model.MessageConfig;
 import com.ymatou.mq.infrastructure.service.MessageConfigService;
 import com.ymatou.mq.infrastructure.model.Message;
-import com.ymatou.mq.rabbit.receiver.infrastructure.filequeue.FileDb;
-import com.ymatou.mq.rabbit.receiver.infrastructure.dispatcher.RabbitDispatchFacade;
+import com.ymatou.mq.rabbit.receiver.support.FileDb;
+import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
 import com.ymatou.mq.rabbit.RabbitProducer;
 import com.ymatou.mq.rabbit.RabbitProducerFactory;
 import org.slf4j.Logger;
@@ -48,7 +48,7 @@ public class RabbitReceiverService {
      */
     public String receiveAndPublish(Message msg){
         try {
-            //验证队列/bizCode有效性
+            //验证队列有效性
             this.validQueue(msg.getAppId(),msg.getBizCode());
 
             //调rabbitmq发布消息
