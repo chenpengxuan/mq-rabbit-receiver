@@ -2,9 +2,9 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import com.ymatou.messagebus.facade.BizException;
 import com.ymatou.messagebus.facade.ErrorCode;
-import com.ymatou.mq.infrastructure.config.model.MessageConfig;
-import com.ymatou.mq.infrastructure.config.service.MessageConfigService;
-import com.ymatou.mq.rabbit.receiver.model.Message;
+import com.ymatou.mq.infrastructure.model.MessageConfig;
+import com.ymatou.mq.infrastructure.service.MessageConfigService;
+import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.rabbit.receiver.infrastructure.filequeue.FileDb;
 import com.ymatou.mq.rabbit.receiver.infrastructure.dispatcher.RabbitDispatchFacade;
 import com.ymatou.mq.rabbit.RabbitProducer;

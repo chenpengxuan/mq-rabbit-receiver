@@ -1,12 +1,12 @@
 package com.ymatou.mq.rabbit.receiver.service;
 
 import com.alibaba.dubbo.common.utils.CollectionUtils;
-import com.ymatou.mq.infrastructure.config.model.CallbackConfig;
-import com.ymatou.mq.infrastructure.config.service.MessageConfigService;
-import com.ymatou.mq.rabbit.receiver.model.Message;
-import com.ymatou.mq.rabbit.receiver.model.MessageDispatchDetail;
-import com.ymatou.mq.rabbit.receiver.repository.MessageDispatchDetailRepository;
-import com.ymatou.mq.rabbit.receiver.repository.MessageRepository;
+import com.ymatou.mq.infrastructure.model.CallbackConfig;
+import com.ymatou.mq.infrastructure.service.MessageConfigService;
+import com.ymatou.mq.infrastructure.model.Message;
+import com.ymatou.mq.infrastructure.model.MessageDispatchDetail;
+import com.ymatou.mq.infrastructure.repository.MessageDispatchDetailRepository;
+import com.ymatou.mq.infrastructure.repository.MessageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

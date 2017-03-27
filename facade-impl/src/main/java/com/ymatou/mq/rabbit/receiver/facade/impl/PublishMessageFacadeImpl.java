@@ -12,7 +12,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.ymatou.messagebus.facade.PublishMessageFacade;
 import com.ymatou.messagebus.facade.model.PublishMessageReq;
 import com.ymatou.messagebus.facade.model.PublishMessageResp;
-import com.ymatou.mq.rabbit.receiver.model.Message;
+import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

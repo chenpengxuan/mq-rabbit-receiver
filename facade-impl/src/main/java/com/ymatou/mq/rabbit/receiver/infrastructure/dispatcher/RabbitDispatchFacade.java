@@ -1,6 +1,6 @@
 package com.ymatou.mq.rabbit.receiver.infrastructure.dispatcher;
 
-import com.ymatou.mq.rabbit.receiver.model.Message;
+import com.ymatou.mq.infrastructure.model.Message;
 import org.springframework.stereotype.Component;
 
 /**
