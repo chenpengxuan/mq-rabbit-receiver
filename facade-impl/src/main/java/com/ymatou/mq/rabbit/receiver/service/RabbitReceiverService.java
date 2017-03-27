@@ -2,7 +2,7 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import com.ymatou.messagebus.facade.BizException;
 import com.ymatou.messagebus.facade.ErrorCode;
-import com.ymatou.mq.infrastructure.model.MessageConfig;
+import com.ymatou.mq.infrastructure.model.QueueConfig;
 import com.ymatou.mq.infrastructure.service.MessageConfigService;
 import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.rabbit.receiver.support.FileDb;
@@ -80,7 +80,7 @@ public class RabbitReceiverService {
      * 验证bizCode/队列有效性
      */
     void validQueue(String appId,String bizCode){
-        MessageConfig queueConfig = messageConfigService.getQueueConfig(appId,bizCode);
+        QueueConfig queueConfig = messageConfigService.getQueueConfig(appId,bizCode);
         if(queueConfig == null){
             throw new BizException(ErrorCode.QUEUE_CONFIG_NOT_EXIST,String.format("appId:{},bizCode:{} queue config not exist.",appId,bizCode));
         }
