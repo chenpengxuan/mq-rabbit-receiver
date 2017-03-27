@@ -7,6 +7,8 @@
 package com.ymatou.mq.rabbit.receiver.util;
 
 import com.google.common.base.Optional;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +34,13 @@ public class Utils {
 
     public static String uuid() {
         return new ObjectId().toHexString();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(uuid());
+
+        System.out.println(DateFormatUtils.format(new ObjectId("58d8bd4a07d5dbf71cb88e20").getDate(),"yyyyMM"));
+        System.out.println(new ObjectId("58d8bd4a07d5dbf71cb88e20").getDate());
     }
 
     public static String localIp() {

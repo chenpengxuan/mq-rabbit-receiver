@@ -2,10 +2,11 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import com.ymatou.messagebus.facade.BizException;
 import com.ymatou.messagebus.facade.ErrorCode;
+import com.ymatou.mq.infrastructure.filedb.FileDb;
 import com.ymatou.mq.infrastructure.model.QueueConfig;
 import com.ymatou.mq.infrastructure.service.MessageConfigService;
 import com.ymatou.mq.infrastructure.model.Message;
-import com.ymatou.mq.rabbit.receiver.support.FileDb;
+
 import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
 import com.ymatou.mq.rabbit.RabbitProducer;
 import com.ymatou.mq.rabbit.RabbitProducerFactory;
@@ -33,7 +34,7 @@ public class RabbitReceiverService {
     private MessageService messageService;
 
     @Autowired
-    private FileDb fileDb;
+    private FileQueueProcessorService fileQueueProcessorService;
 
     @Autowired
     private RabbitDispatchFacade rabbitDispatchFacade;
@@ -49,20 +50,15 @@ public class RabbitReceiverService {
     public String receiveAndPublish(Message msg){
         try {
             //验证队列有效性
-            this.validQueue(msg.getAppId(),msg.getBizCode());
+            this.validQueue(msg.getAppId(),msg.getQueueCode());
 
             //调rabbitmq发布消息
-            RabbitProducer rabbitProducer = RabbitProducerFactory.createRabbitProducer(msg.getAppId(),msg.getBizCode());
+            RabbitProducer rabbitProducer = RabbitProducerFactory.createRabbitProducer(msg.getAppId(),msg.getQueueCode());
             //TODO
             rabbitProducer.publish(null);
 
             //若发MQ成功，则异步写消息到文件队列
-            taskExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    writeMessageToFileQueue(msg);
-                }
-            });
+            fileQueueProcessorService.saveMessageToFileDb(msg);
         } catch (Exception e) {
             logger.error("publish msg {} error",msg,e);
             try {
@@ -73,7 +69,7 @@ public class RabbitReceiverService {
                 throw new BizException(ErrorCode.FAIL,"invoke dispatcher send msg {} error",ex);
             }
         }
-        return msg.getMsgUuid();
+        return msg.getId();
     }
 
     /**
@@ -83,25 +79,6 @@ public class RabbitReceiverService {
         QueueConfig queueConfig = messageConfigService.getQueueConfig(appId,bizCode);
         if(queueConfig == null){
             throw new BizException(ErrorCode.QUEUE_CONFIG_NOT_EXIST,String.format("appId:{},bizCode:{} queue config not exist.",appId,bizCode));
-        }
-    }
-
-    /**
-     * 写消息到本地文件队列
-     * @param msg
-     */
-    void writeMessageToFileQueue(Message msg){
-        try {
-            fileDb.saveMessage(msg);
-        } catch (Exception e) {
-            logger.error("write msg {} to local file queue error.",msg,e);
-            try {
-                //若写本地文件队列异常，则直接写mongo(消息及分发明细)
-                //TODO 通过写异常回调事件
-                messageService.saveMessage(msg);
-            } catch (Exception ex) {
-                logger.error("write msg {} to mongo error.",msg,ex);
-            }
         }
     }
 }

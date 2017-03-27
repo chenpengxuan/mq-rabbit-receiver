@@ -21,7 +21,7 @@ import org.springframework.context.annotation.DependsOn;
 public class DisconfMgr {
 
     @Bean(name = "disconfMgrBean", destroyMethod = "destroy")
-    @DependsOn({"tomcatConfig"})
+    @DependsOn({"tomcatConfig","fileDbConf"})
     public DisconfMgrBean disconfMgrBean() {
 
         DisconfMgrBean disconfMgrBean = new DisconfMgrBean();

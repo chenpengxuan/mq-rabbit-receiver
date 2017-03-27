@@ -1,55 +1,114 @@
 package com.ymatou.mq.rabbit.receiver.service;
 
-import com.alibaba.dubbo.common.utils.CollectionUtils;
-import com.ymatou.mq.infrastructure.model.Message;
-import com.ymatou.mq.rabbit.receiver.support.FileDb;
+import java.util.Optional;
+import java.util.function.Function;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import com.baidu.disconf.client.common.annotations.DisconfUpdateService;
+import com.baidu.disconf.client.common.update.IDisconfUpdate;
+import com.ymatou.mq.infrastructure.filedb.FileDb;
+import com.ymatou.mq.infrastructure.filedb.FileDbConfig;
+import com.ymatou.mq.infrastructure.filedb.PutExceptionHandler;
+import com.ymatou.mq.infrastructure.model.Message;
+import com.ymatou.mq.rabbit.receiver.config.FileDbConf;
 
 /**
- * 本地消息文件列表处理service
- * Created by zhangzhihua on 2017/3/24.
+ * 本地消息文件列表处理service Created by zhangzhihua on 2017/3/24.
  */
 @Component("fileQueueProcessorService")
-public class FileQueueProcessorService {
+@DisconfUpdateService(confFileKeys = "filedb.properties")
+public class FileQueueProcessorService
+        implements IDisconfUpdate, Function<Pair<String, String>, Boolean>, PutExceptionHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileQueueProcessorService.class);
 
     @Autowired
     private FileDb fileDb;
+    @Autowired
+    private FileDbConf fileDbConf;
 
     @Autowired
     private MessageService messageService;
 
-    /**
-     * 扫描队列并处理
-     */
-    public void takeAndProcess(){
-        List<Message> messageList = this.takeMessageList();
-        this.writeMessagesToMongo(messageList);
+
+    @PostConstruct
+    public void init() {
+        FileDbConfig fileDbConfig = FileDbConfig.newInstance()
+                .setDbName(fileDbConf.getDbName())
+                .setDbPath(fileDbConf.getDbPath())
+                .setConsumerThreadNums(fileDbConf.getConsumerThreadNums())
+                .setConsumeDuration(fileDbConf.getConsumeDuration())
+                .setMaxConsumeSizeInDuration(fileDbConf.getMaxConsumeSizeInDuration())
+                .setConsumer(this)
+                .setPutExceptionHandler(this);
+
+        fileDb = FileDb.newFileDb(fileDbConfig);
     }
 
     /**
-     * 从本地文件队列读取一定量消息
+     * 重新配置线程数，消费间隔，最大消费数量等
+     * 
+     * @throws Exception
+     */
+    @Override
+    public void reload() throws Exception {
+        FileDbConfig newConfig = FileDbConfig.newInstance()
+                .setConsumerThreadNums(fileDbConf.getConsumerThreadNums())
+                .setConsumeDuration(fileDbConf.getConsumeDuration())
+                .setMaxConsumeSizeInDuration(fileDbConf.getMaxConsumeSizeInDuration());
+
+        fileDb.reset(newConfig);
+    }
+
+
+    /**
+     * 保存成文件队列
+     * 
+     * @param message
+     */
+    public void saveMessageToFileDb(Message message) {
+        fileDb.put(message.getId(), Message.toJsonString(message));
+    }
+
+    /**
+     * 消费从文件获取到的数据 入库成功 返回true
+     * 
+     * @param pair
      * @return
      */
-    List<Message> takeMessageList(){
-        return fileDb.takeMessages();
+    @Override
+    public Boolean apply(Pair<String, String> pair) {
+        Boolean success = Boolean.FALSE;
+        try {
+            Message message = Message.fromJson(pair.getValue());
+            success = messageService.saveMessage(message);
+        } catch (Exception e) {
+            LOGGER.error("save message to mongo error", e);
+        }
+        return success;
     }
 
     /**
-     * 写消息到mongo
+     * 异常处理
+     * 
+     * @param key
+     * @param value
+     * @param throwable
      */
-    void writeMessagesToMongo(List<Message> messageList){
-        if(CollectionUtils.isEmpty(messageList)){
-            return;
-        }
-        for(Message message:messageList){
-            //保存消息到mongo并删除本地队列记录 TODO 失败回滚
-            messageService.saveMessage(message);
-            fileDb.deleteMessage(message);
-        }
+    @Override
+    public void handleException(String key, String value, Optional<Throwable> throwable) {
+
+        LOGGER.warn("key:{},value:{} can not save to filedb ", key, value,
+                throwable.isPresent() ? throwable.get() : "");
+
+        Message message = Message.fromJson(value);
+        messageService.saveMessage(message);
     }
-
-
 }

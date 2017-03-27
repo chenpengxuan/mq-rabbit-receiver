@@ -1,19 +1,20 @@
 package com.ymatou.mq.rabbit.receiver.service;
 
-import com.alibaba.dubbo.common.utils.CollectionUtils;
-import com.ymatou.mq.infrastructure.model.CallbackConfig;
-import com.ymatou.mq.infrastructure.service.MessageConfigService;
-import com.ymatou.mq.infrastructure.model.Message;
-import com.ymatou.mq.infrastructure.model.MessageDispatchDetail;
-import com.ymatou.mq.infrastructure.repository.MessageDispatchDetailRepository;
-import com.ymatou.mq.infrastructure.repository.MessageRepository;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.alibaba.dubbo.common.utils.CollectionUtils;
+import com.ymatou.mq.infrastructure.model.CallbackConfig;
+import com.ymatou.mq.infrastructure.model.Message;
+import com.ymatou.mq.infrastructure.model.MessageDispatchDetail;
+import com.ymatou.mq.infrastructure.repository.MessageDispatchDetailRepository;
+import com.ymatou.mq.infrastructure.repository.MessageRepository;
+import com.ymatou.mq.infrastructure.service.MessageConfigService;
 
 /**
  * 消息服务
@@ -35,19 +36,28 @@ public class MessageService {
 
     /**
      * 保存消息及分发明细
+     * 
      * @param msg
      */
-    public void saveMessage(Message msg){
-        //保存消息
-        messageRepository.save(msg);
-        //获取消息分发明细列表
-        List<MessageDispatchDetail> detailList = this.buildMessageDispatchDetailList(msg);
-        //保存分发明细列表 TODO 一致性处理
-        if(CollectionUtils.isNotEmpty(detailList)){
-            for(MessageDispatchDetail detail:detailList){
-                messageDispatchDetailRepository.saveDetail(detail);
+    public boolean saveMessage(Message msg) {
+        // 保存消息
+        if (messageRepository.save(msg)) {
+
+            // 获取消息分发明细列表
+            List<MessageDispatchDetail> detailList = this.buildMessageDispatchDetailList(msg);
+            // 保存分发明细列表
+            if (CollectionUtils.isNotEmpty(detailList)) {
+                for (MessageDispatchDetail detail : detailList) {
+                    if (!messageDispatchDetailRepository.saveDetail(detail)) {
+                        // 有一条没保存成功 直接退出 等待下回再次保存
+                        return false;
+                    }
+                }
             }
+            // 所有保存成功 ，返回true
+            return true;
         }
+        return false;
     }
 
     /**
@@ -57,7 +67,7 @@ public class MessageService {
      */
     List<MessageDispatchDetail> buildMessageDispatchDetailList(Message msg){
         List<MessageDispatchDetail> detailList = new ArrayList<MessageDispatchDetail>();
-        List<CallbackConfig> subscribleConfigList =  messageConfigService.getSubscribleConfigList(msg.getAppId(),msg.getBizCode());
+        List<CallbackConfig> subscribleConfigList =  messageConfigService.getSubscribleConfigList(msg.getAppId(),msg.getQueueCode());
         if(CollectionUtils.isNotEmpty(subscribleConfigList)){
             for(CallbackConfig subscribleConfig:subscribleConfigList){
                 MessageDispatchDetail detail = new MessageDispatchDetail();
