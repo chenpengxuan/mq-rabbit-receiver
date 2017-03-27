@@ -70,7 +70,7 @@ public class RabbitReceiverService {
             fileQueueProcessorService.saveMessageToFileDb(msg);
         } catch (Exception e) {
             if(logger.isWarnEnabled()){
-                logger.warn("publish msg fail or rabbit is not open.",e);
+                logger.warn("publish msg fail or rabbit not enable.",e);
             }
             try {
                 //若发MQ失败，则直接调用dispatch分发站接口发送
