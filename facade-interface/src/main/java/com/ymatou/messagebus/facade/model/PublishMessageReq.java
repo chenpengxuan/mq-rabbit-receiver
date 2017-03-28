@@ -123,6 +123,7 @@ public class PublishMessageReq extends BaseRequest {
         this.body = body;
     }
 
+    //FIXME:什么时候用呢, 不是已经有NotEmpty之类标签；如果用，直接重命名为validate()
     public void validateData() {
         if (StringUtils.isEmpty(appId)) {
             throw new IllegalArgumentException("appId not empty");
