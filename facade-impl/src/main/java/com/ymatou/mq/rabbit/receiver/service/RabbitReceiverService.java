@@ -69,14 +69,14 @@ public class RabbitReceiverService {
             fileQueueProcessorService.saveMessageToFileDb(msg);
         } catch (Exception e) {
             if(logger.isWarnEnabled()){
-                logger.warn("publish msg fail or rabbit not enable.",e);
+                logger.warn("publish msg fail.",e);
             }
             try {
                 //若发MQ失败，则直接调用dispatch分发站接口发送
                 rabbitDispatchFacade.dispatchMessage(msg);
             } catch (Exception ex) {
                 //发MQ失败->调分发站失败则返回失败信息
-                throw new BizException(ErrorCode.FAIL,"invoke dispatcher send msg {} error",ex);
+                throw new BizException(ErrorCode.FAIL,"invoke dispatcher send msg error",ex);
             }
         }
     }
