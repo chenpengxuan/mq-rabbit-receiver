@@ -7,7 +7,7 @@ import com.ymatou.mq.infrastructure.model.QueueConfig;
 import com.ymatou.mq.infrastructure.service.MessageConfigService;
 import com.ymatou.mq.infrastructure.model.Message;
 
-import com.ymatou.mq.rabbit.receiver.config.RabbitConfig;
+import com.ymatou.mq.rabbit.config.RabbitConfig;
 import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
 import com.ymatou.mq.rabbit.RabbitProducer;
 import com.ymatou.mq.rabbit.RabbitProducerFactory;
@@ -84,17 +84,6 @@ public class RabbitReceiverService {
     }
 
     /**
-     * 获取rabbit配置
-     * @return
-     */
-    Properties getRabbitConfig(){
-        Properties props = new Properties();
-        props.setProperty("masterEnable",String.valueOf(rabbitConfig.getMasterEnable()));
-        props.setProperty("slaveEnable",String.valueOf(rabbitConfig.getSlaveEnable()));
-        return  props;
-    }
-
-    /**
      * 验证bizCode/队列有效性
      */
     void validQueue(String appId,String bizCode){
@@ -102,5 +91,9 @@ public class RabbitReceiverService {
         if(queueConfig == null){
             throw new BizException(ErrorCode.QUEUE_CONFIG_NOT_EXIST,String.format("appId:{},bizCode:{} queue config not exist.",appId,bizCode));
         }
+    }
+
+    public RabbitConfig getRabbitConfig() {
+        return rabbitConfig;
     }
 }
