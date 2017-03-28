@@ -14,7 +14,7 @@ import com.ymatou.messagebus.facade.model.PublishMessageReq;
 import com.ymatou.messagebus.facade.model.PublishMessageResp;
 import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
-import com.ymatou.mq.rabbit.receiver.util.NetUtil;
+import com.ymatou.mq.infrastructure.util.NetUtil;
 import com.ymatou.mq.rabbit.receiver.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
