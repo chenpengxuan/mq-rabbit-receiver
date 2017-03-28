@@ -70,6 +70,7 @@ public class RabbitReceiverService {
             //若发MQ成功，则异步写消息到文件队列
             fileQueueProcessorService.saveMessageToFileDb(msg);
         } catch (Exception e) {
+            //FIXME：IllegalArumentException和BizException，不需要调分发站，直接返回客户端失败?
             logger.warn("publish msg fail.",e);
             try {
                 //若发MQ失败，则直接调用dispatch分发站接口发送
