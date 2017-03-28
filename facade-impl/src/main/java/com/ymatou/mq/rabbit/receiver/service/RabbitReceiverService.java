@@ -10,7 +10,7 @@ import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.rabbit.config.RabbitConfig;
 import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
 import com.ymatou.mq.rabbit.RabbitProducer;
-import com.ymatou.mq.rabbit.RabbitProducerFactory;
+import com.ymatou.mq.rabbit.RabbitChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +62,8 @@ public class RabbitReceiverService {
             //获取rabbit ack事件监听
             ConfirmListener confirmListener = rabbitAckHandlerService.getConfirmListener(msg.getAppId(),msg.getQueueCode());
             //调rabbitmq发布消息
-            RabbitProducer rabbitProducer = RabbitProducerFactory.createRabbitProducer(msg.getAppId(),msg.getQueueCode(),confirmListener,this.getRabbitConfig());
-            rabbitProducer.publish(msg.getBody(),msg.getBizId(),msg.getId(), this.getRabbitConfig());
+            RabbitProducer rabbitProducer = RabbitChannelFactory.createRabbitProducer(msg.getAppId(),msg.getQueueCode(),confirmListener,this.getRabbitConfig());
+            rabbitProducer.publish(, msg.getBody(), msg.getBizId(), msg.getId(), this.getRabbitConfig());
             //设置共享unconfirmed集合
             rabbitAckHandlerService.setUnconfirmedSet(rabbitProducer.getUnconfirmedSet());
 
