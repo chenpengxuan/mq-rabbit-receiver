@@ -65,6 +65,7 @@ public class PublishMessageFacadeImpl implements PublishMessageFacade {
         msg.setBody(req.getBody());
         msg.setClientIp(req.getIp());
         msg.setRecvIp(NetUtil.getHostIp());
+        //FIXME: new Date()
         msg.setCreateTime(new Date().getTime());
         return msg;
     }
