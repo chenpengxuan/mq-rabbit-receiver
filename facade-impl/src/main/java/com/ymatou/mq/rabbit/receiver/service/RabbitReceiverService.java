@@ -18,7 +18,6 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Properties;
 
 /**
  * rabbitmq接收消息service
@@ -55,7 +54,7 @@ public class RabbitReceiverService {
      * @param msg
      * @return
      */
-    public String receiveAndPublish(Message msg){
+    public void receiveAndPublish(Message msg){
         try {
             //验证队列有效性
             this.validQueue(msg.getAppId(),msg.getQueueCode());
@@ -80,16 +79,15 @@ public class RabbitReceiverService {
                 throw new BizException(ErrorCode.FAIL,"invoke dispatcher send msg {} error",ex);
             }
         }
-        return msg.getId();
     }
 
     /**
-     * 验证bizCode/队列有效性
+     * 验证queuCode有效性
      */
-    void validQueue(String appId,String bizCode){
-        QueueConfig queueConfig = messageConfigService.getQueueConfig(appId,bizCode);
+    void validQueue(String appId,String queueCode){
+        QueueConfig queueConfig = messageConfigService.getQueueConfig(appId, queueCode);
         if(queueConfig == null){
-            throw new BizException(ErrorCode.QUEUE_CONFIG_NOT_EXIST,String.format("appId:{},bizCode:{} queue config not exist.",appId,bizCode));
+            throw new BizException(ErrorCode.QUEUE_CONFIG_NOT_EXIST,String.format("appId:{},queueCode:{} not exist.",appId, queueCode));
         }
     }
 

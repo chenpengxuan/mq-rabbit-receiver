@@ -14,10 +14,14 @@ import com.ymatou.messagebus.facade.model.PublishMessageReq;
 import com.ymatou.messagebus.facade.model.PublishMessageResp;
 import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
+import com.ymatou.mq.rabbit.receiver.util.NetUtil;
+import com.ymatou.mq.rabbit.receiver.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 
 /**
@@ -34,12 +38,16 @@ public class PublishMessageFacadeImpl implements PublishMessageFacade {
 
     @Override
     public PublishMessageResp publish(PublishMessageReq req) {
-        PublishMessageResp resp = new PublishMessageResp();
         //构造请求消息
         Message msg = this.buildMessage(req);
+
         //接收发布消息
-        String msgUuid = rabbitReceiverService.receiveAndPublish(msg);
-        resp.setUuid(msgUuid);
+        rabbitReceiverService.receiveAndPublish(msg);
+
+        //返回
+        PublishMessageResp resp = new PublishMessageResp();
+        resp.setUuid(msg.getId());
+        resp.setSuccess(true);
         return resp;
     }
 
@@ -50,6 +58,14 @@ public class PublishMessageFacadeImpl implements PublishMessageFacade {
      */
     Message buildMessage(PublishMessageReq req){
         Message msg = new Message();
+        msg.setAppId(req.getAppId());
+        msg.setQueueCode(req.getCode());
+        msg.setId(Utils.newUuid());
+        msg.setBizId(req.getMsgUniqueId());
+        msg.setBody(req.getBody());
+        msg.setClientIp(req.getIp());
+        msg.setRecvIp(NetUtil.getHostIp());
+        msg.setCreateTime(new Date().getTime());
         return msg;
     }
 

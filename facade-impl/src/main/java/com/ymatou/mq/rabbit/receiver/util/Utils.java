@@ -19,6 +19,8 @@ import java.net.NetworkInterface;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 
 /**
@@ -93,6 +95,17 @@ public class Utils {
             LOGGER.error("Failed to read version. {}", e.getMessage(), e);
             return "Failed to read version:" + e.getMessage();
         }
+    }
+
+    /**
+     * 生成MessageUuid: {yyyyMM}.{ObjectId}
+     *
+     * @return
+     */
+    public static String newUuid() {
+        //FIXME:热点方法, SimpleDateFormat#format很耗时
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMM");
+        return String.format("%s.%s", dateFormat.format(new Date()), ObjectId.get().toString());
     }
 
     /**

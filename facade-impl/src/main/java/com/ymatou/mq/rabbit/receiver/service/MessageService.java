@@ -1,6 +1,7 @@
 package com.ymatou.mq.rabbit.receiver.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -42,7 +43,6 @@ public class MessageService {
     public boolean saveMessage(Message msg) {
         // 保存消息
         if (messageRepository.save(msg)) {
-
             // 获取消息分发明细列表
             List<MessageDispatchDetail> detailList = this.buildMessageDispatchDetailList(msg);
             // 保存分发明细列表
@@ -67,13 +67,29 @@ public class MessageService {
      */
     List<MessageDispatchDetail> buildMessageDispatchDetailList(Message msg){
         List<MessageDispatchDetail> detailList = new ArrayList<MessageDispatchDetail>();
-        List<CallbackConfig> subscribleConfigList =  messageConfigService.getSubscribleConfigList(msg.getAppId(),msg.getQueueCode());
-        if(CollectionUtils.isNotEmpty(subscribleConfigList)){
-            for(CallbackConfig subscribleConfig:subscribleConfigList){
+        List<CallbackConfig> callbackConfigList =  messageConfigService.getCallbackConfigList(msg.getAppId(),msg.getQueueCode());
+        if(CollectionUtils.isNotEmpty(callbackConfigList)){
+            for(CallbackConfig callbackConfig:callbackConfigList){
                 MessageDispatchDetail detail = new MessageDispatchDetail();
-                //TODO
+                detail.setId(this.buildDetailId(msg,callbackConfig));
+                detail.setMsgId(msg.getId());
+                detail.setBizId(msg.getBizId());
+                detail.setAppId(msg.getAppId());
+                detail.setQueueCode(msg.getQueueCode());
+                detail.setConsumerId(callbackConfig.getCallbackKey());
+                detail.setCreateTime(new Date().getTime());
             }
         }
         return detailList;
+    }
+
+    /**
+     * 生成明细id
+     * @param msg
+     * @param callbackConfig
+     * @return
+     */
+    String buildDetailId(Message msg,CallbackConfig callbackConfig){
+        return String.format("%s_%s",msg.getId(),callbackConfig.getCallbackKey());
     }
 }
