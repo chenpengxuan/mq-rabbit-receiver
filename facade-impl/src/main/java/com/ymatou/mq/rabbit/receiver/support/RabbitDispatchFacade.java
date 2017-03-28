@@ -1,6 +1,9 @@
 package com.ymatou.mq.rabbit.receiver.support;
 
 import com.ymatou.mq.infrastructure.model.Message;
+import com.ymatou.mq.rabbit.RabbitProducer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,8 +13,9 @@ import org.springframework.stereotype.Component;
 @Component("rabbitDispatchFacade")
 public class RabbitDispatchFacade {
 
-    public void dispatchMessage(Message msg){
-        //TODO
+    private static final Logger logger = LoggerFactory.getLogger(RabbitDispatchFacade.class);
 
+    public void dispatchMessage(Message msg){
+        logger.info("direct dispatch msg:{}",msg);
     }
 }

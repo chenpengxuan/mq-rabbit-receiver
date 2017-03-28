@@ -2,9 +2,8 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import com.rabbitmq.client.ConfirmListener;
 import com.ymatou.mq.infrastructure.model.Message;
-import com.ymatou.mq.infrastructure.model.QueueConfig;
-import com.ymatou.mq.rabbit.config.RabbitConfig;
 import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
+import com.ymatou.mq.rabbit.support.RabbitConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ public class RabbitAckHandlerService{
     /**
      * 未确认集合
      */
-    private SortedMap<Long, MessageAndConfigWrapper> unconfirmedSet = Collections.synchronizedSortedMap(new TreeMap<Long, MessageAndConfigWrapper>());
+    private SortedMap<Long, Map<String,Object>> unconfirmedSet = null;
 
     @Autowired
     private RabbitDispatchFacade rabbitDispatchFacade;
@@ -76,11 +75,10 @@ public class RabbitAckHandlerService{
             if (multiple) {
                 //TODO
             }else{
-                MessageAndConfigWrapper wrapper = unconfirmedSet.get(deliveryTag);
-                Message message = wrapper.getMessage();
                 //若出现nack，则调用dispatch直接分发
                 try {
-                    rabbitDispatchFacade.dispatchMessage(message);
+                    Map<String,Object> map = unconfirmedSet.get(deliveryTag);
+                    rabbitDispatchFacade.dispatchMessage(getPublishMessage(map));
                 } catch (Exception e) {
                     logger.error("invoke dispatch fail.",e);
                 }
@@ -89,34 +87,24 @@ public class RabbitAckHandlerService{
     }
 
     /**
-     * MessageWrapper，用于包装Message,MessageConfig
-     * @author zhangzhihua
+     * 获取要发布的消息
+     * @param map
+     * @return
      */
-    class MessageAndConfigWrapper{
+    Message getPublishMessage(Map<String,Object> map){
+        Message msg = new Message();
+        msg.setQueueCode(String.valueOf(map.get(RabbitConstants.QUEUE_CODE)));
+        msg.setId(String.valueOf(map.get(RabbitConstants.MSG_ID)));
+        msg.setBizId(String.valueOf(map.get(RabbitConstants.BIZ_ID)));
+        msg.setBody(String.valueOf(map.get(RabbitConstants.BODY)));
+        return msg;
+    }
 
-        private Message message;
+    public SortedMap<Long, Map<String, Object>> getUnconfirmedSet() {
+        return unconfirmedSet;
+    }
 
-        private QueueConfig queueConfig;
-
-        public MessageAndConfigWrapper(Message message,QueueConfig queueConfig){
-            this.message = message;
-            this.queueConfig = queueConfig;
-        }
-
-        public Message getMessage() {
-            return message;
-        }
-
-        public void setMessage(Message message) {
-            this.message = message;
-        }
-
-        public QueueConfig getQueueConfig() {
-            return queueConfig;
-        }
-
-        public void setQueueConfig(QueueConfig queueConfig) {
-            this.queueConfig = queueConfig;
-        }
+    public void setUnconfirmedSet(SortedMap<Long, Map<String, Object>> unconfirmedSet) {
+        this.unconfirmedSet = unconfirmedSet;
     }
 }

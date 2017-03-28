@@ -64,6 +64,8 @@ public class RabbitReceiverService {
             //调rabbitmq发布消息
             RabbitProducer rabbitProducer = RabbitProducerFactory.createRabbitProducer(msg.getAppId(),msg.getQueueCode(),confirmListener,this.getRabbitConfig());
             rabbitProducer.publish(msg.getBody(),msg.getBizId(),msg.getId(), this.getRabbitConfig());
+            //设置共享unconfirmed集合
+            rabbitAckHandlerService.setUnconfirmedSet(rabbitProducer.getUnconfirmedSet());
 
             //若发MQ成功，则异步写消息到文件队列
             fileQueueProcessorService.saveMessageToFileDb(msg);
