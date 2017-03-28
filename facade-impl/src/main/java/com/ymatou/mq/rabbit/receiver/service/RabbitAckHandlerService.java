@@ -39,12 +39,11 @@ public class RabbitAckHandlerService{
     private RabbitDispatchFacade rabbitDispatchFacade;
 
     /**
-     * 根据appId/queueCode获取listener
-     * @param appId
-     * @param queueCode
+     * 获取confirm listener
      * @return
      */
-    public ConfirmListener getConfirmListener(String appId, String queueCode){
+    public ConfirmListener getConfirmListener(){
+        /*
         String confirmKey = String.format("%s_%s", appId, queueCode);
         if(confirmListenerMap.get(confirmKey) != null){
             return confirmListenerMap.get(confirmKey);
@@ -53,6 +52,8 @@ public class RabbitAckHandlerService{
             confirmListenerMap.put(confirmKey,confirmListener);
             return confirmListener;
         }
+        */
+        return new DefaultConfirmListener();
     }
 
     /**

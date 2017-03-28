@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 /**
@@ -49,6 +50,20 @@ public class RabbitReceiverService {
     @Autowired
     private RabbitConfig rabbitConfig;
 
+    private RabbitProducer rabbitProducer;
+
+    @PostConstruct
+    public void init(){
+        //获取rabbit ack事件监听
+        ConfirmListener confirmListener = rabbitAckHandlerService.getConfirmListener();
+        //调rabbitmq发布消息
+        if(rabbitProducer == null){
+            rabbitProducer = new RabbitProducer(rabbitConfig,confirmListener);
+        }
+        //设置共享unconfirmed集合
+        rabbitAckHandlerService.setUnconfirmedSet(rabbitProducer.getUnconfirmedSet());
+    }
+
     /**
      * 接收并发布消息
      * @param msg
@@ -59,13 +74,8 @@ public class RabbitReceiverService {
             //验证队列有效性
             this.validQueue(msg.getAppId(),msg.getQueueCode());
 
-            //获取rabbit ack事件监听
-            ConfirmListener confirmListener = rabbitAckHandlerService.getConfirmListener(msg.getAppId(),msg.getQueueCode());
-            //调rabbitmq发布消息
-            RabbitProducer rabbitProducer = RabbitChannelFactory.createRabbitProducer(msg.getAppId(),msg.getQueueCode(),confirmListener,this.getRabbitConfig());
-            rabbitProducer.publish(, msg.getBody(), msg.getBizId(), msg.getId(), this.getRabbitConfig());
-            //设置共享unconfirmed集合
-            rabbitAckHandlerService.setUnconfirmedSet(rabbitProducer.getUnconfirmedSet());
+            //发布消息
+            rabbitProducer.publish(msg.getQueueCode(), msg.getBody(), msg.getBizId(), msg.getId(), this.getRabbitConfig());
 
             //若发MQ成功，则异步写消息到文件队列
             fileQueueProcessorService.saveMessageToFileDb(msg);
