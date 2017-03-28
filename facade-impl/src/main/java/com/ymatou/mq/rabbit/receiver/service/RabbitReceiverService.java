@@ -68,9 +68,7 @@ public class RabbitReceiverService {
             //若发MQ成功，则异步写消息到文件队列
             fileQueueProcessorService.saveMessageToFileDb(msg);
         } catch (Exception e) {
-            if(logger.isWarnEnabled()){
-                logger.warn("publish msg fail.",e);
-            }
+            logger.warn("publish msg fail.",e);
             try {
                 //若发MQ失败，则直接调用dispatch分发站接口发送
                 rabbitDispatchFacade.dispatchMessage(msg);
