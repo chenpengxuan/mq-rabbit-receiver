@@ -41,7 +41,7 @@ public class MessageServiceTest extends BaseTest{
         message.setClientIp("127.0.0.1");
         message.setQueueCode("testJava");
         message.setRecvIp("127.0.0.1");
-        message.setCreateTime(Long.valueOf(DateFormatUtils.format(new Date(),"yyyyMMddHHmmss")));
+        message.setCreateTime(new Date());
 
         messageService.saveMessage(message);
 
