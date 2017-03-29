@@ -108,19 +108,12 @@ public class FileQueueProcessorService
         LOGGER.warn("key:{},value:{} can not save to filedb ", key, value,
                 throwable.isPresent() ? throwable.get() : "");
 
-        //FIXME: handelException中还可以再往外抛异常?
         Message message = Message.fromJson(value);
 
-        boolean success = false;
         try {
-            success = messageService.saveMessage(message);
+            messageService.saveMessage(message);
         } catch (Exception e) {
-            success = false;
-            LOGGER.error("filedb handleException save message to mongo error",e);
-        }
-
-        if(!success){
-            //todo 直接调用分发站
+            LOGGER.error("filedb handleException save message to mongo error", e);
         }
     }
 }
