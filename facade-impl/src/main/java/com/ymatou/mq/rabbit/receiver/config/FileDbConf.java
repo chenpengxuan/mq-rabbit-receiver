@@ -7,8 +7,6 @@
 
 package com.ymatou.mq.rabbit.receiver.config;
 
-import com.baidu.disconf.client.common.annotations.DisconfUpdateService;
-import com.baidu.disconf.client.common.update.IDisconfUpdate;
 import org.springframework.stereotype.Component;
 
 import com.baidu.disconf.client.common.annotations.DisconfFile;
@@ -19,8 +17,7 @@ import com.baidu.disconf.client.common.annotations.DisconfFileItem;
  */
 @Component
 @DisconfFile(fileName = "filedb.properties")
-
-public class FileDbConf implements IDisconfUpdate{
+public class FileDbConf{
 
     /**
      * store的名称，以及 线程池中的名称
@@ -92,8 +89,4 @@ public class FileDbConf implements IDisconfUpdate{
         this.consumerThreadNums = consumerThreadNums;
     }
 
-    @Override
-    public void reload() throws Exception {
-
-    }
 }
