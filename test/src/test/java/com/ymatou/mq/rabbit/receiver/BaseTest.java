@@ -5,7 +5,7 @@
  *
  */
 
-package com.ymatou.mq.rabbit.receiver.service;
+package com.ymatou.mq.rabbit.receiver;
 
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.ComponentScan;
