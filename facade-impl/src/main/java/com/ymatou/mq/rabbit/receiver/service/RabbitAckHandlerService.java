@@ -33,7 +33,7 @@ public class RabbitAckHandlerService{
     /**
      * 未确认集合
      */
-    private SortedMap<Long, Map<String,Object>> unconfirmedSet = null;
+    private SortedMap<Long, Message> unconfirmedSet = null;
 
     @Autowired
     private RabbitDispatchFacade rabbitDispatchFacade;
@@ -43,16 +43,6 @@ public class RabbitAckHandlerService{
      * @return
      */
     public ConfirmListener getConfirmListener(){
-        /*
-        String confirmKey = String.format("%s_%s", appId, queueCode);
-        if(confirmListenerMap.get(confirmKey) != null){
-            return confirmListenerMap.get(confirmKey);
-        }else{
-            ConfirmListener confirmListener = new DefaultConfirmListener();
-            confirmListenerMap.put(confirmKey,confirmListener);
-            return confirmListener;
-        }
-        */
         return new DefaultConfirmListener();
     }
 
@@ -78,8 +68,8 @@ public class RabbitAckHandlerService{
             }else{
                 //若出现nack，则调用dispatch直接分发
                 try {
-                    Map<String,Object> map = unconfirmedSet.get(deliveryTag);
-                    rabbitDispatchFacade.dispatchMessage(getPublishMessage(map));
+                    Message message = unconfirmedSet.get(deliveryTag);
+                    rabbitDispatchFacade.dispatchMessage(message);
                 } catch (Exception e) {
                     logger.error("invoke dispatch fail.",e);
                 }
@@ -87,25 +77,11 @@ public class RabbitAckHandlerService{
         }
     }
 
-    /**
-     * 获取要发布的消息
-     * @param map
-     * @return
-     */
-    Message getPublishMessage(Map<String,Object> map){
-        Message msg = new Message();
-        msg.setQueueCode(String.valueOf(map.get(RabbitConstants.QUEUE_CODE)));
-        msg.setId(String.valueOf(map.get(RabbitConstants.MSG_ID)));
-        msg.setBizId(String.valueOf(map.get(RabbitConstants.BIZ_ID)));
-        msg.setBody(String.valueOf(map.get(RabbitConstants.BODY)));
-        return msg;
-    }
-
-    public SortedMap<Long, Map<String, Object>> getUnconfirmedSet() {
+    public SortedMap<Long, Message> getUnconfirmedSet() {
         return unconfirmedSet;
     }
 
-    public void setUnconfirmedSet(SortedMap<Long, Map<String, Object>> unconfirmedSet) {
+    public void setUnconfirmedSet(SortedMap<Long, Message> unconfirmedSet) {
         this.unconfirmedSet = unconfirmedSet;
     }
 }

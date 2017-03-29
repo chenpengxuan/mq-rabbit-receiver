@@ -10,14 +10,12 @@ import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.rabbit.config.RabbitConfig;
 import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
 import com.ymatou.mq.rabbit.RabbitProducer;
-import com.ymatou.mq.rabbit.RabbitChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
 /**
  * rabbitmq接收消息service
@@ -46,16 +44,13 @@ public class RabbitReceiverService {
     @Autowired
     private RabbitConfig rabbitConfig;
 
+    @Autowired
     private RabbitProducer rabbitProducer;
 
     @PostConstruct
     public void init(){
         //获取rabbit ack事件监听
         ConfirmListener confirmListener = rabbitAckHandlerService.getConfirmListener();
-        //调rabbitmq发布消息
-        if(rabbitProducer == null){
-            rabbitProducer = new RabbitProducer(rabbitConfig,confirmListener);
-        }
         //设置共享unconfirmed集合
         rabbitAckHandlerService.setUnconfirmedSet(rabbitProducer.getUnconfirmedSet());
     }
@@ -71,7 +66,7 @@ public class RabbitReceiverService {
             this.validQueue(msg.getAppId(),msg.getQueueCode());
 
             //发布消息
-            rabbitProducer.publish(msg.getQueueCode(), msg.getBody(), msg.getBizId(), msg.getId(), this.getRabbitConfig());
+            rabbitProducer.publish(msg.getQueueCode(),msg, this.getRabbitConfig());
 
             //若发MQ成功，则异步写消息到文件队列
             fileQueueProcessorService.saveMessageToFileDb(msg);
