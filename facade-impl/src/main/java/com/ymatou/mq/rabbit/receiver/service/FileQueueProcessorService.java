@@ -27,8 +27,7 @@ import com.ymatou.mq.rabbit.receiver.config.FileDbConf;
 public class FileQueueProcessorService
         implements IDisconfUpdate, Function<Pair<String, String>, Boolean>, PutExceptionHandler {
 
-    //FIXME:同一工程，有的用LOGGER，有的用logger，统一下
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileQueueProcessorService.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileQueueProcessorService.class);
 
     private FileDb fileDb;
     @Autowired
@@ -90,7 +89,7 @@ public class FileQueueProcessorService
             Message message = Message.fromJson(pair.getValue());
             success = messageService.saveMessage(message);
         } catch (Exception e) {
-            LOGGER.error("save message to mongo error", e);
+            logger.error("save message to mongo error", e);
         }
         return success;
     }
@@ -105,7 +104,7 @@ public class FileQueueProcessorService
     @Override
     public void handleException(String key, String value, Optional<Throwable> throwable) {
 
-        LOGGER.warn("key:{},value:{} can not save to filedb ", key, value,
+        logger.warn("key:{},value:{} can not save to filedb ", key, value,
                 throwable.isPresent() ? throwable.get() : "");
 
         Message message = Message.fromJson(value);
@@ -113,7 +112,7 @@ public class FileQueueProcessorService
         try {
             messageService.saveMessage(message);
         } catch (Exception e) {
-            LOGGER.error("filedb handleException save message to mongo error", e);
+            logger.error("filedb handleException save message to mongo error", e);
         }
     }
 }
