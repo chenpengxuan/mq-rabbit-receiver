@@ -49,10 +49,10 @@ public class RabbitReceiverService {
 
     @PostConstruct
     public void init(){
-        //获取rabbit ack事件监听
-        ConfirmListener confirmListener = rabbitAckHandlerService.getConfirmListener();
+        //设置rabbit ack事件监听
+        rabbitProducer.setConfirmListener(rabbitAckHandlerService.getConfirmListener());
         //设置共享unconfirmed集合
-        rabbitAckHandlerService.setUnconfirmedSet(rabbitProducer.getUnconfirmedSet());
+        rabbitProducer.setUnconfirmedSet(rabbitAckHandlerService.getUnconfirmedSet());
     }
 
     /**
@@ -66,7 +66,7 @@ public class RabbitReceiverService {
             this.validQueue(msg.getAppId(),msg.getQueueCode());
 
             //发布消息
-            rabbitProducer.publish(msg.getQueueCode(),msg, this.getRabbitConfig());
+            rabbitProducer.publish(msg.getQueueCode(),msg);
 
             //若发MQ成功，则异步写消息到文件队列
             fileQueueProcessorService.saveMessageToFileDb(msg);

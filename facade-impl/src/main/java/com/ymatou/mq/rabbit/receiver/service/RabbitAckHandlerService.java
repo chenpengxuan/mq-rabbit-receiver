@@ -26,14 +26,9 @@ public class RabbitAckHandlerService{
     private static final Logger logger = LoggerFactory.getLogger(RabbitAckHandlerService.class);
 
     /**
-     * ConfirmListener映射
-     */
-    private Map<String,ConfirmListener> confirmListenerMap = new ConcurrentHashMap<String,ConfirmListener>();
-
-    /**
      * 未确认集合
      */
-    private SortedMap<Long, Message> unconfirmedSet = null;
+    private SortedMap<Long, Message> unconfirmedSet = Collections.synchronizedSortedMap(new TreeMap<Long, Message>());
 
     @Autowired
     private RabbitDispatchFacade rabbitDispatchFacade;
