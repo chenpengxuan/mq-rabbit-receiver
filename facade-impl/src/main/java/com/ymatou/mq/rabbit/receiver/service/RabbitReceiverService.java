@@ -14,7 +14,6 @@ import com.ymatou.mq.rabbit.RabbitChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -43,9 +42,6 @@ public class RabbitReceiverService {
 
     @Autowired
     private RabbitDispatchFacade rabbitDispatchFacade;
-
-    @Resource
-    private TaskExecutor taskExecutor;
 
     @Autowired
     private RabbitConfig rabbitConfig;

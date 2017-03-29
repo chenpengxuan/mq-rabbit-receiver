@@ -16,6 +16,5 @@ import org.springframework.context.annotation.ImportResource;
  */
 @Configuration
 @ImportResource("classpath:spring/dubbo-provider.xml")
-@DependsOn("disconfMgrBean2")
 public class DubboConfig {
 }

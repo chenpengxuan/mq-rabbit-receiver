@@ -30,7 +30,6 @@ public class FileQueueProcessorService
     //FIXME:同一工程，有的用LOGGER，有的用logger，统一下
     private static final Logger LOGGER = LoggerFactory.getLogger(FileQueueProcessorService.class);
 
-    @Autowired
     private FileDb fileDb;
     @Autowired
     private FileDbConf fileDbConf;
@@ -111,6 +110,17 @@ public class FileQueueProcessorService
 
         //FIXME: handelException中还可以再往外抛异常?
         Message message = Message.fromJson(value);
-        messageService.saveMessage(message);
+
+        boolean success = false;
+        try {
+            success = messageService.saveMessage(message);
+        } catch (Exception e) {
+            success = false;
+            LOGGER.error("filedb handleException save message to mongo error",e);
+        }
+
+        if(!success){
+            //todo 直接调用分发站
+        }
     }
 }

@@ -12,10 +12,6 @@ package com.ymatou.mq.rabbit.receiver.rest;
  */
 public interface PublishMessageResource {
 
-    String sayHello(String name);
-
-    String testShutdownGracefully();
-
     String shutdown();
 
 

@@ -42,13 +42,7 @@ public class FacadeAspect {
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(FacadeAspect.class);
 
-    /*
-     * es更新操作文档找不到异常日志级别
-     */
-    @Value("${es.update.notfound.error.level}")
-    private String esUpdateNotfoundErrorLevel;
-
-    @Pointcut("execution(* com.ymatou.orderes.facade.*Facade.*(*)) && args(req)")
+    @Pointcut("execution(* com.ymatou.mq.rabbit.receiver.facade.*Facade.*(*)) && args(req)")
     public void executeFacade(BaseRequest req) {
     }
 
