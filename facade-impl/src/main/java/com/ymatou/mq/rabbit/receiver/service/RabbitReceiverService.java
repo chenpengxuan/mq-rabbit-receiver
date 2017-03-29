@@ -117,7 +117,7 @@ public class RabbitReceiverService {
     void validQueue(String appId,String queueCode){
         QueueConfig queueConfig = messageConfigService.getQueueConfig(appId, queueCode);
         if(queueConfig == null){
-            throw new BizException(ErrorCode.QUEUE_CONFIG_NOT_EXIST,String.format("appId:{},queueCode:{} not exist.",appId, queueCode));
+            throw new BizException(ErrorCode.QUEUE_CONFIG_NOT_EXIST,String.format("appId:[%s],queueCode:[%s] not exist.",appId, queueCode));
         }
     }
 
