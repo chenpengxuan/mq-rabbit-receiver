@@ -27,6 +27,7 @@ import com.ymatou.mq.rabbit.receiver.config.FileDbConf;
 public class FileQueueProcessorService
         implements IDisconfUpdate, Function<Pair<String, String>, Boolean>, PutExceptionHandler {
 
+    //FIXME:同一工程，有的用LOGGER，有的用logger，统一下
     private static final Logger LOGGER = LoggerFactory.getLogger(FileQueueProcessorService.class);
 
     @Autowired
@@ -108,6 +109,7 @@ public class FileQueueProcessorService
         LOGGER.warn("key:{},value:{} can not save to filedb ", key, value,
                 throwable.isPresent() ? throwable.get() : "");
 
+        //FIXME: handelException中还可以再往外抛异常?
         Message message = Message.fromJson(value);
         messageService.saveMessage(message);
     }
