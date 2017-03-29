@@ -98,17 +98,6 @@ public class Utils {
     }
 
     /**
-     * 生成MessageUuid: {yyyyMM}.{ObjectId}
-     *
-     * @return
-     */
-    public static String newUuid() {
-        //FIXME:热点方法, SimpleDateFormat#format很耗时
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMM");
-        return String.format("%s.%s", dateFormat.format(new Date()), ObjectId.get().toString());
-    }
-
-    /**
      * 处理null问题
      *
      * @return
