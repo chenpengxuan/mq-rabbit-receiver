@@ -65,21 +65,49 @@ public class RabbitReceiverService {
             //验证队列有效性
             this.validQueue(msg.getAppId(),msg.getQueueCode());
 
-            //发布消息
-            rabbitProducer.publish(msg.getQueueCode(),msg);
-
-            //若发MQ成功，则异步写消息到文件队列
-            fileQueueProcessorService.saveMessageToFileDb(msg);
-        } catch (Exception e) {
-            //FIXME：IllegalArumentException和BizException，不需要调分发站，直接返回客户端失败?
-            logger.warn("publish msg fail.",e);
-            try {
-                //若发MQ失败，则直接调用dispatch分发站接口发送
-                rabbitDispatchFacade.dispatchMessage(msg);
-            } catch (Exception ex) {
-                //发MQ失败->调分发站失败则返回失败信息
-                throw new BizException(ErrorCode.FAIL,"invoke dispatcher send msg error",ex);
+            //若rabbit master/slave都没开启，则直接调分发站
+            if(!isEnableRabbit(rabbitConfig)){
+                invokeDispatch(msg);
+            }else{
+                //发布消息
+                rabbitProducer.publish(msg.getQueueCode(),msg);
+                //若发MQ成功，则异步写消息到文件队列
+                fileQueueProcessorService.saveMessageToFileDb(msg);
             }
+
+        } catch(BizException e){
+            //若出现biz异常，则抛出由facade处理
+            logger.error("recevie and publish msg:{} occur biz exception.",msg,e);
+            throw e;
+        } catch (Exception e) {
+            //若出现exception，则调用分发站
+            logger.error("recevie and publish msg:{} occur exception.",msg,e);
+            this.invokeDispatch(msg);
+        }
+    }
+
+    /**
+     * rabbit master/slave是否开启
+     * @param rabbitConfig
+     */
+    boolean isEnableRabbit(RabbitConfig rabbitConfig){
+        if(!rabbitConfig.isMasterEnable() && !rabbitConfig.isSlaveEnable()){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 直接调用分发站发送
+     * @param message
+     */
+    void invokeDispatch(Message message){
+        try {
+            //若发MQ失败，则直接调用dispatch分发站接口发送
+            rabbitDispatchFacade.dispatchMessage(message);
+        } catch (Exception ex) {
+            //发MQ失败->调分发站失败则返回失败信息
+            throw new BizException(ErrorCode.FAIL,"invoke dispatcher send msg error",ex);
         }
     }
 

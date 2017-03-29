@@ -16,6 +16,7 @@ import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
 import com.ymatou.mq.infrastructure.util.NetUtil;
 import com.ymatou.mq.rabbit.receiver.util.Utils;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,13 +61,12 @@ public class PublishMessageFacadeImpl implements PublishMessageFacade {
         Message msg = new Message();
         msg.setAppId(req.getAppId());
         msg.setQueueCode(req.getCode());
-        msg.setId(Utils.newUuid());
+        msg.setId(ObjectId.get().toString());
         msg.setBizId(req.getMsgUniqueId());
         msg.setBody(req.getBody());
         msg.setClientIp(req.getIp());
         msg.setRecvIp(NetUtil.getHostIp());
-        //FIXME: new Date()
-        msg.setCreateTime(new Date().getTime());
+        msg.setCreateTime(new Date());
         return msg;
     }
 

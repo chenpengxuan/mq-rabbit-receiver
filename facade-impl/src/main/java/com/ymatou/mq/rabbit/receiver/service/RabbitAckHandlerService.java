@@ -60,11 +60,13 @@ public class RabbitAckHandlerService{
             logger.error("nack:" + deliveryTag + "," + multiple);
             if (multiple) {
                 //TODO
+                unconfirmedSet.headMap(deliveryTag +1).clear();
             }else{
                 //若出现nack，则调用dispatch直接分发
                 try {
                     Message message = unconfirmedSet.get(deliveryTag);
                     rabbitDispatchFacade.dispatchMessage(message);
+                    unconfirmedSet.remove(deliveryTag);
                 } catch (Exception e) {
                     logger.error("invoke dispatch fail.",e);
                 }

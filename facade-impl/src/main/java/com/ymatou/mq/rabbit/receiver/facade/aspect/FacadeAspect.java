@@ -80,8 +80,7 @@ public class FacadeAspect {
         Object resp = null;
 
         try {
-            //TODO 校验
-            //req.validate();
+            req.validate();
             resp = joinPoint.proceed(new Object[]{req});
         } catch (IllegalArgumentException e) {
             //无效参数异常
