@@ -93,7 +93,8 @@ allprojects{
 //        !--API最终确定后，版本号修改为“1.0.0YyyyMmDd”并release。客户端最终必须都是使用release版 --
         mqRabbitReceiverFacadeVersion = "1.0.0.20161209"
         ordersyncModelVersion = "1.0.0.20170217"
-        orderesFacadeVersion = "1.0.0.201701131626"
+        mqInfrastructureVersion = "1.0.0.2017033001"
+        mqRabbitCommonVersion = "1.0.0.2017033001"
     }
 
     repositories {
