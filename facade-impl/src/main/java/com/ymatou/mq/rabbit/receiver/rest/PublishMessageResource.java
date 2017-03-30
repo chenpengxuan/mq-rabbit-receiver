@@ -7,12 +7,20 @@
 
 package com.ymatou.mq.rabbit.receiver.rest;
 
+import com.ymatou.messagebus.facade.model.PublishMessageRestReq;
+
 /**
  * @author luoshiqian 2016/8/31 14:12
  */
 public interface PublishMessageResource {
 
-    String shutdown();
+    /**
+     * 发布单条消息
+     *
+     * @param req
+     * @return
+     */
+    RestResp publish(PublishMessageRestReq req);
 
 
 }

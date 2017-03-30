@@ -7,28 +7,26 @@
 package com.ymatou.mq.rabbit.receiver.facade.impl;
 
 
+import java.util.Date;
 
-import com.alibaba.dubbo.config.annotation.Service;
-import com.ymatou.messagebus.facade.PublishMessageFacade;
-import com.ymatou.messagebus.facade.model.PublishMessageReq;
-import com.ymatou.messagebus.facade.model.PublishMessageResp;
-import com.ymatou.mq.infrastructure.model.Message;
-import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
-import com.ymatou.mq.infrastructure.util.NetUtil;
-import com.ymatou.mq.rabbit.receiver.util.Utils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import com.ymatou.messagebus.facade.PublishMessageFacade;
+import com.ymatou.messagebus.facade.model.PublishMessageReq;
+import com.ymatou.messagebus.facade.model.PublishMessageResp;
+import com.ymatou.mq.infrastructure.model.Message;
+import com.ymatou.mq.infrastructure.util.NetUtil;
+import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
 
 
 /**
  * @author luoshiqian 2016/8/31 14:13
  */
-@Service(protocol = "dubbo")
+//@Service(protocol = "dubbo")
 @Component
 public class PublishMessageFacadeImpl implements PublishMessageFacade {
 

@@ -1,21 +1,20 @@
 package com.ymatou.mq.rabbit.receiver.service;
 
-import com.rabbitmq.client.ConfirmListener;
-import com.ymatou.messagebus.facade.BizException;
-import com.ymatou.messagebus.facade.ErrorCode;
-import com.ymatou.mq.infrastructure.model.QueueConfig;
-import com.ymatou.mq.infrastructure.service.MessageConfigService;
-import com.ymatou.mq.infrastructure.model.Message;
+import javax.annotation.PostConstruct;
 
-import com.ymatou.mq.rabbit.config.RabbitConfig;
-import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
-import com.ymatou.mq.rabbit.RabbitProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import com.ymatou.messagebus.facade.BizException;
+import com.ymatou.messagebus.facade.ErrorCode;
+import com.ymatou.mq.infrastructure.model.Message;
+import com.ymatou.mq.infrastructure.model.QueueConfig;
+import com.ymatou.mq.infrastructure.service.MessageConfigService;
+import com.ymatou.mq.rabbit.RabbitProducer;
+import com.ymatou.mq.rabbit.config.RabbitConfig;
+import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
 
 /**
  * rabbitmq接收消息service
@@ -28,9 +27,6 @@ public class RabbitReceiverService {
 
     @Autowired
     private MessageConfigService messageConfigService;
-
-    @Autowired
-    private MessageService messageService;
 
     @Autowired
     private FileQueueProcessorService fileQueueProcessorService;
@@ -60,6 +56,7 @@ public class RabbitReceiverService {
      * @param msg
      * @return
      */
+    //FIXME 返回要带上成功失败 不能一直是成功
     public void receiveAndPublish(Message msg){
         try {
             //验证队列有效性
@@ -82,6 +79,8 @@ public class RabbitReceiverService {
         } catch (Exception e) {
             //若出现exception，则调用分发站
             logger.error("recevie and publish msg:{} occur exception.",msg,e);
+
+            //FIXME 根据返回值成功 失败
             this.invokeDispatch(msg);
         }
     }
