@@ -2,7 +2,7 @@
 
 source "/etc/profile"
 GCLOGPATH="logs/gc.log"
-MAIN_CLASS="com.ymatou.mq.rabbit.receiver.starter"
+MAIN_CLASS="com.ymatou.mq.rabbit.receiver.starter.Application"
 APP_NAME="receiver.rmq.iapi.ymatou.com"
 CLASS_PATH="lib/*:conf"
 JAVA_OPTS=" -server \
