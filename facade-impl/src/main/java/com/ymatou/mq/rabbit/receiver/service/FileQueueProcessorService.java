@@ -8,11 +8,10 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.baidu.disconf.client.common.annotations.DisconfUpdateService;
-import com.baidu.disconf.client.common.update.IDisconfUpdate;
 import com.ymatou.mq.infrastructure.filedb.FileDb;
 import com.ymatou.mq.infrastructure.filedb.FileDbConfig;
 import com.ymatou.mq.infrastructure.filedb.PutExceptionHandler;
@@ -22,10 +21,8 @@ import com.ymatou.mq.rabbit.receiver.config.FileDbConf;
 /**
  * 本地消息文件列表处理service Created by zhangzhihua on 2017/3/24.
  */
-@Component("fileQueueProcessorService")
-@DisconfUpdateService(confFileKeys = "filedb.properties")
-public class FileQueueProcessorService
-        implements IDisconfUpdate, Function<Pair<String, String>, Boolean>, PutExceptionHandler {
+@Component
+public class FileQueueProcessorService implements Function<Pair<String, String>, Boolean>, PutExceptionHandler,InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(FileQueueProcessorService.class);
 
@@ -36,6 +33,13 @@ public class FileQueueProcessorService
     @Autowired
     private MessageService messageService;
 
+    public FileDb getFileDb() {
+        return fileDb;
+    }
+
+    public void setFileDb(FileDb fileDb) {
+        this.fileDb = fileDb;
+    }
 
     @PostConstruct
     public void init() {
@@ -49,21 +53,6 @@ public class FileQueueProcessorService
                 .setPutExceptionHandler(this);
 
         fileDb = FileDb.newFileDb(fileDbConfig);
-    }
-
-    /**
-     * 重新配置线程数，消费间隔，最大消费数量等
-     * 
-     * @throws Exception
-     */
-    @Override
-    public void reload() throws Exception {
-        FileDbConfig newConfig = FileDbConfig.newInstance()
-                .setConsumerThreadNums(fileDbConf.getConsumerThreadNums())
-                .setConsumeDuration(fileDbConf.getConsumeDuration())
-                .setMaxConsumeSizeInDuration(fileDbConf.getMaxConsumeSizeInDuration());
-
-        fileDb.reset(newConfig);
     }
 
 
@@ -114,5 +103,10 @@ public class FileQueueProcessorService
         } catch (Exception e) {
             logger.error("filedb handleException save message to mongo error", e);
         }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+//        init();
     }
 }

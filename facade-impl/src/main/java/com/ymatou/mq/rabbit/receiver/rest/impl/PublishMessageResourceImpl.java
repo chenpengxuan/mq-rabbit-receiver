@@ -14,11 +14,14 @@ import com.ymatou.messagebus.facade.model.PublishMessageResp;
 import com.ymatou.messagebus.facade.model.PublishMessageRestReq;
 import com.ymatou.mq.rabbit.receiver.rest.PublishMessageResource;
 import com.ymatou.mq.rabbit.receiver.rest.RestResp;
+import com.ymatou.mq.rabbit.receiver.service.FileQueueProcessorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -36,6 +39,8 @@ public class PublishMessageResourceImpl implements PublishMessageResource {
 
     @Resource
     PublishMessageFacade publishMessageFacade;
+    @Autowired
+    FileQueueProcessorService fileQueueProcessorService;
 
     @Override
     @POST
@@ -51,5 +56,13 @@ public class PublishMessageResourceImpl implements PublishMessageResource {
         PublishMessageResp resp = publishMessageFacade.publish(request);
 
         return RestResp.newInstance(resp);
+    }
+
+    @GET
+    @Path("/{filestatus:(?i:filestatus)}")
+    @Override
+    public String fileStatus() {
+
+        return fileQueueProcessorService.getFileDb().status();
     }
 }

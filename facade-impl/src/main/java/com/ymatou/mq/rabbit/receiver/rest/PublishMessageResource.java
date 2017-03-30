@@ -22,5 +22,7 @@ public interface PublishMessageResource {
      */
     RestResp publish(PublishMessageRestReq req);
 
+    String fileStatus();
+
 
 }

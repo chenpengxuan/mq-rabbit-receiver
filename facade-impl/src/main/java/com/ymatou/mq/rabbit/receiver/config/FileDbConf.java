@@ -7,6 +7,11 @@
 
 package com.ymatou.mq.rabbit.receiver.config;
 
+import com.baidu.disconf.client.common.annotations.DisconfUpdateService;
+import com.baidu.disconf.client.common.update.IDisconfUpdate;
+import com.ymatou.mq.infrastructure.filedb.FileDbConfig;
+import com.ymatou.mq.infrastructure.util.SpringContextHolder;
+import com.ymatou.mq.rabbit.receiver.service.FileQueueProcessorService;
 import org.springframework.stereotype.Component;
 
 import com.baidu.disconf.client.common.annotations.DisconfFile;
@@ -17,7 +22,8 @@ import com.baidu.disconf.client.common.annotations.DisconfFileItem;
  */
 @Component
 @DisconfFile(fileName = "filedb.properties")
-public class FileDbConf{
+@DisconfUpdateService(confFileKeys = "filedb.properties")
+public class FileDbConf implements IDisconfUpdate{
 
     /**
      * store的名称，以及 线程池中的名称
@@ -89,4 +95,19 @@ public class FileDbConf{
         this.consumerThreadNums = consumerThreadNums;
     }
 
+    /**
+     * 重新配置线程数，消费间隔，最大消费数量等
+     * @throws Exception
+     */
+    @Override
+    public void reload() throws Exception {
+
+        FileDbConfig newConfig = FileDbConfig.newInstance()
+                .setConsumerThreadNums(getConsumerThreadNums())
+                .setConsumeDuration(getConsumeDuration())
+                .setMaxConsumeSizeInDuration(getMaxConsumeSizeInDuration());
+
+        FileQueueProcessorService fileQueueProcessorService = SpringContextHolder.getBean(FileQueueProcessorService.class);
+        fileQueueProcessorService.getFileDb().reset(newConfig);
+    }
 }
