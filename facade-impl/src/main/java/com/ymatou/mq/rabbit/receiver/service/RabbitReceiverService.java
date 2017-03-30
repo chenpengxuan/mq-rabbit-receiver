@@ -2,6 +2,7 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import javax.annotation.PostConstruct;
 
+import com.ymatou.mq.rabbit.RabbitChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +46,8 @@ public class RabbitReceiverService {
 
     @PostConstruct
     public void init(){
-        //设置rabbit ack事件监听
-        rabbitProducer.setConfirmListener(rabbitAckHandlerService.getConfirmListener());
-        //设置共享unconfirmed集合
-        rabbitProducer.setUnconfirmedSet(rabbitAckHandlerService.getUnconfirmedSet());
+        //设置ack 回调处理handler
+        rabbitProducer.setRabbitAckHandler(rabbitAckHandlerService);
     }
 
     /**

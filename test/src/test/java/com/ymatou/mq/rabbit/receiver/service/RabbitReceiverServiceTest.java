@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 
+import static org.junit.Assert.fail;
+
 /**
  * Created by zhangzhihua on 2017/3/29.
  */
@@ -28,8 +30,8 @@ public class RabbitReceiverServiceTest extends BaseTest{
 
     @Test
     public void testReceiveAndPublish(){
-        try {
-            for(int i=0;i<5;i++){
+        for(int j=0;j<5;j++){
+            try {
                 PublishMessageReq req = new PublishMessageReq();
                 req.setAppId("rabbit_optimization");
                 req.setCode("biz1");
@@ -40,9 +42,11 @@ public class RabbitReceiverServiceTest extends BaseTest{
                 req.setIp("172.16.22.102");
                 Message msg = buildMessage(req);
                 rabbitReceiverService.receiveAndPublish(msg);
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail("ReceiveAndPublish fail.");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
         }
     }
 
