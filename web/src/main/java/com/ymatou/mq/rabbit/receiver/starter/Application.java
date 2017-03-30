@@ -21,7 +21,7 @@ import com.ymatou.mq.rabbit.receiver.util.Constants;
  * @author luoshiqian 2016/8/31 12:31
  */
 @Configuration
-@EnableAspectJAutoProxy
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @ComponentScan(basePackages = "com.ymatou.mq")
 public class Application {
     public static final Logger logger = LoggerFactory.getLogger(Application.class);
