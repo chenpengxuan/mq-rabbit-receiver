@@ -32,26 +32,36 @@ public class RabbitAckHandlerService implements RabbitAckHandler {
 
     @Override
     public void handleAck(long deliveryTag, boolean multiple, Channel channel, SortedMap<Long, Message> unconfirmedSet) {
-        logger.info("handleAck,current thread:{},deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",Thread.currentThread().getId(),deliveryTag,multiple,channel,unconfirmedSet);
+        logger.debug("handleAck,current thread name:{},thread id:{},deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",Thread.currentThread().getName(),Thread.currentThread().getId(),deliveryTag,multiple,channel.hashCode(),unconfirmedSet);
         if (multiple) {
             unconfirmedSet.headMap(deliveryTag +1).clear();
         } else {
+            logger.debug("first key:{},last key:{},values len:{}:",unconfirmedSet.firstKey(),unconfirmedSet.lastKey(),unconfirmedSet.size());
             unconfirmedSet.remove(deliveryTag);
         }
     }
 
     @Override
     public void handleNack(long deliveryTag, boolean multiple, Channel channel, SortedMap<Long, Message> unconfirmedSet) throws IOException {
-        logger.info("handleNack,deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",deliveryTag,multiple,channel,unconfirmedSet);
+        logger.debug("handleAck,current thread name:{},thread id:{},deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",Thread.currentThread().getName(),Thread.currentThread().getId(),deliveryTag,multiple,channel.hashCode(),unconfirmedSet);
+        //若出现nack，则调用dispatch直接分发
         if (multiple) {
-            //TODO
+            long beginKey = unconfirmedSet.firstKey().longValue();
+            for(long i=beginKey;i<deliveryTag+1;i++){
+                Message message = unconfirmedSet.get(i);
+                if(message != null){
+                    rabbitDispatchFacade.dispatchMessage(message);
+                }
+            }
             unconfirmedSet.headMap(deliveryTag +1).clear();
         }else{
-            //若出现nack，则调用dispatch直接分发
             try {
                 Message message = unconfirmedSet.get(deliveryTag);
-                rabbitDispatchFacade.dispatchMessage(message);
+                if(message != null){
+                    rabbitDispatchFacade.dispatchMessage(message);
+                }
                 unconfirmedSet.remove(deliveryTag);
+                logger.debug("first key:{},last key:{},values len:",unconfirmedSet.firstKey(),unconfirmedSet.lastKey(),unconfirmedSet.size());
             } catch (Exception e) {
                 logger.error("invoke dispatch fail.",e);
             }

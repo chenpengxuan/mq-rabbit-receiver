@@ -54,14 +54,14 @@ public class RabbitReceiverServiceWithMultThread{
     }
 
     public void testReceiveAndPublishWithMulThread(){
-        for(int i=0;i<5;i++){
+        for(int i=0;i<2;i++){
             new Thread( new Runnable(){
                 @Override
                 public void run() {
-                    for(int j=0;j<5;j++){
+                    for(int j=0;j<10;j++){
                         try {
                             PublishMessageReq req = new PublishMessageReq();
-                            logger.info("current thread:{}",Thread.currentThread().getId());
+                            logger.info("current thread name:{},thread id:{}",Thread.currentThread().getName(),Thread.currentThread().getId());
                             req.setAppId("rabbit_optimization");
                             req.setCode("biz1");
                             req.setMsgUniqueId(ObjectId.get().toString());
