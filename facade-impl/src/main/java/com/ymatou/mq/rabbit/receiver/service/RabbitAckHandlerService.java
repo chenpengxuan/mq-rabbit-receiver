@@ -43,6 +43,7 @@ public class RabbitAckHandlerService implements RabbitAckHandler {
 
     @Override
     public void handleNack(long deliveryTag, boolean multiple, Channel channel, SortedMap<Long, Message> unconfirmedSet) throws IOException {
+        //FIXME: nack要记error
         logger.debug("handleAck,current thread name:{},thread id:{},deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",Thread.currentThread().getName(),Thread.currentThread().getId(),deliveryTag,multiple,channel.hashCode(),unconfirmedSet);
         //若出现nack，则调用dispatch直接分发
         if (multiple) {
