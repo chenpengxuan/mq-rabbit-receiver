@@ -56,6 +56,7 @@ public class RabbitReceiverService {
                 rabbitProducer.publish(msg.getQueueCode(),msg);
             } catch(BizException e){
                 //若发布出现biz异常，则抛出由facade处理
+                //FIXME:此处无需logger.error, FacadeAspect已处理
                 logger.error("recevie and publish msg:{} occur biz exception.",msg,e);
                 throw e;
             } catch (Exception e) {
@@ -73,6 +74,7 @@ public class RabbitReceiverService {
      * @param rabbitConfig
      */
     boolean isEnableRabbit(RabbitConfig rabbitConfig){
+        //FIXME: rabbitConfig.isMasterEnable() || rabbitConfig.isSlaveEnable()
         if(!rabbitConfig.isMasterEnable() && !rabbitConfig.isSlaveEnable()){
             return false;
         }

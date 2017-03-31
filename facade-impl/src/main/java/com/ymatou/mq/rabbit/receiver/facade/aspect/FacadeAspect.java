@@ -88,11 +88,13 @@ public class FacadeAspect {
             resp = buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, e.getLocalizedMessage());
             logger.error("Invalid request: {}", req, e);
         }catch (BizException e) {
-            //业务异常 TODO 异常编码
+            //对于MQ业务，明确的业务异常都应该error报警
             resp = buildErrorResponse(joinPoint, ErrorCode.FAIL, e.getLocalizedMessage());
+            logger.error("Biz error in executing request:{}", req, e);
         } catch (Throwable e) {
             //未知异常
             resp = buildErrorResponse(joinPoint, ErrorCode.UNKNOWN, e.getLocalizedMessage());
+            logger.error("Unknown error in executing request:{}", req, e);
         } finally {
             //FIXME:对这个应用，响应设为debug级别?
             if (logger.isInfoEnabled()) {
