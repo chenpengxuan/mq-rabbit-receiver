@@ -2,7 +2,6 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import javax.annotation.PostConstruct;
 
-import com.ymatou.mq.rabbit.RabbitChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import com.ymatou.messagebus.facade.ErrorCode;
 import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.infrastructure.model.QueueConfig;
 import com.ymatou.mq.infrastructure.service.MessageConfigService;
-import com.ymatou.mq.rabbit.RabbitProducer;
 import com.ymatou.mq.rabbit.config.RabbitConfig;
 import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
 
@@ -33,9 +31,6 @@ public class RabbitReceiverService {
     private FileQueueProcessorService fileQueueProcessorService;
 
     @Autowired
-    private RabbitAckHandlerService rabbitAckHandlerService;
-
-    @Autowired
     private RabbitDispatchFacade rabbitDispatchFacade;
 
     @Autowired
@@ -43,12 +38,6 @@ public class RabbitReceiverService {
 
     @Autowired
     private RabbitProducer rabbitProducer;
-
-    @PostConstruct
-    public void init(){
-        //设置ack 回调处理handler
-        rabbitProducer.setRabbitAckHandler(rabbitAckHandlerService);
-    }
 
     /**
      * 接收并发布消息
