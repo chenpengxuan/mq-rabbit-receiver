@@ -8,7 +8,6 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import javax.annotation.PostConstruct;
 
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,6 @@ import com.ymatou.mq.infrastructure.support.ConfigReloadListener;
 import com.ymatou.mq.rabbit.RabbitConnectionFactory;
 import com.ymatou.mq.rabbit.config.RabbitConfig;
 import com.ymatou.mq.rabbit.support.RabbitConstants;
-
-import java.util.Map;
 
 /**
  * 定时刷新配置 回调处理
@@ -44,7 +41,6 @@ public class ConfigReloadService implements ConfigReloadListener {
     private Channel primaryChannel;
     private Channel secondaryChannel;
 
-    private Map<String,Object> declareQueueArguments = Maps.newHashMap();
 
     @PostConstruct
     public void init() {
@@ -62,9 +58,6 @@ public class ConfigReloadService implements ConfigReloadListener {
         } catch (Exception e) {
             logger.error("create secondaryConnection/secondaryChannel error", e);
         }
-
-        //queue 找master 策略，使用最小master的机器  详见：https://www.rabbitmq.com/ha.html  Queue Master Location
-        declareQueueArguments.put("x-queue-master-locator","min-masters");
     }
 
     @Override
@@ -79,7 +72,7 @@ public class ConfigReloadService implements ConfigReloadListener {
     void declareQueue(Channel channel, String queue) {
         if (channel != null) {
             try {
-                channel.queueDeclare(queue, true, false, false, declareQueueArguments);
+                channel.queueDeclare(queue, true, false, false, null);
             } catch (Exception e) {
                 logger.error("declareQueue:{} error", queue, e);
             }
