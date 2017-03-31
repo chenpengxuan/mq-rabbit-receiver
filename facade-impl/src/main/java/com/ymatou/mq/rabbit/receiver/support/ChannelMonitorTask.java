@@ -1,13 +1,11 @@
 package com.ymatou.mq.rabbit.receiver.support;
 
-import com.ymatou.mq.rabbit.receiver.service.ChannelMonitorService;
-import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
+import com.ymatou.mq.rabbit.receiver.service.RabbitMonitorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Timer;
 import java.util.TimerTask;
 
 /**
@@ -18,19 +16,19 @@ public class ChannelMonitorTask extends TimerTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ChannelMonitorTask.class);
 
-    private ChannelMonitorService channelMonitorService;
+    private RabbitMonitorService rabbitMonitorService;
 
     @Override
     public void run() {
-        if(channelMonitorService == null){
+        if(rabbitMonitorService == null){
             WebApplicationContext wac = ContextLoader.getCurrentWebApplicationContext();
-            channelMonitorService = (ChannelMonitorService)wac.getBean("channelMonitorService");
+            rabbitMonitorService = (RabbitMonitorService)wac.getBean("rabbitMonitorService");
         }
 
         try {
-            channelMonitorService.scanAndProcess();
+            rabbitMonitorService.scanChannelAndProcess();
         } catch (Exception e) {
-            logger.error("ChannelMonitorTask.scanAndProcess error.",e);
+            logger.error("ChannelMonitorTask.run error.",e);
         }
     }
 

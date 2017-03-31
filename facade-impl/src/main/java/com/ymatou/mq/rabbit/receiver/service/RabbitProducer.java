@@ -35,7 +35,7 @@ public class RabbitProducer {
     private RabbitDispatchFacade rabbitDispatchFacade;
 
     @Autowired
-    private ChannelMonitorService channelMonitorService;
+    private RabbitMonitorService channelMonitorService;
 
     /**
      * 发布消息

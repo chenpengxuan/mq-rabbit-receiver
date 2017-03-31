@@ -1,7 +1,6 @@
 package com.ymatou.mq.rabbit.receiver.service;
 
 import com.rabbitmq.client.Channel;
-import com.ymatou.mq.rabbit.receiver.support.ChannelMonitorTask;
 import com.ymatou.mq.rabbit.support.ChannelWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,20 +14,20 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
- * channel监听处理service
+ * rabbit监听(如channel等)处理service
  * Created by zhangzhihua on 2017/3/31.
  */
-@Component("channelMonitorService")
-public class ChannelMonitorService {
+@Component("rabbitMonitorService")
+public class RabbitMonitorService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChannelMonitorService.class);
+    private static final Logger logger = LoggerFactory.getLogger(RabbitMonitorService.class);
 
     private List<ChannelWrapper> channelWrapperList = Collections.synchronizedList(new ArrayList<ChannelWrapper>());
 
     /**
-     * 扫描并处理
+     * 扫描channel并处理
      */
-    public void scanAndProcess(){
+    public void scanChannelAndProcess(){
         if(CollectionUtils.isEmpty(channelWrapperList)){
             return;
         }

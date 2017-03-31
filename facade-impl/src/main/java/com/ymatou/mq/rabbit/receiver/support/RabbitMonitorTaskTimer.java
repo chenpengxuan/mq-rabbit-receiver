@@ -8,11 +8,11 @@ import javax.annotation.PostConstruct;
 import java.util.Timer;
 
 /**
- * channel监听任务管理
+ * rabbit监听(如channel等)timer start
  * Created by zhangzhihua on 2017/3/31.
  */
 @Component
-public class ChannelMonitorTaskTimer {
+public class RabbitMonitorTaskTimer {
 
     private static final Logger logger = LoggerFactory.getLogger(ChannelMonitorTask.class);
 
