@@ -1,7 +1,6 @@
 package com.ymatou.mq.rabbit.receiver.support;
 
 import com.ymatou.mq.infrastructure.model.Message;
-import com.ymatou.mq.rabbit.RabbitProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
