@@ -34,6 +34,9 @@ public class RabbitProducer {
     @Autowired
     private RabbitDispatchFacade rabbitDispatchFacade;
 
+    @Autowired
+    private ChannelMonitorService channelMonitorService;
+
     /**
      * 发布消息
      * @param queue
@@ -51,12 +54,14 @@ public class RabbitProducer {
         Channel channel = channelWrapper.getChannel();
         //若是第一次创建channel，则初始化ack相关
         if(channelWrapper.getUnconfirmedSet() == null){
-            //保证channel与unconfirmedset&acklistener一对一
+            //设置channel对应的unconfirmedset、acklistener、thread信息
             SortedMap<Long, Message> unconfirmedSet = Collections.synchronizedSortedMap(new TreeMap<Long, Message>());
             channelWrapper.setUnconfirmedSet(unconfirmedSet);
             RabbitAckListener rabbitAckListener = new RabbitAckListener(channel,unconfirmedSet,rabbitDispatchFacade);
             channel.addConfirmListener(rabbitAckListener);
             channel.confirmSelect();
+            channelWrapper.setThread(Thread.currentThread());
+            channelMonitorService.addChannerWrapper(channelWrapper);
         }
         //声明队列
         this.declareQueue(channel,queue);
@@ -69,6 +74,10 @@ public class RabbitProducer {
                 .type(rabbitConfig.getCurrentCluster()).deliveryMode(RabbitConstants.DELIVERY_PERSISTENT)
                 .build();
         channel.basicPublish("", queue, basicProps, body.getBytes());
+    }
+
+    void monitorChannelStatus(){
+
     }
 
     /**
