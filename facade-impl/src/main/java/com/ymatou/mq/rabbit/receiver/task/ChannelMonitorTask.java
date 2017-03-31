@@ -1,4 +1,4 @@
-package com.ymatou.mq.rabbit.receiver.support;
+package com.ymatou.mq.rabbit.receiver.task;
 
 import com.ymatou.mq.rabbit.receiver.service.RabbitMonitorService;
 import org.slf4j.Logger;

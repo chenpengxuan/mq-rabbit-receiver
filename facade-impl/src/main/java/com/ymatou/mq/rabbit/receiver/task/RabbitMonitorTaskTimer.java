@@ -1,4 +1,4 @@
-package com.ymatou.mq.rabbit.receiver.support;
+package com.ymatou.mq.rabbit.receiver.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public class RabbitMonitorTaskTimer {
 
         try {
             Timer timer = new Timer(true);
-            timer.schedule(channelMonitorTask, 0, 1000 * 10);
+            timer.schedule(channelMonitorTask, 0, 100 * 2);
             logger.info("monitor channel timer started.");
         } catch (Exception e) {
             logger.error("schedule error.",e);
