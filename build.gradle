@@ -94,7 +94,7 @@ allprojects{
         mqRabbitReceiverFacadeVersion = "1.0.0.20161209"
         ordersyncModelVersion = "1.0.0.20170217"
         mqInfrastructureVersion = "1.0.0.2017033001"
-        mqRabbitCommonVersion = "1.0.0.2017033001"
+        mqRabbitCommonVersion = "1.0.0.2017033101"
     }
 
     repositories {

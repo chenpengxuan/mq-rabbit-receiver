@@ -43,11 +43,11 @@ public class PublishMessageRestTest {
     public void testPublish() throws Exception {
         PublishMessageRestReq req = new PublishMessageRestReq();
 
-        req.setAppId("testjava_v2");
+        req.setAppId("testdashen");
         req.setMsgUniqueId("123bcdf3");
         req.setBody("{\"orderId\":1321321}");
         req.setIp("127.0.0.1");
-        req.setCode("trading_test");
+        req.setCode("publishok");
 
         CloseableHttpClient httpClient = buildClient();
         String url = "http://localhost:9310/api/publish";
