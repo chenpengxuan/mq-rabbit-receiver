@@ -1,7 +1,6 @@
 /*
  *
- *  (C) Copyright 2017 Ymatou (http://www.ymatou.com/).
- *  All rights reserved.
+ * (C) Copyright 2017 Ymatou (http://www.ymatou.com/). All rights reserved.
  *
  */
 
@@ -11,12 +10,12 @@ import com.google.common.collect.Lists;
 import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-
 import com.ymatou.mq.infrastructure.support.ScheduledExecutorHelper;
 import org.junit.Before;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -33,7 +32,7 @@ public class RabbitMqBaseTest {
 
     public ConnectionFactory factory;
     public List<Address> addressList = Lists.newArrayList(
-            new Address("172.16.101.19", 5672));
+            new Address("172.16.101.18", 5672));
 
     @Before
     public void before() {
@@ -52,6 +51,14 @@ public class RabbitMqBaseTest {
 
     public void hold() throws Exception {
         System.in.read();
+    }
+
+    public void sleep(int time) {
+        try {
+            TimeUnit.MILLISECONDS.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }

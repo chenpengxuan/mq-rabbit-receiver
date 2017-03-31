@@ -11,7 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ymatou.messagebus.facade.model.PublishMessageReq;
 import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.infrastructure.util.NetUtil;
-import com.ymatou.mq.rabbit.RabbitAckListener;
+
 import com.ymatou.mq.rabbit.receiver.BaseTest;
 import org.bson.types.ObjectId;
 import org.junit.Test;

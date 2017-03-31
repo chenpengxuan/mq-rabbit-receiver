@@ -22,7 +22,7 @@ import com.ymatou.mq.rabbit.receiver.config.FileDbConf;
  * 本地消息文件列表处理service Created by zhangzhihua on 2017/3/24.
  */
 @Component
-public class FileQueueProcessorService implements Function<Pair<String, String>, Boolean>, PutExceptionHandler,InitializingBean {
+public class FileQueueProcessorService implements Function<Pair<String, String>, Boolean>, PutExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(FileQueueProcessorService.class);
 
@@ -103,10 +103,5 @@ public class FileQueueProcessorService implements Function<Pair<String, String>,
         } catch (Exception e) {
             logger.error("filedb handleException save message to mongo error", e);
         }
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-//        init();
     }
 }
