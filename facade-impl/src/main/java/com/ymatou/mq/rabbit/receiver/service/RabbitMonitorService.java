@@ -38,7 +38,8 @@ public class RabbitMonitorService {
                 Thread thread = channelWrapper.getThread();
                 if(thread == null || !thread.isAlive()){
                     logger.warn("thread:{} is not alive.",thread);
-                    if(channel != null){
+                    //TODO conn.channel.count--
+                    if(channel != null && channel.isOpen()){
                         channel.close();
                     }
                 }

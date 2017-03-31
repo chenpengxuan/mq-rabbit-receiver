@@ -1,7 +1,9 @@
 package com.ymatou.mq.rabbit.receiver.task;
 
+import com.ymatou.mq.rabbit.receiver.service.RabbitMonitorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -18,15 +20,19 @@ public class RabbitMonitorTaskTimer {
 
     private ChannelMonitorTask channelMonitorTask;
 
+    @Autowired
+    private RabbitMonitorService rabbitMonitorService;
+
     @PostConstruct
     public void init(){
         if(channelMonitorTask == null){
             channelMonitorTask = new ChannelMonitorTask();
+            channelMonitorTask.setRabbitMonitorService(rabbitMonitorService);
         }
 
         try {
             Timer timer = new Timer(true);
-            timer.schedule(channelMonitorTask, 0, 100 * 2);
+            timer.schedule(channelMonitorTask, 0, 1000 * 5);
             logger.info("monitor channel timer started.");
         } catch (Exception e) {
             logger.error("schedule error.",e);

@@ -51,7 +51,7 @@ public class RabbitReceiverServiceWithMultThread{
             new Thread( new Runnable(){
                 @Override
                 public void run() {
-                    for(int j=0;j<10000;j++){
+                    for(int j=0;j<100;j++){
                         try {
                             PublishMessageReq req = new PublishMessageReq();
                             logger.info("current thread name:{},thread id:{}",Thread.currentThread().getName(),Thread.currentThread().getId());

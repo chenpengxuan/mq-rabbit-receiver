@@ -20,16 +20,19 @@ public class ChannelMonitorTask extends TimerTask {
 
     @Override
     public void run() {
-        if(rabbitMonitorService == null){
-            WebApplicationContext wac = ContextLoader.getCurrentWebApplicationContext();
-            rabbitMonitorService = (RabbitMonitorService)wac.getBean("rabbitMonitorService");
-        }
-
         try {
+            logger.info("schedual invoke scanChannelAndProcess...");
             rabbitMonitorService.scanChannelAndProcess();
         } catch (Exception e) {
             logger.error("ChannelMonitorTask.run error.",e);
         }
     }
 
+    public RabbitMonitorService getRabbitMonitorService() {
+        return rabbitMonitorService;
+    }
+
+    public void setRabbitMonitorService(RabbitMonitorService rabbitMonitorService) {
+        this.rabbitMonitorService = rabbitMonitorService;
+    }
 }
