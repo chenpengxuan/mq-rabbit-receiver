@@ -44,32 +44,27 @@ public class RabbitReceiverService {
      * @param msg
      * @return
      */
-    //FIXME 返回要带上成功失败 不能一直是成功
     public void receiveAndPublish(Message msg){
-        try {
-            //验证队列有效性
-            this.validQueue(msg.getAppId(),msg.getQueueCode());
-
-            //若rabbit master/slave都没开启，则直接调分发站
-            if(!isEnableRabbit(rabbitConfig)){
-                invokeDispatch(msg);
-            }else{
+        //验证队列有效性
+        this.validQueue(msg.getAppId(),msg.getQueueCode());
+        //若rabbit master/slave都没开启，则直接调分发站
+        if(!isEnableRabbit(rabbitConfig)){
+            invokeDispatch(msg);
+        }else{
+            try {
                 //发布消息
                 rabbitProducer.publish(msg.getQueueCode(),msg);
-                //若发MQ成功，则异步写消息到文件队列
-                fileQueueProcessorService.saveMessageToFileDb(msg);
+            } catch(BizException e){
+                //若发布出现biz异常，则抛出由facade处理
+                logger.error("recevie and publish msg:{} occur biz exception.",msg,e);
+                throw e;
+            } catch (Exception e) {
+                //若发布出现exception，则调用分发站
+                logger.error("recevie and publish msg:{} occur exception.",msg,e);
+                this.invokeDispatch(msg);
             }
-
-        } catch(BizException e){
-            //若出现biz异常，则抛出由facade处理
-            logger.error("recevie and publish msg:{} occur biz exception.",msg,e);
-            throw e;
-        } catch (Exception e) {
-            //若出现exception，则调用分发站
-            logger.error("recevie and publish msg:{} occur exception.",msg,e);
-
-            //FIXME 根据返回值成功 失败
-            this.invokeDispatch(msg);
+            //若发MQ成功，则异步写消息到文件队列
+            fileQueueProcessorService.saveMessageToFileDb(msg);
         }
     }
 
