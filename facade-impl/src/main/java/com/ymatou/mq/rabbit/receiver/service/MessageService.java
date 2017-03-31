@@ -78,6 +78,7 @@ public class MessageService {
                 detail.setQueueCode(msg.getQueueCode());
                 detail.setConsumerId(callbackConfig.getCallbackKey());
                 detail.setCreateTime(new Date());
+                detailList.add(detail);
             }
         }
         return detailList;
