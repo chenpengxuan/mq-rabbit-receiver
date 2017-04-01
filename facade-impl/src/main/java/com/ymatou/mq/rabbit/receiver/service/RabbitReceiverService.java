@@ -54,20 +54,14 @@ public class RabbitReceiverService {
             try {
                 //发布消息
                 rabbitProducer.publish(msg.getQueueCode(),msg);
-            } catch(BizException e){ //FIXME: public过程中无BizException，直接去掉
-                //若发布出现biz异常，则抛出由facade处理
-                //FIXME:此处无需logger.error, FacadeAspect已处理
-                logger.error("recevie and publish msg:{} occur biz exception.",msg,e);
-                throw e;
+                //若发MQ成功，则异步写消息到文件队列
+                fileQueueProcessorService.saveMessageToFileDb(msg);
             } catch (Exception e) {
                 //若发布出现exception，则调用分发站
                 logger.error("recevie and publish msg:{} occur exception.",msg,e);
                 this.invokeDispatch(msg);
             }
 
-            //FIXME:应该移到try{}内，publish成功发出，才需要写本地文件队列
-            //若发MQ成功，则异步写消息到文件队列
-            fileQueueProcessorService.saveMessageToFileDb(msg);
         }
     }
 
@@ -76,11 +70,10 @@ public class RabbitReceiverService {
      * @param rabbitConfig
      */
     boolean isEnableRabbit(RabbitConfig rabbitConfig){
-        //FIXME: rabbitConfig.isMasterEnable() || rabbitConfig.isSlaveEnable()
-        if(!rabbitConfig.isMasterEnable() && !rabbitConfig.isSlaveEnable()){
-            return false;
+        if(rabbitConfig.isMasterEnable() || rabbitConfig.isSlaveEnable()){
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**
