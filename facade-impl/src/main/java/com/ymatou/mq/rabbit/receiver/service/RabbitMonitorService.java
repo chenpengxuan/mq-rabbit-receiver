@@ -22,6 +22,9 @@ public class RabbitMonitorService {
 
     private static final Logger logger = LoggerFactory.getLogger(RabbitMonitorService.class);
 
+    /**
+     * channel wrapper列表
+     */
     private List<ChannelWrapper> channelWrapperList = Collections.synchronizedList(new ArrayList<ChannelWrapper>());
 
     /**
@@ -37,10 +40,11 @@ public class RabbitMonitorService {
                 Channel channel = channelWrapper.getChannel();
                 Thread thread = channelWrapper.getThread();
                 if(thread == null || !thread.isAlive()){
-                    logger.warn("thread:{} is not alive.",thread);
-                    //TODO conn.channel.count--
+                    logger.debug("thread:{} is not alive,channel status:{}.",thread,channel != null?channel.isOpen():"null");
                     if(channel != null && channel.isOpen()){
+                        //TODO 可以考虑复用
                         channel.close();
+                        this.clearChannelWrapper(channelWrapper);
                     }
                 }
             }
@@ -49,6 +53,23 @@ public class RabbitMonitorService {
         } catch (TimeoutException e) {
             logger.error("scanAndProcess occur error.",e);
         }
+    }
+
+    /**
+     * 清理channel wrapper
+     * @param channelWrapper
+     */
+    public void clearChannelWrapper(ChannelWrapper channelWrapper){
+        //删除channelWrapperList中元素
+        if(!CollectionUtils.isEmpty(channelWrapperList)){
+            for(ChannelWrapper item:channelWrapperList){
+                if(item.getChannel() == channelWrapper.getChannel()){
+                    channelWrapperList.remove(channelWrapper);
+                }
+            }
+        }
+        //conn.channel计数-1
+        channelWrapper.getConnectionWrapper().decCount();
     }
 
     /**
