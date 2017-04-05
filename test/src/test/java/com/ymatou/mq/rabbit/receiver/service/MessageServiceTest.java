@@ -9,9 +9,8 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.infrastructure.repository.MessageRepository;
-import com.ymatou.mq.infrastructure.support.MongoRepository;
+import com.ymatou.mq.infrastructure.service.MessageService;
 import com.ymatou.mq.rabbit.receiver.BaseTest;
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
