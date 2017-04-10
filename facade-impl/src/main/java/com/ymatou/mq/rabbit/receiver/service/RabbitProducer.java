@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.SerializationUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -70,14 +71,11 @@ public class RabbitProducer {
         channelWrapper.getUnconfirmedSet().put(channel.getNextPublishSeqNo(),message);
 
         AMQP.BasicProperties basicProps = new AMQP.BasicProperties.Builder()
-                .messageId(bizId).correlationId(msgId)
+                .messageId(msgId).correlationId(bizId)
                 .type(rabbitConfig.getCurrentCluster()).deliveryMode(RabbitConstants.DELIVERY_PERSISTENT)
                 .build();
-        channel.basicPublish("", queue, basicProps, body.getBytes());
-    }
 
-    void monitorChannelStatus(){
-
+        channel.basicPublish("", queue, basicProps, SerializationUtils.serialize(body));
     }
 
     /**

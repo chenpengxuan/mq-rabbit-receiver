@@ -30,14 +30,14 @@ public class RabbitReceiverServiceTest extends BaseTest{
 
     @Test
     public void testReceiveAndPublish(){
-        for(int j=0;j<5;j++){
+        for(int j=0;j<1;j++){
             try {
                 PublishMessageReq req = new PublishMessageReq();
                 req.setAppId("rabbit_optimization");
                 req.setCode("biz1");
                 req.setMsgUniqueId(ObjectId.get().toString());
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("name","kaka");
+                jsonObject.put("name","kaka-" + new Date());
                 req.setBody(jsonObject.toJSONString());
                 req.setIp("172.16.22.102");
                 Message msg = buildMessage(req);
@@ -46,7 +46,12 @@ public class RabbitReceiverServiceTest extends BaseTest{
                 e.printStackTrace();
                 fail("ReceiveAndPublish fail.");
             }
+        }
 
+        try {
+            Thread.sleep(1000*60);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
