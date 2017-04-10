@@ -61,7 +61,11 @@ public class RabbitProducer {
             RabbitAckListener rabbitAckListener = new RabbitAckListener(channel,unconfirmedSet,rabbitDispatchFacade);
             channel.addConfirmListener(rabbitAckListener);
             channel.confirmSelect();
+
+            //FIXME:移动channelWrapper创建的地方
             channelWrapper.setThread(Thread.currentThread());
+
+            //FIXME:系统当前所有的channelWrapper直接维护到RabbitChannelFactory
             channelMonitorService.addChannerWrapper(channelWrapper);
         }
         //声明队列
@@ -79,15 +83,14 @@ public class RabbitProducer {
     }
 
     /**
+     * FIXME: declareQueue不需要了，basicQos(1)移动到创建channel的地方
      * 声明队列
      * @param channel
      * @param queue
      * @throws IOException
      */
     void declareQueue(Channel channel,String queue) throws IOException {
-        //channel.exchangeDeclare(exchange, "direct", true);
         channel.queueDeclare(queue, true, false, false, null);
-        //channel.queueBind(queue, exchange, queue);
         channel.basicQos(1);
     }
 
