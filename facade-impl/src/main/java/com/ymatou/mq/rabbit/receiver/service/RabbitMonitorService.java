@@ -62,6 +62,7 @@ public class RabbitMonitorService {
     public void clearChannelWrapper(ChannelWrapper channelWrapper){
         //删除channelWrapperList中元素
         if(!CollectionUtils.isEmpty(channelWrapperList)){
+            //FIXME: channelWrapperList.remove(channelWrapper)??
             for(ChannelWrapper item:channelWrapperList){
                 if(item.getChannel() == channelWrapper.getChannel()){
                     channelWrapperList.remove(channelWrapper);
