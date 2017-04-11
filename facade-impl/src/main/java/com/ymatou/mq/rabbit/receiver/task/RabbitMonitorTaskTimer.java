@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import java.util.Timer;
 
 /**
+ * FIXME: 类太多了，ChannelMonitorTask/RabbitMonitorServer能否去掉？直接集成到这个类？
  * rabbit监听(如channel等)timer start
  * Created by zhangzhihua on 2017/3/31.
  */
@@ -30,6 +31,7 @@ public class RabbitMonitorTaskTimer {
             channelMonitorTask.setRabbitMonitorService(rabbitMonitorService);
         }
 
+        //FIXME: 为什么要try/catch??
         try {
             Timer timer = new Timer(true);
             timer.schedule(channelMonitorTask, 0, 1000 * 10);
