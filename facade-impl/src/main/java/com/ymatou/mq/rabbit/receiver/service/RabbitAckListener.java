@@ -59,20 +59,24 @@ public class RabbitAckListener implements ConfirmListener {
         logger.debug("handleAck,current thread name:{},thread id:{},deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",Thread.currentThread().getName(),Thread.currentThread().getId(),deliveryTag,multiple,channel.hashCode(),unconfirmedSet);
         //若出现nack，则调用dispatch直接分发
         if (multiple) {
+            //FIXME:直接取headMap()???
             long beginKey = unconfirmedSet.firstKey().longValue();
             for(long i=beginKey;i<deliveryTag+1;i++){
                 Message message = unconfirmedSet.get(i);
                 if(message != null){
+                    //FIXME:异常了，继续continue??
                     rabbitDispatchFacade.dispatchMessage(message);
                 }
             }
             unconfirmedSet.headMap(deliveryTag +1).clear();
         }else{
             try {
+                //FIXME: unconfirmedSet.remove()
                 Message message = unconfirmedSet.get(deliveryTag);
                 if(message != null){
                     rabbitDispatchFacade.dispatchMessage(message);
                 }
+
                 unconfirmedSet.remove(deliveryTag);
                 logger.debug("first key:{},last key:{},values len:",unconfirmedSet.firstKey(),unconfirmedSet.lastKey(),unconfirmedSet.size());
             } catch (Exception e) {

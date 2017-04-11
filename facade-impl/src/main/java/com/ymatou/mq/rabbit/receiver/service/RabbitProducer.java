@@ -56,8 +56,11 @@ public class RabbitProducer {
         //若是第一次创建channel，则初始化ack相关
         if(channelWrapper.getUnconfirmedSet() == null){
             //设置channel对应的unconfirmedset、acklistener、thread信息
+            //FIXME: unfirmedSet为什么不在channel初始化时自动创建呢
             SortedMap<Long, Message> unconfirmedSet = Collections.synchronizedSortedMap(new TreeMap<Long, Message>());
             channelWrapper.setUnconfirmedSet(unconfirmedSet);
+
+            //FIXME: RabbitAckListener构造函数是 (channelWrapper, rabbitDispatchFacade)会更好
             RabbitAckListener rabbitAckListener = new RabbitAckListener(channel,unconfirmedSet,rabbitDispatchFacade);
             channel.addConfirmListener(rabbitAckListener);
             channel.confirmSelect();
@@ -68,6 +71,8 @@ public class RabbitProducer {
             //FIXME:系统当前所有的channelWrapper直接维护到RabbitChannelFactory
             channelMonitorService.addChannerWrapper(channelWrapper);
         }
+
+        //FIXME:没必要
         //声明队列
         this.declareQueue(channel,queue);
 
@@ -79,6 +84,7 @@ public class RabbitProducer {
                 .type(rabbitConfig.getCurrentCluster()).deliveryMode(RabbitConstants.DELIVERY_PERSISTENT)
                 .build();
 
+        //FIXME:中文等非Ascii码传输，有编码问题吗
         channel.basicPublish("", queue, basicProps, SerializationUtils.serialize(body));
     }
 
