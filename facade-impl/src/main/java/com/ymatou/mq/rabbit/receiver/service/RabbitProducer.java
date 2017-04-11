@@ -55,27 +55,17 @@ public class RabbitProducer {
         Channel channel = channelWrapper.getChannel();
         //若是第一次创建channel，则初始化ack相关
         if(channelWrapper.getUnconfirmedSet() == null){
-            //设置channel对应的unconfirmedset、acklistener、thread信息
-            //FIXME: unfirmedSet为什么不在channel初始化时自动创建呢
+            //设置channel对应的unconfirmedSet、acklistener信息
             SortedMap<Long, Object> unconfirmedSet = Collections.synchronizedSortedMap(new TreeMap<Long, Object>());
-
             channelWrapper.setUnconfirmedSet(unconfirmedSet);
 
-            //FIXME: RabbitAckListener构造函数是 (channelWrapper, rabbitDispatchFacade)会更好
-            RabbitAckListener rabbitAckListener = new RabbitAckListener(channel,unconfirmedSet,rabbitDispatchFacade);
+            RabbitAckListener rabbitAckListener = new RabbitAckListener(channelWrapper,rabbitDispatchFacade);
             channel.addConfirmListener(rabbitAckListener);
             channel.confirmSelect();
-
-            //FIXME:移动channelWrapper创建的地方
-            channelWrapper.setThread(Thread.currentThread());
 
             //FIXME:系统当前所有的channelWrapper直接维护到RabbitChannelFactory
             channelMonitorService.addChannerWrapper(channelWrapper);
         }
-
-        //FIXME:没必要
-        //声明队列
-        this.declareQueue(channel,queue);
 
         //设置ack关联数据
         channelWrapper.getUnconfirmedSet().put(channel.getNextPublishSeqNo(),message);
@@ -87,18 +77,6 @@ public class RabbitProducer {
 
         //FIXME:中文等非Ascii码传输，有编码问题吗
         channel.basicPublish("", queue, basicProps, SerializationUtils.serialize(body));
-    }
-
-    /**
-     * FIXME: declareQueue不需要了，basicQos(1)移动到创建channel的地方
-     * 声明队列
-     * @param channel
-     * @param queue
-     * @throws IOException
-     */
-    void declareQueue(Channel channel,String queue) throws IOException {
-        channel.queueDeclare(queue, true, false, false, null);
-        channel.basicQos(1);
     }
 
 }

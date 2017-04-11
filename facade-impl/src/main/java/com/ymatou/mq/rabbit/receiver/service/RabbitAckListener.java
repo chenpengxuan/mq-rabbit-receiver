@@ -4,6 +4,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConfirmListener;
 import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
+import com.ymatou.mq.rabbit.support.ChannelWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,9 @@ public class RabbitAckListener implements ConfirmListener {
     private RabbitDispatchFacade rabbitDispatchFacade;
 
 
-    public RabbitAckListener(Channel channel, SortedMap<Long, Object> unconfirmedSet, RabbitDispatchFacade rabbitDispatchFacade){
-        this.channel = channel;
-        this.unconfirmedSet = unconfirmedSet;
+    public RabbitAckListener(ChannelWrapper channelWrapper, RabbitDispatchFacade rabbitDispatchFacade){
+        this.channel = channelWrapper.getChannel();
+        this.unconfirmedSet = channelWrapper.getUnconfirmedSet();
         this.rabbitDispatchFacade = rabbitDispatchFacade;
         logger.debug("new RabbitAckListener,current thread name:{},thread id:{},channel:{},unconfirmedSet:{}",Thread.currentThread().getName(),Thread.currentThread().getId(),channel.hashCode(),unconfirmedSet);
     }
