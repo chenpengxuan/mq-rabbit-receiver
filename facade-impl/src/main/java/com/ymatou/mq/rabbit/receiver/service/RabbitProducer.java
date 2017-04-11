@@ -56,7 +56,7 @@ public class RabbitProducer {
         //若是第一次创建channel，则初始化ack相关
         if(channelWrapper.getUnconfirmedSet() == null){
             //设置channel对应的unconfirmedset、acklistener、thread信息
-            SortedMap<Long, Message> unconfirmedSet = Collections.synchronizedSortedMap(new TreeMap<Long, Message>());
+            SortedMap<Long, Object> unconfirmedSet = Collections.synchronizedSortedMap(new TreeMap<Long, Object>());
             channelWrapper.setUnconfirmedSet(unconfirmedSet);
             RabbitAckListener rabbitAckListener = new RabbitAckListener(channel,unconfirmedSet,rabbitDispatchFacade);
             channel.addConfirmListener(rabbitAckListener);
