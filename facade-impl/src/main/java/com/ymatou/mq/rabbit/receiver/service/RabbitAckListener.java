@@ -71,9 +71,8 @@ public class RabbitAckListener implements ConfirmListener {
             unconfirmedSet.headMap(deliveryTag +1).clear();
         }else{
             try {
-                Message message = (Message) unconfirmedSet.get(deliveryTag);
                 //FIXME: unconfirmedSet.remove()
-                Message message = unconfirmedSet.get(deliveryTag);
+                Message message = (Message) unconfirmedSet.get(deliveryTag);
                 if(message != null){
                     rabbitDispatchFacade.dispatchMessage(message);
                 }
