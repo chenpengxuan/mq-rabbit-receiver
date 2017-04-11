@@ -27,7 +27,7 @@ public class RabbitAckListener implements ConfirmListener {
     /**
      * 未确认集合
      */
-    private SortedMap<Long, Message> unconfirmedSet;
+    private SortedMap<Long, Object> unconfirmedSet;
 
     /**
      * rabbit分发facade
@@ -35,7 +35,7 @@ public class RabbitAckListener implements ConfirmListener {
     private RabbitDispatchFacade rabbitDispatchFacade;
 
 
-    public RabbitAckListener(Channel channel, SortedMap<Long, Message> unconfirmedSet, RabbitDispatchFacade rabbitDispatchFacade){
+    public RabbitAckListener(Channel channel, SortedMap<Long, Object> unconfirmedSet, RabbitDispatchFacade rabbitDispatchFacade){
         this.channel = channel;
         this.unconfirmedSet = unconfirmedSet;
         this.rabbitDispatchFacade = rabbitDispatchFacade;
@@ -62,7 +62,7 @@ public class RabbitAckListener implements ConfirmListener {
             //FIXME:直接取headMap()???
             long beginKey = unconfirmedSet.firstKey().longValue();
             for(long i=beginKey;i<deliveryTag+1;i++){
-                Message message = unconfirmedSet.get(i);
+                Message message = (Message) unconfirmedSet.get(i);
                 if(message != null){
                     //FIXME:异常了，继续continue??
                     rabbitDispatchFacade.dispatchMessage(message);
@@ -71,6 +71,7 @@ public class RabbitAckListener implements ConfirmListener {
             unconfirmedSet.headMap(deliveryTag +1).clear();
         }else{
             try {
+                Message message = (Message) unconfirmedSet.get(deliveryTag);
                 //FIXME: unconfirmedSet.remove()
                 Message message = unconfirmedSet.get(deliveryTag);
                 if(message != null){
@@ -94,11 +95,11 @@ public class RabbitAckListener implements ConfirmListener {
         this.channel = channel;
     }
 
-    public SortedMap<Long, Message> getUnconfirmedSet() {
+    public SortedMap<Long, Object> getUnconfirmedSet() {
         return unconfirmedSet;
     }
 
-    public void setUnconfirmedSet(SortedMap<Long, Message> unconfirmedSet) {
+    public void setUnconfirmedSet(SortedMap<Long, Object> unconfirmedSet) {
         this.unconfirmedSet = unconfirmedSet;
     }
 

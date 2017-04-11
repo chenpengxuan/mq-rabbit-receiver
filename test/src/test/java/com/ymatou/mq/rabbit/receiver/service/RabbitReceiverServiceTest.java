@@ -30,7 +30,7 @@ public class RabbitReceiverServiceTest extends BaseTest{
 
     @Test
     public void testReceiveAndPublish(){
-        for(int j=0;j<1;j++){
+        for(int j=0;j<20;j++){
             try {
                 PublishMessageReq req = new PublishMessageReq();
                 req.setAppId("rabbit_optimization");
