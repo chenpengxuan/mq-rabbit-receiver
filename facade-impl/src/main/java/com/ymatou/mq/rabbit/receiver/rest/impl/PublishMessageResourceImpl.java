@@ -39,13 +39,14 @@ public class PublishMessageResourceImpl implements PublishMessageResource {
 
     @Resource
     PublishMessageFacade publishMessageFacade;
+
     @Autowired
     FileQueueProcessorService fileQueueProcessorService;
 
     @Override
     @POST
     @Path("/{publish:(?i:publish)}")
-    public RestResp publish(PublishMessageRestReq req) {
+    public PublishMessageResp publish(PublishMessageRestReq req) {
         PublishMessageReq request = new PublishMessageReq();
         request.setAppId(req.getAppId());
         request.setCode(req.getCode());
@@ -55,14 +56,14 @@ public class PublishMessageResourceImpl implements PublishMessageResource {
 
         PublishMessageResp resp = publishMessageFacade.publish(request);
 
-        return RestResp.newInstance(resp);
+        //return RestResp.newInstance(resp);
+        return resp;
     }
 
     @GET
     @Path("/{filestatus:(?i:filestatus)}")
     @Override
     public String fileStatus() {
-
         return fileQueueProcessorService.getFileDb().status();
     }
 }
