@@ -7,8 +7,8 @@
 
 package com.ymatou.mq.rabbit.receiver.rest;
 
+import com.ymatou.messagebus.facade.model.PublishMessageReq;
 import com.ymatou.messagebus.facade.model.PublishMessageResp;
-import com.ymatou.messagebus.facade.model.PublishMessageRestReq;
 
 /**
  * @author luoshiqian 2016/8/31 14:12
@@ -21,7 +21,7 @@ public interface PublishMessageResource {
      * @param req
      * @return
      */
-    PublishMessageResp publish(PublishMessageRestReq req);
+    PublishMessageResp publish(PublishMessageReq req);
 
     String fileStatus();
 

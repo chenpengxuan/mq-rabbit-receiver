@@ -12,6 +12,7 @@ import java.util.Date;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +32,8 @@ import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
 public class PublishMessageFacadeImpl implements PublishMessageFacade {
 
     private static final Logger logger = LoggerFactory.getLogger(PublishMessageFacadeImpl.class);
+
+    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     @Autowired
     private RabbitReceiverService rabbitReceiverService;
@@ -61,7 +64,7 @@ public class PublishMessageFacadeImpl implements PublishMessageFacade {
         msg.setQueueCode(req.getCode());
         msg.setId(ObjectId.get().toString());
         msg.setBizId(req.getMsgUniqueId());
-        msg.setBody(req.getBody());
+        msg.setBody(JSON.toJSONStringWithDateFormat(req.getBody(), DATE_FORMAT));
         msg.setClientIp(req.getIp());
         msg.setRecvIp(NetUtil.getHostIp());
         msg.setCreateTime(new Date());
