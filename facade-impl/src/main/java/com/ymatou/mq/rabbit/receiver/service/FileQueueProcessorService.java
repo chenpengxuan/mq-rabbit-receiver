@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import com.ymatou.mq.infrastructure.service.MessageService;
 import org.apache.commons.lang3.tuple.Pair;
@@ -103,5 +104,10 @@ public class FileQueueProcessorService implements Function<Pair<String, String>,
         } catch (Exception e) {
             logger.error("filedb handleException save message to mongo error", e);
         }
+    }
+
+    @PreDestroy
+    public void destroy(){
+        fileDb.close();
     }
 }
