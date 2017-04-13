@@ -5,6 +5,7 @@ import com.rabbitmq.client.Channel;
 import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.rabbit.RabbitChannelFactory;
 import com.ymatou.mq.rabbit.config.RabbitConfig;
+import com.ymatou.mq.rabbit.receiver.config.ReceiverConfig;
 import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
 import com.ymatou.mq.rabbit.support.ChannelWrapper;
 import com.ymatou.mq.rabbit.support.RabbitConstants;
@@ -33,6 +34,9 @@ public class RabbitProducer {
     private RabbitConfig rabbitConfig;
 
     @Autowired
+    private ReceiverConfig receiverConfig;
+
+    @Autowired
     private RabbitDispatchFacade rabbitDispatchFacade;
 
     /**
@@ -48,7 +52,7 @@ public class RabbitProducer {
 
         logger.debug("RabbitProducer.publish,current thread name:{},thread id:{}",Thread.currentThread().getName(),Thread.currentThread().getId());
         //获取channel
-        ChannelWrapper channelWrapper = RabbitChannelFactory.getChannelWrapper(rabbitConfig);
+        ChannelWrapper channelWrapper = RabbitChannelFactory.getChannelWrapper(receiverConfig.getCurrentCluster(),rabbitConfig);
         Channel channel = channelWrapper.getChannel();
         //若是第一次创建channel，则初始化ack相关
         if(channelWrapper.getUnconfirmedSet() == null){
@@ -66,7 +70,7 @@ public class RabbitProducer {
 
         AMQP.BasicProperties basicProps = new AMQP.BasicProperties.Builder()
                 .messageId(msgId).correlationId(bizId)
-                .type(rabbitConfig.getCurrentCluster()).deliveryMode(RabbitConstants.DELIVERY_PERSISTENT)
+                .type(receiverConfig.getCurrentCluster()).deliveryMode(RabbitConstants.DELIVERY_PERSISTENT)
                 .build();
 
         //FIXME:中文等非Ascii码传输，有编码问题吗

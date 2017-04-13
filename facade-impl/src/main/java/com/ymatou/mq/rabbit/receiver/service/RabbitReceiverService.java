@@ -2,6 +2,7 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import javax.annotation.PostConstruct;
 
+import com.ymatou.mq.rabbit.receiver.config.ReceiverConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class RabbitReceiverService {
     private RabbitConfig rabbitConfig;
 
     @Autowired
+    private ReceiverConfig receiverConfig;
+
+    @Autowired
     private RabbitProducer rabbitProducer;
 
     /**
@@ -48,7 +52,7 @@ public class RabbitReceiverService {
         //验证队列有效性
         this.validQueue(msg.getAppId(),msg.getQueueCode());
         //若rabbit master/slave都没开启，则直接调分发站
-        if(!isEnableRabbit(rabbitConfig)){
+        if(!isEnableRabbit()){
             invokeDispatch(msg);
         }else{
             try {
@@ -67,10 +71,9 @@ public class RabbitReceiverService {
 
     /**
      * rabbit master/slave是否开启
-     * @param rabbitConfig
      */
-    boolean isEnableRabbit(RabbitConfig rabbitConfig){
-        if(rabbitConfig.isMasterEnable() || rabbitConfig.isSlaveEnable()){
+    boolean isEnableRabbit(){
+        if(receiverConfig.isMasterEnable() || receiverConfig.isSlaveEnable()){
             return true;
         }
         return false;
