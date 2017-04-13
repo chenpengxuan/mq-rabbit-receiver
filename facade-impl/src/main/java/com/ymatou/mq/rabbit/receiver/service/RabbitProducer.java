@@ -35,9 +35,6 @@ public class RabbitProducer {
     @Autowired
     private RabbitDispatchFacade rabbitDispatchFacade;
 
-    @Autowired
-    private RabbitMonitorService channelMonitorService;
-
     /**
      * 发布消息
      * @param queue
@@ -62,9 +59,6 @@ public class RabbitProducer {
             RabbitAckListener rabbitAckListener = new RabbitAckListener(channelWrapper,rabbitDispatchFacade);
             channel.addConfirmListener(rabbitAckListener);
             channel.confirmSelect();
-
-            //FIXME:系统当前所有的channelWrapper直接维护到RabbitChannelFactory
-            channelMonitorService.addChannerWrapper(channelWrapper);
         }
 
         //设置ack关联数据
