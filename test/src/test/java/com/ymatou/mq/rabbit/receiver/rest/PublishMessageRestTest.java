@@ -17,7 +17,7 @@ import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
 import com.alibaba.fastjson.JSON;
-import com.ymatou.messagebus.facade.model.PublishMessageRestReq;
+import com.ymatou.messagebus.facade.model.PublishMessageReq;
 
 /**
  * @author luoshiqian 2017/3/30 11:18
@@ -41,7 +41,7 @@ public class PublishMessageRestTest {
 
     @Test
     public void testPublish() throws Exception {
-        PublishMessageRestReq req = new PublishMessageRestReq();
+        PublishMessageReq req = new PublishMessageReq();
 
         req.setAppId("testdashen");
         req.setMsgUniqueId("123bcdf3");
