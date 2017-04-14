@@ -8,6 +8,9 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import javax.annotation.PostConstruct;
 
+import com.ymatou.mq.infrastructure.model.AppConfig;
+import com.ymatou.mq.infrastructure.model.CallbackConfig;
+import com.ymatou.mq.infrastructure.model.QueueConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,19 +65,40 @@ public class ConfigReloadService implements ConfigReloadListener {
 
     @Override
     public void callback() {
+        /*
         MessageConfigService.appConfigMap.values().stream().flatMap(appConfig -> appConfig.getMessageCfgList().stream())
                 .forEach(queue -> {
                     declareQueue(primaryChannel, queue.getCode());
                     declareQueue(secondaryChannel, queue.getCode());
                 });
+        */
+        for(AppConfig appConfig:MessageConfigService.appConfigMap.values()){
+            for(QueueConfig queueConfig:appConfig.getMessageCfgList()){
+                for(CallbackConfig callbackConfig:queueConfig.getCallbackCfgList()){
+                    String exchange = String.format("%s_%s",appConfig.getAppId(),queueConfig.getCode());
+                    String queue = callbackConfig.getCallbackKey();
+                    logger.info("exchange:{},queue:{}",exchange,queue);
+                    declareQueue(primaryChannel, exchange,queue);
+                    declareQueue(secondaryChannel, exchange,queue);
+                }
+            }
+        }
     }
 
-    void declareQueue(Channel channel, String queue) {
+    /**
+     * 声明队列
+     * @param channel
+     * @param exchange
+     * @param queue
+     */
+    void declareQueue(Channel channel, String exchange,String queue) {
         if (channel != null) {
             try {
+                channel.exchangeDeclare(exchange, "fanout", true);
                 channel.queueDeclare(queue, true, false, false, null);
+                channel.queueBind(queue, exchange, queue);
             } catch (Exception e) {
-                logger.error("declareQueue:{} error", queue, e);
+                logger.error("declareQueue:{},{} error", exchange,queue, e);
             }
         }
     }

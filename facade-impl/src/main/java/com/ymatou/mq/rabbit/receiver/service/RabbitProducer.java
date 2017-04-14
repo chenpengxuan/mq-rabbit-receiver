@@ -42,11 +42,11 @@ public class RabbitProducer {
 
     /**
      * 发布消息
-     * @param queue
+     * @param exchange
      * @param message
      * @throws IOException
      */
-    public void publish(String queue, Message message) throws IOException {
+    public void publish(String exchange, Message message) throws IOException {
         String msgId = message.getId();
         String bizId = message.getBizId();
         String body = message.getBody();
@@ -75,7 +75,7 @@ public class RabbitProducer {
                 .build();
 
         //FIXME:中文等非Ascii码传输，有编码问题吗
-        channel.basicPublish("", queue, basicProps, SerializationUtils.serialize(body));
+        channel.basicPublish(exchange, exchange, basicProps, SerializationUtils.serialize(body));
     }
 
 }

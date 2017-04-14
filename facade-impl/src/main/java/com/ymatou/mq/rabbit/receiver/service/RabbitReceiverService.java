@@ -59,13 +59,13 @@ public class RabbitReceiverService {
         }else{
             try {
                 //发布消息
-                rabbitProducer.publish(msg.getQueueCode(),msg);
+                rabbitProducer.publish(String.format("%s_%s",msg.getAppId(),msg.getQueueCode()),msg);
                 //若发MQ成功，则异步写消息到文件队列
                 fileQueueProcessorService.saveMessageToFileDb(msg);
             } catch (Exception e) {
                 //若发布出现exception，则调用分发站
                 logger.error("recevie and publish msg:{} occur exception.",msg,e);
-                this.dispatchMessage(msg);
+                dispatchMessage(msg);
             }
 
         }
