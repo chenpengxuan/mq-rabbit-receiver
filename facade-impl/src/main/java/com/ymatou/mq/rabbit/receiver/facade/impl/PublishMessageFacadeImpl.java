@@ -44,7 +44,7 @@ public class PublishMessageFacadeImpl implements PublishMessageFacade {
         Message msg = this.buildMessage(req);
 
         //接收发布消息
-        rabbitReceiverService.receiveAndPublish(msg);
+       rabbitReceiverService.receiveAndPublish(msg);
 
         //返回
         PublishMessageResp resp = new PublishMessageResp();

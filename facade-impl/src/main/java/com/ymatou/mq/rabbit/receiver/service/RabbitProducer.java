@@ -1,12 +1,13 @@
 package com.ymatou.mq.rabbit.receiver.service;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.rabbit.RabbitChannelFactory;
 import com.ymatou.mq.rabbit.config.RabbitConfig;
+import com.ymatou.mq.rabbit.dispatcher.facade.MessageDispatchFacade;
 import com.ymatou.mq.rabbit.receiver.config.ReceiverConfig;
-import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
 import com.ymatou.mq.rabbit.support.ChannelWrapper;
 import com.ymatou.mq.rabbit.support.RabbitConstants;
 import org.slf4j.Logger;
@@ -36,8 +37,8 @@ public class RabbitProducer {
     @Autowired
     private ReceiverConfig receiverConfig;
 
-    @Autowired
-    private RabbitDispatchFacade rabbitDispatchFacade;
+    @Reference
+    private MessageDispatchFacade messageDispatchFacade;
 
     /**
      * 发布消息
@@ -60,7 +61,7 @@ public class RabbitProducer {
             SortedMap<Long, Object> unconfirmedSet = Collections.synchronizedSortedMap(new TreeMap<Long, Object>());
             channelWrapper.setUnconfirmedSet(unconfirmedSet);
 
-            RabbitAckListener rabbitAckListener = new RabbitAckListener(channelWrapper,rabbitDispatchFacade);
+            RabbitAckListener rabbitAckListener = new RabbitAckListener(channelWrapper,messageDispatchFacade);
             channel.addConfirmListener(rabbitAckListener);
             channel.confirmSelect();
         }

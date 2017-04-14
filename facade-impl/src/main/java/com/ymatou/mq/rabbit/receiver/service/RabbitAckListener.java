@@ -2,8 +2,12 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConfirmListener;
+import com.ymatou.messagebus.facade.BizException;
+import com.ymatou.messagebus.facade.ErrorCode;
 import com.ymatou.mq.infrastructure.model.Message;
-import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
+import com.ymatou.mq.rabbit.dispatcher.facade.MessageDispatchFacade;
+import com.ymatou.mq.rabbit.dispatcher.facade.model.DispatchMessageReq;
+import com.ymatou.mq.rabbit.dispatcher.facade.model.DispatchMessageResp;
 import com.ymatou.mq.rabbit.support.ChannelWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +37,13 @@ public class RabbitAckListener implements ConfirmListener {
     /**
      * rabbit分发facade
      */
-    private RabbitDispatchFacade rabbitDispatchFacade;
+    private MessageDispatchFacade messageDispatchFacade;
 
 
-    public RabbitAckListener(ChannelWrapper channelWrapper, RabbitDispatchFacade rabbitDispatchFacade){
+    public RabbitAckListener(ChannelWrapper channelWrapper, MessageDispatchFacade messageDispatchFacade){
         this.channel = channelWrapper.getChannel();
         this.unconfirmedSet = channelWrapper.getUnconfirmedSet();
-        this.rabbitDispatchFacade = rabbitDispatchFacade;
+        this.messageDispatchFacade = messageDispatchFacade;
         logger.debug("new RabbitAckListener,current thread name:{},thread id:{},channel:{},unconfirmedSet:{}",Thread.currentThread().getName(),Thread.currentThread().getId(),channel.hashCode(),unconfirmedSet);
     }
 
@@ -57,7 +61,7 @@ public class RabbitAckListener implements ConfirmListener {
     @Override
     public void handleNack(long deliveryTag, boolean multiple) throws IOException {
         logger.error("handleNack,channel:{},deliveryTag:{},multiple:{}",channel,deliveryTag,multiple);
-        logger.debug("handleAck,current thread name:{},thread id:{},deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",Thread.currentThread().getName(),Thread.currentThread().getId(),deliveryTag,multiple,channel.hashCode(),unconfirmedSet);
+        logger.debug("handleNack,current thread name:{},thread id:{},deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",Thread.currentThread().getName(),Thread.currentThread().getId(),deliveryTag,multiple,channel.hashCode(),unconfirmedSet);
         //若出现nack，则调用dispatch直接分发
         if (multiple) {
             //FIXME:直接取headMap()???
@@ -66,7 +70,7 @@ public class RabbitAckListener implements ConfirmListener {
                 Message message = (Message) unconfirmedSet.get(i);
                 if(message != null){
                     //FIXME:异常了，继续continue??
-                    rabbitDispatchFacade.dispatchMessage(message);
+                    dispatchMessage(message);
                 }
             }
             unconfirmedSet.headMap(deliveryTag +1).clear();
@@ -75,9 +79,8 @@ public class RabbitAckListener implements ConfirmListener {
                 //FIXME: unconfirmedSet.remove()
                 Message message = (Message) unconfirmedSet.get(deliveryTag);
                 if(message != null){
-                    rabbitDispatchFacade.dispatchMessage(message);
+                    dispatchMessage(message);
                 }
-
                 unconfirmedSet.remove(deliveryTag);
                 logger.debug("first key:{},last key:{},values len:",unconfirmedSet.firstKey(),unconfirmedSet.lastKey(),unconfirmedSet.size());
             } catch (Exception e) {
@@ -85,6 +88,39 @@ public class RabbitAckListener implements ConfirmListener {
             }
         }
 
+    }
+
+    /**
+     * 直接调用分发站发送
+     * @param message
+     */
+    void dispatchMessage(Message message){
+        try {
+            //若发MQ失败，则直接调用dispatch分发站接口发送
+            DispatchMessageResp resp = messageDispatchFacade.dispatch(this.toDispatchMessageReq(message));
+            if(!resp.isSuccess()){
+                throw new BizException(ErrorCode.FAIL,resp.getErrorMessage());
+            }
+        } catch (Exception ex) {
+            //发MQ失败->调分发站失败则返回失败信息
+            throw new BizException(ErrorCode.FAIL,"dispatch message error",ex);
+        }
+    }
+
+    /**
+     * 转化为DispatchMessageReq
+     * @param message
+     * @return
+     */
+    DispatchMessageReq toDispatchMessageReq(Message message){
+        DispatchMessageReq req = new DispatchMessageReq();
+        req.setId(message.getId());
+        req.setAppId(message.getAppId());
+        req.setCode(message.getQueueCode());
+        req.setMsgUniqueId(message.getBizId());
+        req.setBody(message.getBody());
+        req.setIp(message.getClientIp());
+        return req;
     }
 
     public Channel getChannel() {
@@ -103,11 +139,11 @@ public class RabbitAckListener implements ConfirmListener {
         this.unconfirmedSet = unconfirmedSet;
     }
 
-    public RabbitDispatchFacade getRabbitDispatchFacade() {
-        return rabbitDispatchFacade;
+    public MessageDispatchFacade getMessageDispatchFacade() {
+        return messageDispatchFacade;
     }
 
-    public void setRabbitDispatchFacade(RabbitDispatchFacade rabbitDispatchFacade) {
-        this.rabbitDispatchFacade = rabbitDispatchFacade;
+    public void setMessageDispatchFacade(MessageDispatchFacade messageDispatchFacade) {
+        this.messageDispatchFacade = messageDispatchFacade;
     }
 }
