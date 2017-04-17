@@ -71,7 +71,7 @@ public class RabbitProducer {
 
         AMQP.BasicProperties basicProps = new AMQP.BasicProperties.Builder()
                 .messageId(msgId).correlationId(bizId)
-                .type(receiverConfig.getCurrentCluster()).deliveryMode(RabbitConstants.DELIVERY_PERSISTENT)
+                .deliveryMode(RabbitConstants.DELIVERY_PERSISTENT)
                 .build();
 
         //FIXME:中文等非Ascii码传输，有编码问题吗
