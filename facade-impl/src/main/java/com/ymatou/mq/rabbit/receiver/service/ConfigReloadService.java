@@ -77,7 +77,7 @@ public class ConfigReloadService implements ConfigReloadListener {
                 for(CallbackConfig callbackConfig:queueConfig.getCallbackCfgList()){
                     String exchange = String.format("%s_%s",appConfig.getAppId(),queueConfig.getCode());
                     String queue = callbackConfig.getCallbackKey();
-                    logger.info("exchange:{},queue:{}",exchange,queue);
+                    //logger.debug("exchange:{},queue:{}",exchange,queue);
                     declareQueue(primaryChannel, exchange,queue);
                     declareQueue(secondaryChannel, exchange,queue);
                 }
