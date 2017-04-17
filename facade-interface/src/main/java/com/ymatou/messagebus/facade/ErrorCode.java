@@ -13,6 +13,8 @@ public enum ErrorCode {
 
     QUEUE_CONFIG_NOT_EXIST(1001,"队列配置不存在."),
 
+    QUEUE_CONFIG_NOT_ENABLE(1002,"队列配置没有开启."),
+
     /*
      * 业务逻辑错误 3000
      */
