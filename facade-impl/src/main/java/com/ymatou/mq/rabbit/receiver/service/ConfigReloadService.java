@@ -36,12 +36,16 @@ public class ConfigReloadService implements ConfigReloadListener {
 
     @Autowired
     private MessageConfigService messageConfigService;
+
     @Autowired
     private RabbitConfig rabbitConfig;
 
     private Connection primaryConnection;
+
     private Connection secondaryConnection;
+
     private Channel primaryChannel;
+
     private Channel secondaryChannel;
 
 
@@ -65,19 +69,19 @@ public class ConfigReloadService implements ConfigReloadListener {
 
     @Override
     public void callback() {
-        /*
-        MessageConfigService.appConfigMap.values().stream().flatMap(appConfig -> appConfig.getMessageCfgList().stream())
-                .forEach(queue -> {
-                    declareQueue(primaryChannel, queue.getCode());
-                    declareQueue(secondaryChannel, queue.getCode());
-                });
-        */
+        //声明队列处理
+        handleDeclareQueue();
+    }
+
+    /**
+     * 声明队列处理
+     */
+    void handleDeclareQueue(){
         for(AppConfig appConfig:MessageConfigService.appConfigMap.values()){
             for(QueueConfig queueConfig:appConfig.getMessageCfgList()){
                 for(CallbackConfig callbackConfig:queueConfig.getCallbackCfgList()){
                     String exchange = String.format("%s_%s",appConfig.getAppId(),queueConfig.getCode());
                     String queue = callbackConfig.getCallbackKey();
-                    //logger.debug("exchange:{},queue:{}",exchange,queue);
                     declareQueue(primaryChannel, exchange,queue);
                     declareQueue(secondaryChannel, exchange,queue);
                 }

@@ -53,6 +53,7 @@ public class RabbitReceiverService {
     public void receiveAndPublish(Message msg){
         //验证队列有效性
         this.validQueue(msg.getAppId(),msg.getQueueCode());
+
         //若rabbit master/slave都没开启，则直接调分发站
         if(!isEnableRabbit()){
             dispatchMessage(msg);
@@ -121,6 +122,9 @@ public class RabbitReceiverService {
         QueueConfig queueConfig = messageConfigService.getQueueConfig(appId, queueCode);
         if(queueConfig == null){
             throw new BizException(ErrorCode.QUEUE_CONFIG_NOT_EXIST,String.format("appId:[%s],queueCode:[%s] not exist.",appId, queueCode));
+        }
+        if(!queueConfig.getEnable()){
+            throw new BizException(ErrorCode.QUEUE_CONFIG_NOT_ENABLE,String.format("appId:[%s],queueCode:[%s] not enabled.",appId, queueCode));
         }
     }
 
