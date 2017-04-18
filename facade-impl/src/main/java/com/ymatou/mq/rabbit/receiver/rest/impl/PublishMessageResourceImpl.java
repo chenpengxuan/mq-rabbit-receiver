@@ -7,13 +7,11 @@
 package com.ymatou.mq.rabbit.receiver.rest.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.alibaba.fastjson.JSON;
 import com.ymatou.messagebus.facade.PublishMessageFacade;
 import com.ymatou.messagebus.facade.model.PublishMessageReq;
 import com.ymatou.messagebus.facade.model.PublishMessageResp;
 import com.ymatou.mq.rabbit.receiver.rest.PublishMessageResource;
-import com.ymatou.mq.rabbit.receiver.rest.RestResp;
-import com.ymatou.mq.rabbit.receiver.service.FileQueueProcessorService;
+import com.ymatou.mq.rabbit.receiver.service.MessageFileQueueService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +38,7 @@ public class PublishMessageResourceImpl implements PublishMessageResource {
     PublishMessageFacade publishMessageFacade;
 
     @Autowired
-    FileQueueProcessorService fileQueueProcessorService;
+    MessageFileQueueService messageFileQueueService;
 
     @Override
     @POST
@@ -61,6 +59,6 @@ public class PublishMessageResourceImpl implements PublishMessageResource {
     @Path("/{filestatus:(?i:filestatus)}")
     @Override
     public String fileStatus() {
-        return fileQueueProcessorService.getFileDb().status();
+        return messageFileQueueService.getFileDb().status();
     }
 }

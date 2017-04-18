@@ -5,7 +5,6 @@ import com.ymatou.mq.rabbit.dispatcher.facade.MessageDispatchFacade;
 import com.ymatou.mq.rabbit.dispatcher.facade.model.DispatchMessageReq;
 import com.ymatou.mq.rabbit.dispatcher.facade.model.DispatchMessageResp;
 import com.ymatou.mq.rabbit.receiver.config.ReceiverConfig;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class RabbitReceiverService {
     private MessageConfigService messageConfigService;
 
     @Autowired
-    private FileQueueProcessorService fileQueueProcessorService;
+    private MessageFileQueueService messageFileQueueService;
 
     @Reference
     private MessageDispatchFacade messageDispatchFacade;
@@ -62,7 +61,7 @@ public class RabbitReceiverService {
                 //发布消息
                 rabbitProducer.publish(String.format("%s_%s",msg.getAppId(),msg.getQueueCode()),msg);
                 //若发MQ成功，则异步写消息到文件队列
-                fileQueueProcessorService.saveMessageToFileDb(msg);
+                messageFileQueueService.saveMessageToFileDb(msg);
             } catch (Exception e) {
                 //若发布出现exception，则调用分发站
                 logger.error("recevie and publish msg:{} occur exception.",msg,e);
