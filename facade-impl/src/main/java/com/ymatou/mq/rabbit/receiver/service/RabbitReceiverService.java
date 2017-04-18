@@ -5,6 +5,7 @@ import com.ymatou.mq.rabbit.dispatcher.facade.MessageDispatchFacade;
 import com.ymatou.mq.rabbit.dispatcher.facade.model.DispatchMessageReq;
 import com.ymatou.mq.rabbit.dispatcher.facade.model.DispatchMessageResp;
 import com.ymatou.mq.rabbit.receiver.config.ReceiverConfig;
+import com.ymatou.performancemonitorclient.PerformanceStatisticContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import com.ymatou.mq.rabbit.config.RabbitConfig;
 public class RabbitReceiverService {
 
     private static final Logger logger = LoggerFactory.getLogger(RabbitReceiverService.class);
+
+    public static final String MONITOR_APP_ID = "monitor.mq.iapi.ymatou.com";
 
     @Autowired
     private MessageConfigService messageConfigService;
@@ -50,6 +53,7 @@ public class RabbitReceiverService {
      * @return
      */
     public void receiveAndPublish(Message msg){
+        long startTime = System.currentTimeMillis();
         //验证队列有效性
         this.validQueue(msg.getAppId(),msg.getQueueCode());
 
@@ -69,6 +73,11 @@ public class RabbitReceiverService {
             }
 
         }
+
+        // 上报接收消息性能数据
+        long consumedTime = System.currentTimeMillis() - startTime;
+        PerformanceStatisticContainer.add(consumedTime, String.format("%s_%s.receiver", msg.getAppId(),msg.getQueueCode()),
+                MONITOR_APP_ID);
     }
 
     /**

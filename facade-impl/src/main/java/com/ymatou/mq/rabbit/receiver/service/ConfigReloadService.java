@@ -52,6 +52,8 @@ public class ConfigReloadService implements ConfigReloadListener {
     @PostConstruct
     public void init() {
         messageConfigService.addConfigCacheListener(this);
+        //启动时声明队列
+        handleDeclareQueue();
 
         try {
             primaryConnection = RabbitConnectionFactory.createConnection(RabbitConstants.CLUSTER_MASTER, rabbitConfig);
