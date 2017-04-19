@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Timer;
 
 /**
  * rabbit监听(如channel等)timer start
@@ -21,15 +22,8 @@ public class RabbitMonitorTaskTimer {
 
     @PostConstruct
     public void init(){
-        //FIXME: 为什么要try/catch??
-        /*
-        try {
-            Timer timer = new Timer(true);
-            timer.schedule(channelMonitorTask, 0, 1000 * 10);
-            logger.info("monitor channel timer started.");
-        } catch (Exception e) {
-            logger.error("schedule error.",e);
-        }
-        */
+        Timer timer = new Timer(true);
+        timer.schedule(channelMonitorTask, 60, 1000 * 120);
+        logger.info("monitor channel timer started.");
     }
 }

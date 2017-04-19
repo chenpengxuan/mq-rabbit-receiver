@@ -27,10 +27,10 @@ public class RabbitMonitorTask extends TimerTask {
     @Override
     public void run() {
         try {
-            logger.info("schedual invoke scanChannelAndProcess...");
+            logger.debug("schedual invoke scanChannelAndProcess...");
             this.scanChannelAndProcess();
         } catch (Exception e) {
-            logger.error("ChannelMonitorTask.run error.",e);
+            logger.error("scanChannelAndProcess error.",e);
         }
     }
 
