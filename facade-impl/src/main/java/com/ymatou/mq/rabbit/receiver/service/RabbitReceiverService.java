@@ -115,7 +115,7 @@ public class RabbitReceiverService {
     DispatchMessageReq toDispatchMessageReq(Message message){
         DispatchMessageReq req = new DispatchMessageReq();
         req.setId(message.getId());
-        req.setAppId(message.getAppId());
+        req.setApp(message.getAppId());
         req.setCode(message.getQueueCode());
         req.setMsgUniqueId(message.getBizId());
         req.setBody(message.getBody());
