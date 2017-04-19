@@ -24,6 +24,8 @@ import com.ymatou.mq.rabbit.RabbitConnectionFactory;
 import com.ymatou.mq.rabbit.config.RabbitConfig;
 import com.ymatou.mq.rabbit.support.RabbitConstants;
 
+import java.io.IOException;
+
 /**
  * 定时刷新配置 回调处理
  * 
@@ -52,8 +54,8 @@ public class ConfigReloadService implements ConfigReloadListener {
     @PostConstruct
     public void init() {
         messageConfigService.addConfigCacheListener(this);
-        //启动时声明队列
-        handleDeclareQueue();
+        //启动时声明交换器、队列
+        declareExchangeAndQueue();
 
         try {
             primaryConnection = RabbitConnectionFactory.createConnection(RabbitConstants.CLUSTER_MASTER, rabbitConfig);
@@ -71,22 +73,65 @@ public class ConfigReloadService implements ConfigReloadListener {
 
     @Override
     public void callback() {
-        //声明队列处理
-        handleDeclareQueue();
+        declareExchangeAndQueue();
+        //deleteExchangeAndQueue();
     }
 
     /**
-     * 声明队列处理
+     * 删除交换器、队列
      */
-    void handleDeclareQueue(){
+    void deleteExchangeAndQueue(){
+        try {
+            for(AppConfig appConfig:MessageConfigService.appConfigMap.values()){
+                for(QueueConfig queueConfig:appConfig.getMessageCfgList()){
+                    String exchange = String.format("%s_%s",appConfig.getAppId(),queueConfig.getCode());
+                    //删除exchange
+                    primaryChannel.exchangeDelete(exchange);
+                    secondaryChannel.exchangeDelete(exchange);
+                    for(CallbackConfig callbackConfig:queueConfig.getCallbackCfgList()){
+                        String callbackKey = callbackConfig.getCallbackKey();
+                        //删除queue
+                        primaryChannel.queueDelete(callbackKey);
+                        secondaryChannel.queueDelete(callbackKey);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            logger.error("delete exchange and queue error.",e);
+        }
+    }
+
+    /**
+     * 声明交换器、队列
+     */
+    void declareExchangeAndQueue(){
         for(AppConfig appConfig:MessageConfigService.appConfigMap.values()){
             for(QueueConfig queueConfig:appConfig.getMessageCfgList()){
+                String exchange = String.format("%s_%s",appConfig.getAppId(),queueConfig.getCode());
+                //声明exchange
+                declareExchange(primaryChannel,exchange);
+                declareExchange(secondaryChannel,exchange);
                 for(CallbackConfig callbackConfig:queueConfig.getCallbackCfgList()){
-                    String exchange = String.format("%s_%s",appConfig.getAppId(),queueConfig.getCode());
-                    String queue = callbackConfig.getCallbackKey();
-                    declareQueue(primaryChannel, exchange,queue);
-                    declareQueue(secondaryChannel, exchange,queue);
+                    String callbackKey = callbackConfig.getCallbackKey();
+                    //声明queue
+                    declareQueue(primaryChannel, exchange,callbackKey);
+                    declareQueue(secondaryChannel, exchange,callbackKey);
                 }
+            }
+        }
+    }
+
+    /**
+     * 声明exchange
+     * @param channel
+     * @param exchange
+     */
+    void declareExchange(Channel channel, String exchange) {
+        if (channel != null) {
+            try {
+                channel.exchangeDeclare(exchange, "topic", true);
+            } catch (Exception e) {
+                logger.error("declareExchange {} error", exchange, e);
             }
         }
     }
@@ -95,17 +140,29 @@ public class ConfigReloadService implements ConfigReloadListener {
      * 声明队列
      * @param channel
      * @param exchange
-     * @param queue
+     * @param callbackKey
      */
-    void declareQueue(Channel channel, String exchange,String queue) {
+    void declareQueue(Channel channel, String exchange,String callbackKey) {
         if (channel != null) {
             try {
-                channel.exchangeDeclare(exchange, "fanout", true);
-                channel.queueDeclare(queue, true, false, false, null);
-                channel.queueBind(queue, exchange, queue);
+                channel.queueDeclare(callbackKey, true, false, false, null);
+                channel.queueBind(callbackKey, exchange, getRouteKey(callbackKey));
+                getRouteKey(callbackKey);
             } catch (Exception e) {
-                logger.error("declareQueue:{},{} error", exchange,queue, e);
+                logger.error("declareQueue:{},{} error", exchange,callbackKey, e);
             }
         }
+    }
+
+    /**
+     * 获取routeKey
+     * @param callbackKey
+     * @return
+     */
+    String getRouteKey(String callbackKey){
+        String callbackNo = callbackKey.substring(callbackKey.lastIndexOf("_")+1,callbackKey.length());
+        String routeKey = String.format("#.%s.#",callbackNo);
+        logger.info("routeKey:{},callbackKey:{}",routeKey,callbackKey);
+        return routeKey;
     }
 }

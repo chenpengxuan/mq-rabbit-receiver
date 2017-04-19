@@ -3,7 +3,9 @@ package com.ymatou.mq.rabbit.receiver.service;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
+import com.ymatou.mq.infrastructure.model.CallbackConfig;
 import com.ymatou.mq.infrastructure.model.Message;
+import com.ymatou.mq.infrastructure.service.MessageConfigService;
 import com.ymatou.mq.rabbit.RabbitChannelFactory;
 import com.ymatou.mq.rabbit.config.RabbitConfig;
 import com.ymatou.mq.rabbit.dispatcher.facade.MessageDispatchFacade;
@@ -36,6 +38,9 @@ public class RabbitProducer {
 
     @Autowired
     private ReceiverConfig receiverConfig;
+
+    @Autowired
+    private MessageConfigService messageConfigService;
 
     @Reference
     private MessageDispatchFacade messageDispatchFacade;
@@ -75,7 +80,40 @@ public class RabbitProducer {
                 .build();
 
         //FIXME:中文等非Ascii码传输，有编码问题吗
-        channel.basicPublish(exchange, exchange, basicProps, SerializationUtils.serialize(body));
+        String routeKey = getRouteKey(message.getAppId(),message.getQueueCode());
+        channel.basicPublish(exchange, routeKey, basicProps, SerializationUtils.serialize(body));
+    }
+
+    /**
+     * 获取routeKey
+     * @param appId
+     * @param queueCode
+     * @return
+     */
+    String getRouteKey(String appId,String queueCode){
+        StringBuffer buf = new StringBuffer();
+        List<CallbackConfig> callbackConfigList = messageConfigService.getCallbackConfigList(appId,queueCode);
+        int i = 0;
+        for(CallbackConfig callbackConfig:callbackConfigList){
+            if(callbackConfig.getQueueConfig().getEnable() && callbackConfig.getEnable()){
+                if(i == 0){
+                    buf.append(getCallbackNo(callbackConfig.getCallbackKey()));
+                }else{
+                    buf.append(String.format(".%s",getCallbackNo(callbackConfig.getCallbackKey())));
+                }
+                i++;
+            }
+        }
+        return buf.toString().trim();
+    }
+
+    /**
+     * 获取callbackKey序号
+     * @param callbackKey
+     * @return
+     */
+    String getCallbackNo(String callbackKey){
+        return callbackKey.substring(callbackKey.lastIndexOf("_")+1,callbackKey.length());
     }
 
 }
