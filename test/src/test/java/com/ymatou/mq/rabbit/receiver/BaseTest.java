@@ -7,6 +7,7 @@
 
 package com.ymatou.mq.rabbit.receiver;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -21,4 +22,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @Configuration
 @ComponentScan(basePackages = "com.ymatou")
 public class BaseTest {
+
+    @Test
+    public void startup()throws Exception{
+        System.in.read();
+    }
 }

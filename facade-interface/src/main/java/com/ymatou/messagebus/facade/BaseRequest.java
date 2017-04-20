@@ -22,23 +22,11 @@ public class BaseRequest extends PrintFriendliness {
 	 */
 	private static Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
 
-	/**
-	 * 应用id
-	 */
-	private String appId;
 
 	/**
 	 * 请求Id
 	 */
 	private String requestId;
-
-	public String getAppId() {
-		return appId;
-	}
-
-	public void setAppId(String appId) {
-		this.appId = appId;
-	}
 
 	public String getRequestId() {
 		return requestId;

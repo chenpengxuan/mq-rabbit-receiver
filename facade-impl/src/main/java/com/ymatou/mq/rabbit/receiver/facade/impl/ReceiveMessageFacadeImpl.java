@@ -9,6 +9,7 @@ package com.ymatou.mq.rabbit.receiver.facade.impl;
 
 import java.util.Date;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +28,11 @@ import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
 /**
  * @author luoshiqian 2016/8/31 14:13
  */
-//@Service(protocol = "dubbo")
+@Service(protocol = "dubbo")
 @Component
 public class ReceiveMessageFacadeImpl implements ReceiveMessageFacade {
 
     private static final Logger logger = LoggerFactory.getLogger(ReceiveMessageFacadeImpl.class);
-
-    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     @Autowired
     private RabbitReceiverService rabbitReceiverService;
