@@ -28,3 +28,36 @@ dependencies {
 }
 
 
+
+//上传到nexus
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			repository(url: "http://172.16.100.98/nexus/content/repositories/releases")
+					{ authentication(userName: "admin", password: "admin123") }
+			snapshotRepository(url: "http://172.16.100.98/nexus/content/repositories/snapshots")
+					{ authentication(userName: "admin", password: "admin123") }
+			pom.version = "${mqRabbitReceiverFacadeVersion}"
+			pom.artifactId = "mq-rabbit-receiver-facade"
+			pom.groupId = "$project.group"
+		}
+	}
+}
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+artifacts {
+	archives jar
+	archives sourcesJar
+}
+
+tasks.withType(JavaCompile) {
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+
+	configure(options) {
+		encoding = 'UTF-8'
+	}
+}
