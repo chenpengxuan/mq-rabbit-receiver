@@ -7,10 +7,10 @@
 package com.ymatou.mq.rabbit.receiver.rest.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.ymatou.messagebus.facade.PublishMessageFacade;
-import com.ymatou.messagebus.facade.model.PublishMessageReq;
-import com.ymatou.messagebus.facade.model.PublishMessageResp;
-import com.ymatou.mq.rabbit.receiver.rest.PublishMessageResource;
+import com.ymatou.messagebus.facade.ReceiveMessageFacade;
+import com.ymatou.messagebus.facade.model.ReceiveMessageReq;
+import com.ymatou.messagebus.facade.model.ReceiveMessageResp;
+import com.ymatou.mq.rabbit.receiver.rest.ReceiveMessageResource;
 import com.ymatou.mq.rabbit.receiver.rest.RestResp;
 import com.ymatou.mq.rabbit.receiver.service.MessageFileQueueService;
 import org.slf4j.Logger;
@@ -29,14 +29,14 @@ import javax.ws.rs.Produces;
 @Produces({"application/json; charset=UTF-8"})
 @Service(protocol = "rest")
 @Path("/{api:(?i:api)}")
-public class PublishMessageResourceImpl implements PublishMessageResource {
+public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
 
-    public static final Logger logger = LoggerFactory.getLogger(PublishMessageResourceImpl.class);
+    public static final Logger logger = LoggerFactory.getLogger(ReceiveMessageResourceImpl.class);
 
     //private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     @Resource
-    PublishMessageFacade publishMessageFacade;
+    ReceiveMessageFacade receiveMessageFacade;
 
     @Autowired
     MessageFileQueueService messageFileQueueService;
@@ -44,9 +44,9 @@ public class PublishMessageResourceImpl implements PublishMessageResource {
     @Override
     @POST
     @Path("/{publish:(?i:publish)}")
-    public RestResp publish(PublishMessageReq req) {
-        PublishMessageResp publishMessageResp = publishMessageFacade.publish(req);
-        return RestResp.newInstance(publishMessageResp);
+    public RestResp publish(ReceiveMessageReq req) {
+        ReceiveMessageResp receiveMessageResp = receiveMessageFacade.publish(req);
+        return RestResp.newInstance(receiveMessageResp);
 
     }
 

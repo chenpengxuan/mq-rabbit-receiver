@@ -8,7 +8,7 @@
 package com.ymatou.mq.rabbit.receiver.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ymatou.messagebus.facade.model.PublishMessageReq;
+import com.ymatou.messagebus.facade.model.ReceiveMessageReq;
 import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.infrastructure.util.NetUtil;
 import com.ymatou.mq.rabbit.receiver.BaseTest;
@@ -32,7 +32,7 @@ public class RabbitReceiverServiceTest extends BaseTest{
     public void testReceiveAndPublish(){
         for(int j=0;j<10;j++){
             try {
-                PublishMessageReq req = new PublishMessageReq();
+                ReceiveMessageReq req = new ReceiveMessageReq();
                 req.setAppId("rabbit_optimization");
                 req.setCode("biz1");
                 req.setMsgUniqueId(ObjectId.get().toString());
@@ -60,7 +60,7 @@ public class RabbitReceiverServiceTest extends BaseTest{
      * @param req
      * @return
      */
-    Message buildMessage(PublishMessageReq req){
+    Message buildMessage(ReceiveMessageReq req){
         Message msg = new Message();
         msg.setAppId(req.getAppId());
         msg.setQueueCode(req.getCode());

@@ -17,12 +17,12 @@ import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
 import com.alibaba.fastjson.JSON;
-import com.ymatou.messagebus.facade.model.PublishMessageReq;
+import com.ymatou.messagebus.facade.model.ReceiveMessageReq;
 
 /**
  * @author luoshiqian 2017/3/30 11:18
  */
-public class PublishMessageRestTest {
+public class ReceiveMessageRestTest {
 
 
     private CloseableHttpClient buildClient() {
@@ -41,7 +41,7 @@ public class PublishMessageRestTest {
 
     @Test
     public void testPublish() throws Exception {
-        PublishMessageReq req = new PublishMessageReq();
+        ReceiveMessageReq req = new ReceiveMessageReq();
 
         req.setAppId("testdashen");
         req.setMsgUniqueId("123bcdf3");

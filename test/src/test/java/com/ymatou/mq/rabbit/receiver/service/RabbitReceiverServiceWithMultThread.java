@@ -8,7 +8,7 @@
 package com.ymatou.mq.rabbit.receiver.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ymatou.messagebus.facade.model.PublishMessageReq;
+import com.ymatou.messagebus.facade.model.ReceiveMessageReq;
 import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.infrastructure.util.NetUtil;
 import org.bson.types.ObjectId;
@@ -53,7 +53,7 @@ public class RabbitReceiverServiceWithMultThread{
                 public void run() {
                     for(int j=0;j<100;j++){
                         try {
-                            PublishMessageReq req = new PublishMessageReq();
+                            ReceiveMessageReq req = new ReceiveMessageReq();
                             logger.info("current thread name:{},thread id:{}",Thread.currentThread().getName(),Thread.currentThread().getId());
                             req.setAppId("rabbit_optimization");
                             req.setCode("biz1");
@@ -85,7 +85,7 @@ public class RabbitReceiverServiceWithMultThread{
      * @param req
      * @return
      */
-    Message buildMessage(PublishMessageReq req){
+    Message buildMessage(ReceiveMessageReq req){
         Message msg = new Message();
         msg.setAppId(req.getAppId());
         msg.setQueueCode(req.getCode());

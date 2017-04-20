@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
  * @author wangxudong 2016年7月27日 下午6:51:48
  *
  */
-public class PublishMessageReq extends BaseRequest {
+public class ReceiveMessageReq extends BaseRequest {
 
     private static final long serialVersionUID = 1L;
 
