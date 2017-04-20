@@ -1,6 +1,9 @@
 package com.ymatou.mq.rabbit.receiver.service;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.ymatou.mq.infrastructure.model.CallbackConfig;
@@ -83,6 +86,10 @@ public class RabbitProducer {
         String routeKey = getRouteKey(message.getAppId(),message.getQueueCode());
         if(StringUtils.isNoneBlank(routeKey)){
             channel.basicPublish(exchange, routeKey, basicProps, SerializationUtils.serialize(message));
+            //TODO 设置编码
+            //SerializeConfig serializeConfig = new SerializeConfig();
+            //SerializerFeature[] serializerFeatures = {SerializerFeature.WriteClassName};
+            //channel.basicPublish(exchange, routeKey, basicProps, JSON.toJSONBytes(message,serializeConfig,serializerFeatures));
         }
     }
 
