@@ -54,7 +54,6 @@ public class RabbitProducer {
     public void publish(String exchange, Message message) throws IOException {
         String msgId = message.getId();
         String bizId = message.getBizId();
-        String body = message.getBody();
 
         logger.debug("RabbitProducer.publish,current thread name:{},thread id:{}",Thread.currentThread().getName(),Thread.currentThread().getId());
         //获取channel
@@ -81,7 +80,7 @@ public class RabbitProducer {
 
         //FIXME:中文等非Ascii码传输，有编码问题吗
         String routeKey = getRouteKey(message.getAppId(),message.getQueueCode());
-        channel.basicPublish(exchange, routeKey, basicProps, SerializationUtils.serialize(body));
+        channel.basicPublish(exchange, routeKey, basicProps, SerializationUtils.serialize(message));
     }
 
     /**

@@ -50,7 +50,6 @@ public class RabbitMonitorTask extends TimerTask {
                 if(thread == null || !thread.isAlive()){
                     logger.debug("thread:{} is not alive,channel status:{}.",thread,channel != null?channel.isOpen():"null");
                     if(channel != null && channel.isOpen()){
-                        //TODO 可以考虑复用
                         channel.close();
                         //conn.channel计数-1
                         channelWrapper.getConnectionWrapper().decCount();
