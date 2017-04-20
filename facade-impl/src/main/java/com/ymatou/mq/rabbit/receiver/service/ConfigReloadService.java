@@ -147,7 +147,6 @@ public class ConfigReloadService implements ConfigReloadListener {
             try {
                 channel.queueDeclare(callbackKey, true, false, false, null);
                 channel.queueBind(callbackKey, exchange, getRouteKey(callbackKey));
-                getRouteKey(callbackKey);
             } catch (Exception e) {
                 logger.error("declareQueue:{},{} error", exchange,callbackKey, e);
             }

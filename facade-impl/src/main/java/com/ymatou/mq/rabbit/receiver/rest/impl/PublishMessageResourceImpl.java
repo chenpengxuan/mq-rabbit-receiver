@@ -11,6 +11,7 @@ import com.ymatou.messagebus.facade.PublishMessageFacade;
 import com.ymatou.messagebus.facade.model.PublishMessageReq;
 import com.ymatou.messagebus.facade.model.PublishMessageResp;
 import com.ymatou.mq.rabbit.receiver.rest.PublishMessageResource;
+import com.ymatou.mq.rabbit.receiver.rest.RestResp;
 import com.ymatou.mq.rabbit.receiver.service.MessageFileQueueService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,16 +44,10 @@ public class PublishMessageResourceImpl implements PublishMessageResource {
     @Override
     @POST
     @Path("/{publish:(?i:publish)}")
-    public PublishMessageResp publish(PublishMessageReq req) {
-        /*
-        PublishMessageReq request = new PublishMessageReq();
-        request.setAppId(req.getAppId());
-        request.setCode(req.getCode());
-        request.setIp(req.getIp());
-        request.setMsgUniqueId(req.getMsgUniqueId());
-        request.setBody(JSON.toJSONStringWithDateFormat(req.getBody(), DATE_FORMAT));
-        */
-        return publishMessageFacade.publish(req);
+    public RestResp publish(PublishMessageReq req) {
+        PublishMessageResp publishMessageResp = publishMessageFacade.publish(req);
+        return RestResp.newInstance(publishMessageResp);
+
     }
 
     @GET

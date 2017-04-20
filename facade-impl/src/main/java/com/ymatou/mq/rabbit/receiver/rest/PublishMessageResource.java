@@ -21,7 +21,7 @@ public interface PublishMessageResource {
      * @param req
      * @return
      */
-    PublishMessageResp publish(PublishMessageReq req);
+    RestResp publish(PublishMessageReq req);
 
     String fileStatus();
 
