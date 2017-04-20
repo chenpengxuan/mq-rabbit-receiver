@@ -66,8 +66,11 @@ public class RabbitAckListener implements ConfirmListener {
             for(Object object:unconfirmedMap.headMap(deliveryTag+1).values()){
                 Message message = (Message)object;
                 if(message != null){
-                    //FIXME:异常了，继续continue??
-                    dispatchMessage(message);
+                    try {
+                        dispatchMessage(message);
+                    } catch (Exception e) {
+                        logger.error("dispatchMessage {} error.",message,e);
+                    }
                 }
             }
             unconfirmedMap.headMap(deliveryTag +1).clear();
@@ -75,7 +78,11 @@ public class RabbitAckListener implements ConfirmListener {
             try {
                 Message message = (Message) unconfirmedMap.get(deliveryTag);
                 if(message != null){
-                    dispatchMessage(message);
+                    try {
+                        dispatchMessage(message);
+                    } catch (Exception e) {
+                        logger.error("dispatchMessage {} error.",message,e);
+                    }
                 }
                 unconfirmedMap.remove(deliveryTag);
                 logger.debug("first key:{},last key:{},values len:",unconfirmedMap.firstKey(),unconfirmedMap.lastKey(),unconfirmedMap.size());
