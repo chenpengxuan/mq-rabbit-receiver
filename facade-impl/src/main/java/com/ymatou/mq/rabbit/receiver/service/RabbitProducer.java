@@ -95,6 +95,7 @@ public class RabbitProducer {
         List<CallbackConfig> callbackConfigList = messageConfigService.getCallbackConfigList(appId,queueCode);
         int i = 0;
         for(CallbackConfig callbackConfig:callbackConfigList){
+            //FIXME 如果onlyStgEnable为true 只有当前是stg环境时才发送 ，如果全部排除了 一个订阅者都没有，不需要发送rabbitmq了
             if(callbackConfig.getQueueConfig().getEnable() && callbackConfig.getEnable()){
                 if(i == 0){
                     buf.append(getCallbackNo(callbackConfig.getCallbackKey()));
