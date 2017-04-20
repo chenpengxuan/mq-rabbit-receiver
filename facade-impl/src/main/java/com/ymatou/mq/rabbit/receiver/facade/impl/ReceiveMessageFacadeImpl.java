@@ -64,7 +64,7 @@ public class ReceiveMessageFacadeImpl implements ReceiveMessageFacade {
         msg.setQueueCode(req.getCode());
         msg.setId(ObjectId.get().toString());
         msg.setBizId(req.getMsgUniqueId());
-        msg.setBody(JSON.toJSONStringWithDateFormat(req.getBody(), DATE_FORMAT));
+        msg.setBody(req.getBody());
         msg.setClientIp(req.getIp());
         msg.setRecvIp(NetUtil.getHostIp());
         msg.setCreateTime(new Date());
