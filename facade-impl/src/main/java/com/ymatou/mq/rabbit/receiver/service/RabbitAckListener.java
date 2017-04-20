@@ -11,7 +11,6 @@ import com.ymatou.mq.rabbit.dispatcher.facade.model.DispatchMessageResp;
 import com.ymatou.mq.rabbit.support.ChannelWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.SortedMap;
@@ -32,8 +31,7 @@ public class RabbitAckListener implements ConfirmListener {
     /**
      * 未确认集合
      */
-    //FIXME 命名 不是set
-    private SortedMap<Long, Object> unconfirmedSet;
+    private SortedMap<Long, Object> unconfirmedMap;
 
     /**
      * rabbit分发facade
@@ -43,47 +41,44 @@ public class RabbitAckListener implements ConfirmListener {
 
     public RabbitAckListener(ChannelWrapper channelWrapper, MessageDispatchFacade messageDispatchFacade){
         this.channel = channelWrapper.getChannel();
-        this.unconfirmedSet = channelWrapper.getUnconfirmedSet();
+        this.unconfirmedMap = channelWrapper.getUnconfirmedMap();
         this.messageDispatchFacade = messageDispatchFacade;
-        logger.debug("new RabbitAckListener,current thread name:{},thread id:{},channel:{},unconfirmedSet:{}",Thread.currentThread().getName(),Thread.currentThread().getId(),channel.hashCode(),unconfirmedSet);
+        logger.debug("new RabbitAckListener,current thread name:{},thread id:{},channel:{},unconfirmedMap:{}",Thread.currentThread().getName(),Thread.currentThread().getId(),channel.hashCode(),unconfirmedMap);
     }
 
     @Override
     public void handleAck(long deliveryTag, boolean multiple) {
-        logger.debug("handleAck,current thread name:{},thread id:{},deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",Thread.currentThread().getName(),Thread.currentThread().getId(),deliveryTag,multiple,channel.hashCode(),unconfirmedSet);
+        logger.debug("handleAck,current thread name:{},thread id:{},deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",Thread.currentThread().getName(),Thread.currentThread().getId(),deliveryTag,multiple,channel.hashCode(),unconfirmedMap);
         if (multiple) {
-            unconfirmedSet.headMap(deliveryTag +1).clear();
+            unconfirmedMap.headMap(deliveryTag +1).clear();
         } else {
-            logger.debug("first key:{},last key:{},values len:{}:",unconfirmedSet.firstKey(),unconfirmedSet.lastKey(),unconfirmedSet.size());
-            unconfirmedSet.remove(deliveryTag);
+            logger.debug("first key:{},last key:{},values len:{}:",unconfirmedMap.firstKey(),unconfirmedMap.lastKey(),unconfirmedMap.size());
+            unconfirmedMap.remove(deliveryTag);
         }
     }
 
     @Override
     public void handleNack(long deliveryTag, boolean multiple) throws IOException {
         logger.error("handleNack,channel:{},deliveryTag:{},multiple:{}",channel,deliveryTag,multiple);
-        logger.debug("handleNack,current thread name:{},thread id:{},deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",Thread.currentThread().getName(),Thread.currentThread().getId(),deliveryTag,multiple,channel.hashCode(),unconfirmedSet);
+        logger.debug("handleNack,current thread name:{},thread id:{},deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",Thread.currentThread().getName(),Thread.currentThread().getId(),deliveryTag,multiple,channel.hashCode(),unconfirmedMap);
         //若出现nack，则调用dispatch直接分发
         if (multiple) {
-            //FIXME:直接取headMap()???
-            long beginKey = unconfirmedSet.firstKey().longValue();
-            for(long i=beginKey;i<deliveryTag+1;i++){
-                Message message = (Message) unconfirmedSet.get(i);
+            for(Object object:unconfirmedMap.headMap(deliveryTag+1).values()){
+                Message message = (Message)object;
                 if(message != null){
                     //FIXME:异常了，继续continue??
                     dispatchMessage(message);
                 }
             }
-            unconfirmedSet.headMap(deliveryTag +1).clear();
+            unconfirmedMap.headMap(deliveryTag +1).clear();
         }else{
             try {
-                //FIXME: unconfirmedSet.remove()
-                Message message = (Message) unconfirmedSet.get(deliveryTag);
+                Message message = (Message) unconfirmedMap.get(deliveryTag);
                 if(message != null){
                     dispatchMessage(message);
                 }
-                unconfirmedSet.remove(deliveryTag);
-                logger.debug("first key:{},last key:{},values len:",unconfirmedSet.firstKey(),unconfirmedSet.lastKey(),unconfirmedSet.size());
+                unconfirmedMap.remove(deliveryTag);
+                logger.debug("first key:{},last key:{},values len:",unconfirmedMap.firstKey(),unconfirmedMap.lastKey(),unconfirmedMap.size());
             } catch (Exception e) {
                 logger.error("invoke dispatch fail.",e);
             }
@@ -132,12 +127,12 @@ public class RabbitAckListener implements ConfirmListener {
         this.channel = channel;
     }
 
-    public SortedMap<Long, Object> getUnconfirmedSet() {
-        return unconfirmedSet;
+    public SortedMap<Long, Object> getunconfirmedMap() {
+        return unconfirmedMap;
     }
 
-    public void setUnconfirmedSet(SortedMap<Long, Object> unconfirmedSet) {
-        this.unconfirmedSet = unconfirmedSet;
+    public void setunconfirmedMap(SortedMap<Long, Object> unconfirmedMap) {
+        this.unconfirmedMap = unconfirmedMap;
     }
 
     public MessageDispatchFacade getMessageDispatchFacade() {

@@ -12,6 +12,7 @@ import com.ymatou.mq.rabbit.dispatcher.facade.MessageDispatchFacade;
 import com.ymatou.mq.rabbit.receiver.config.ReceiverConfig;
 import com.ymatou.mq.rabbit.support.ChannelWrapper;
 import com.ymatou.mq.rabbit.support.RabbitConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,10 +61,10 @@ public class RabbitProducer {
         ChannelWrapper channelWrapper = RabbitChannelFactory.getChannelWrapper(receiverConfig.getCurrentCluster(),rabbitConfig);
         Channel channel = channelWrapper.getChannel();
         //若是第一次创建channel，则初始化ack相关
-        if(channelWrapper.getUnconfirmedSet() == null){
+        if(channelWrapper.getUnconfirmedMap() == null){
             //设置channel对应的unconfirmedSet、acklistener信息
             SortedMap<Long, Object> unconfirmedSet = Collections.synchronizedSortedMap(new TreeMap<Long, Object>());
-            channelWrapper.setUnconfirmedSet(unconfirmedSet);
+            channelWrapper.setUnconfirmedMap(unconfirmedSet);
 
             RabbitAckListener rabbitAckListener = new RabbitAckListener(channelWrapper,messageDispatchFacade);
             channel.addConfirmListener(rabbitAckListener);
@@ -71,7 +72,7 @@ public class RabbitProducer {
         }
 
         //设置ack关联数据
-        channelWrapper.getUnconfirmedSet().put(channel.getNextPublishSeqNo(),message);
+        channelWrapper.getUnconfirmedMap().put(channel.getNextPublishSeqNo(),message);
 
         AMQP.BasicProperties basicProps = new AMQP.BasicProperties.Builder()
                 .messageId(msgId).correlationId(bizId)
@@ -80,7 +81,9 @@ public class RabbitProducer {
 
         //FIXME:中文等非Ascii码传输，有编码问题吗
         String routeKey = getRouteKey(message.getAppId(),message.getQueueCode());
-        channel.basicPublish(exchange, routeKey, basicProps, SerializationUtils.serialize(message));
+        if(StringUtils.isNoneBlank(routeKey)){
+            channel.basicPublish(exchange, routeKey, basicProps, SerializationUtils.serialize(message));
+        }
     }
 
     /**
@@ -94,8 +97,7 @@ public class RabbitProducer {
         List<CallbackConfig> callbackConfigList = messageConfigService.getCallbackConfigList(appId,queueCode);
         int i = 0;
         for(CallbackConfig callbackConfig:callbackConfigList){
-            //FIXME 如果onlyStgEnable为true 只有当前是stg环境时才发送 ，如果全部排除了 一个订阅者都没有，不需要发送rabbitmq了
-            if(callbackConfig.getQueueConfig().getEnable() && callbackConfig.getEnable()){
+            if(callbackConfig.isDispatchEnable()){
                 if(i == 0){
                     buf.append(getCallbackNo(callbackConfig.getCallbackKey()));
                 }else{
