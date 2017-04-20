@@ -57,9 +57,6 @@ public class FacadeAspect {
             return buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, "request is null");
         }
 
-        if (req.requireRequestId() && StringUtils.isEmpty(req.getRequestId())) {
-            return buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, "requestId not provided");
-        }
 
         long startTime = System.currentTimeMillis();
 
