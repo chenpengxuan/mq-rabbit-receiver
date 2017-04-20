@@ -36,7 +36,7 @@
     <!-- 提供方应用信息，用于计算依赖关系 -->
     <dubbo:application name="rabbitMqReceiver" logger="slf4j"/>
 
-    <dubbo:registry address="zookeeper://${dubbo.zoo}" timeout="2000"/>
+    <dubbo:registry address="zookeeper://${dubbo.zoo}" timeout="20000"/>
 
     <!--  关闭没有服务提供者是报错 -->
     <dubbo:consumer check="false"/>
@@ -48,14 +48,6 @@
 
     <dubbo:protocol name="rest" server="tomcat" port="${server.port}"
                     extension="com.ymatou.mq.rabbit.receiver.util.JacksonConfig"/>
-
-    <bean id="httpPostErrorConsumer" class="com.ymatou.errorreporter.api.HttpPostErrorConsumer">
-        <constructor-arg value="${errorreport.url}"></constructor-arg>
-    </bean>
-
-    <bean id="bufferErrorReporter" class="com.ymatou.errorreporter.api.BufferedErrorReporter">
-        <property name="errorConsumer" ref="httpPostErrorConsumer"></property>
-    </bean>
 
 
 </beans>
