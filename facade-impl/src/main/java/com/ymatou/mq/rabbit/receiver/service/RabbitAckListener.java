@@ -32,6 +32,7 @@ public class RabbitAckListener implements ConfirmListener {
     /**
      * 未确认集合
      */
+    //FIXME 命名 不是set
     private SortedMap<Long, Object> unconfirmedSet;
 
     /**
