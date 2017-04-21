@@ -82,7 +82,7 @@ public class RabbitProducer {
 
         String routeKey = getRouteKey(message.getAppId(),message.getQueueCode());
         if(StringUtils.isNoneBlank(routeKey)){
-            logger.info("publish message to MQ,exchange:{},routeKey:{},message:{}",exchange,routeKey,message);
+            logger.debug("publish message to MQ,exchange:{},routeKey:{},message:{}",exchange,routeKey,message);
             channel.basicPublish(exchange, routeKey, basicProps, toBytesByFastJson(message));
         }
     }
