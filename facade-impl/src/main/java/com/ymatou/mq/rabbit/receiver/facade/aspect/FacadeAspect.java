@@ -57,11 +57,11 @@ public class FacadeAspect {
             return buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, "request is null");
         }
 
+        /*
         if (StringUtils.isEmpty(req.getRequestId())) {
             return buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, "requestId not provided");
         }
 
-        /*
         if (req.requireAppId() && StringUtils.isEmpty(req.getAppId())) {
             return buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, "appId not provided");
         }
