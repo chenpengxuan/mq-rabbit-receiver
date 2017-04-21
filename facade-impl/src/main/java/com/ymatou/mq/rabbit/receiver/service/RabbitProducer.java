@@ -82,15 +82,32 @@ public class RabbitProducer {
                 .deliveryMode(RabbitConstants.DELIVERY_PERSISTENT)
                 .build();
 
-        //FIXME:中文等非Ascii码传输，有编码问题吗
         String routeKey = getRouteKey(message.getAppId(),message.getQueueCode());
         if(StringUtils.isNoneBlank(routeKey)){
-            channel.basicPublish(exchange, routeKey, basicProps, SerializationUtils.serialize(message));
-            //TODO 设置编码
-            //SerializeConfig serializeConfig = new SerializeConfig();
-            //SerializerFeature[] serializerFeatures = {SerializerFeature.WriteClassName};
-            //channel.basicPublish(exchange, routeKey, basicProps, JSON.toJSONBytes(message,serializeConfig,serializerFeatures));
+            channel.basicPublish(exchange, routeKey, basicProps, toBytesByJava(message));
         }
+    }
+
+    /**
+     * 通过java序列化
+     * @param message
+     * @return
+     */
+    byte[] toBytesByJava(Message message){
+        //FIXME:中文等非Ascii码传输，有编码问题吗
+        //TODO 设置编码
+        return SerializationUtils.serialize(message);
+    }
+
+    /**
+     * 通过fastjson序列化
+     * @param message
+     * @return
+     */
+    byte[] toBytesByFastJson(Message message){
+        SerializeConfig serializeConfig = new SerializeConfig();
+        SerializerFeature[] serializerFeatures = {SerializerFeature.WriteClassName};
+        return  JSON.toJSONBytes(message,serializeConfig,serializerFeatures);
     }
 
     /**
