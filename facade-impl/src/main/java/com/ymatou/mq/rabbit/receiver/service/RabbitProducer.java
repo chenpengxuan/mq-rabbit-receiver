@@ -58,8 +58,6 @@ public class RabbitProducer {
     public void publish(String exchange, Message message) throws IOException {
         String msgId = message.getId();
         String bizId = message.getBizId();
-
-        logger.debug("RabbitProducer.publish,current thread name:{},thread id:{}",Thread.currentThread().getName(),Thread.currentThread().getId());
         //获取channel
         ChannelWrapper channelWrapper = RabbitChannelFactory.getChannelWrapper(receiverConfig.getCurrentCluster(),rabbitConfig);
         Channel channel = channelWrapper.getChannel();
@@ -84,6 +82,7 @@ public class RabbitProducer {
 
         String routeKey = getRouteKey(message.getAppId(),message.getQueueCode());
         if(StringUtils.isNoneBlank(routeKey)){
+            logger.info("publish message to MQ,exchange:{},routeKey:{},message:{}",exchange,routeKey,message);
             channel.basicPublish(exchange, routeKey, basicProps, toBytesByJava(message));
         }
     }

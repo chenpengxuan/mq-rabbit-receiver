@@ -48,7 +48,6 @@ public class RabbitAckListener implements ConfirmListener {
 
     @Override
     public void handleAck(long deliveryTag, boolean multiple) {
-        logger.debug("handleAck,current thread name:{},thread id:{},deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",Thread.currentThread().getName(),Thread.currentThread().getId(),deliveryTag,multiple,channel.hashCode(),unconfirmedMap);
         if (multiple) {
             unconfirmedMap.headMap(deliveryTag +1).clear();
         } else {
@@ -59,8 +58,7 @@ public class RabbitAckListener implements ConfirmListener {
 
     @Override
     public void handleNack(long deliveryTag, boolean multiple) throws IOException {
-        logger.error("handleNack,channel:{},deliveryTag:{},multiple:{}",channel,deliveryTag,multiple);
-        logger.debug("handleNack,current thread name:{},thread id:{},deliveryTag:{},multiple:{},channel:{},unconfirmed：{}",Thread.currentThread().getName(),Thread.currentThread().getId(),deliveryTag,multiple,channel.hashCode(),unconfirmedMap);
+        logger.warn("occur nack,channel:{},deliveryTag:{},multiple:{}",channel,deliveryTag,multiple);
         //若出现nack，则调用dispatch直接分发
         if (multiple) {
             for(Object object:unconfirmedMap.headMap(deliveryTag+1).values()){
@@ -98,6 +96,7 @@ public class RabbitAckListener implements ConfirmListener {
      * @param message
      */
     void dispatchMessage(Message message){
+        logger.info("invoke dispatch,message:{}.",message);
         try {
             //若发MQ失败，则直接调用dispatch分发站接口发送
             DispatchMessageResp resp = messageDispatchFacade.dispatch(this.toDispatchMessageReq(message));
