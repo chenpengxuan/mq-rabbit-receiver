@@ -7,9 +7,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import com.ymatou.mq.infrastructure.service.MessageService;
+import com.ymatou.mq.rabbit.receiver.util.Constants;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -76,8 +78,10 @@ public class MessageFileQueueService implements Function<Pair<String, String>, B
     @Override
     public Boolean apply(Pair<String, String> pair) {
         Boolean success = Boolean.FALSE;
+        MDC.put(Constants.LOG_PREFIX, pair.getKey());
+
+        Message message = Message.fromJson(pair.getValue());
         try {
-            Message message = Message.fromJson(pair.getValue());
             success = messageService.saveMessage(message);
         } catch (Exception e) {
             logger.error("save message to mongo error", e);
