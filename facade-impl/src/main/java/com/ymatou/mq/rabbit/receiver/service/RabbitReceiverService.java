@@ -49,34 +49,35 @@ public class RabbitReceiverService {
 
     /**
      * 接收并发布消息
-     * @param msg
+     * @param message
      * @return
      */
-    public void receiveAndPublish(Message msg){
+    public void receiveAndPublish(Message message){
+        logger.info("receive message:{}.", message);
         long startTime = System.currentTimeMillis();
         //验证队列有效性
-        this.validQueue(msg.getAppId(),msg.getQueueCode());
+        this.validQueue(message.getAppId(), message.getQueueCode());
 
         //若rabbit master/slave都没开启，则直接调分发站
         if(!isEnableRabbit()){
-            dispatchMessage(msg);
+            dispatchMessage(message);
         }else{
             try {
                 //发布消息
-                rabbitProducer.publish(String.format("%s_%s",msg.getAppId(),msg.getQueueCode()),msg);
+                rabbitProducer.publish(String.format("%s_%s", message.getAppId(), message.getQueueCode()), message);
                 //若发MQ成功，则异步写消息到文件队列
-                messageFileQueueService.saveMessageToFileDb(msg);
+                messageFileQueueService.saveMessageToFileDb(message);
             } catch (Exception e) {
                 //若发布出现exception，则调用分发站
-                logger.error("recevie and publish msg:{} occur exception.",msg,e);
-                dispatchMessage(msg);
+                logger.error("recevie and publish msg:{} occur exception.", message,e);
+                dispatchMessage(message);
             }
 
         }
 
         // 上报接收消息性能数据
         long consumedTime = System.currentTimeMillis() - startTime;
-        PerformanceStatisticContainer.add(consumedTime, String.format("%s_%s.receiver", msg.getAppId(),msg.getQueueCode()),
+        PerformanceStatisticContainer.add(consumedTime, String.format("%s_%s.receiver", message.getAppId(), message.getQueueCode()),
                 MONITOR_APP_ID);
     }
 

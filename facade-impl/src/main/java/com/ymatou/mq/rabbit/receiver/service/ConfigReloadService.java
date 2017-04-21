@@ -161,7 +161,7 @@ public class ConfigReloadService implements ConfigReloadListener {
     String getRouteKey(String callbackKey){
         String callbackNo = callbackKey.substring(callbackKey.lastIndexOf("_")+1,callbackKey.length());
         String routeKey = String.format("#.%s.#",callbackNo);
-        logger.info("routeKey:{},callbackKey:{}",routeKey,callbackKey);
+        logger.debug("routeKey:{},callbackKey:{}",routeKey,callbackKey);
         return routeKey;
     }
 }
