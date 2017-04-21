@@ -36,7 +36,7 @@
     <!-- 提供方应用信息，用于计算依赖关系 -->
     <dubbo:application name="rabbitMqReceiver" logger="slf4j"/>
 
-    <dubbo:registry address="zookeeper://${dubbo.zoo}" timeout="2000"/>
+    <dubbo:registry address="zookeeper://${dubbo.zoo}" timeout="20000"/>
 
     <!--  关闭没有服务提供者是报错 -->
     <dubbo:consumer check="false"/>

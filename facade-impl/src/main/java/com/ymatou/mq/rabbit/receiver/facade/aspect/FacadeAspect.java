@@ -42,7 +42,8 @@ public class FacadeAspect {
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(FacadeAspect.class);
 
-    @Pointcut("execution(* com.ymatou.mq.rabbit.receiver.facade.*Facade.*(*)) && args(req)")
+    //@Pointcut("execution(* com.ymatou.mq.rabbit.receiver.facade.*Facade.*(*)) && args(req)")
+    @Pointcut("execution(* com.ymatou.messagebus.facade.*Facade.*(*)) && args(req)")
     public void executeFacade(BaseRequest req) {
     }
 
@@ -56,13 +57,15 @@ public class FacadeAspect {
             return buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, "request is null");
         }
 
-        if (req.requireRequestId() && StringUtils.isEmpty(req.getRequestId())) {
+        if (StringUtils.isEmpty(req.getRequestId())) {
             return buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, "requestId not provided");
         }
 
+        /*
         if (req.requireAppId() && StringUtils.isEmpty(req.getAppId())) {
             return buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, "appId not provided");
         }
+        */
 
         long startTime = System.currentTimeMillis();
 

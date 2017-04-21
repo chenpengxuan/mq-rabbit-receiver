@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import com.ymatou.mq.infrastructure.service.MessageService;
 import org.apache.commons.lang3.tuple.Pair;
@@ -19,12 +20,13 @@ import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.rabbit.receiver.config.FileDbConf;
 
 /**
- * 本地消息文件列表处理service Created by zhangzhihua on 2017/3/24.
+ * 消息本地文件队列处理service
+ * Created by zhangzhihua on 2017/3/24.
  */
 @Component
-public class FileQueueProcessorService implements Function<Pair<String, String>, Boolean>, PutExceptionHandler {
+public class MessageFileQueueService implements Function<Pair<String, String>, Boolean>, PutExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileQueueProcessorService.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageFileQueueService.class);
 
     private FileDb fileDb;
     @Autowired
@@ -101,7 +103,12 @@ public class FileQueueProcessorService implements Function<Pair<String, String>,
         try {
             messageService.saveMessage(message);
         } catch (Exception e) {
-            logger.error("filedb handleException save message to mongo error", e);
+            logger.error("filedb handleException error,save message to mongo.", e);
         }
+    }
+
+    @PreDestroy
+    public void destroy(){
+        fileDb.close();
     }
 }

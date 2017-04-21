@@ -49,5 +49,4 @@
     <dubbo:protocol name="rest" server="tomcat" port="${server.port}"
                     extension="com.ymatou.mq.rabbit.receiver.util.JacksonConfig"/>
 
-
 </beans>

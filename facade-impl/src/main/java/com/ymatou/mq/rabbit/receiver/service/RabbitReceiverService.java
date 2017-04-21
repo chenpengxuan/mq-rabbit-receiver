@@ -1,7 +1,11 @@
 package com.ymatou.mq.rabbit.receiver.service;
 
-import javax.annotation.PostConstruct;
-
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.ymatou.mq.rabbit.dispatcher.facade.MessageDispatchFacade;
+import com.ymatou.mq.rabbit.dispatcher.facade.model.DispatchMessageReq;
+import com.ymatou.mq.rabbit.dispatcher.facade.model.DispatchMessageResp;
+import com.ymatou.mq.rabbit.receiver.config.ReceiverConfig;
+import com.ymatou.performancemonitorclient.PerformanceStatisticContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +17,6 @@ import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.infrastructure.model.QueueConfig;
 import com.ymatou.mq.infrastructure.service.MessageConfigService;
 import com.ymatou.mq.rabbit.config.RabbitConfig;
-import com.ymatou.mq.rabbit.receiver.support.RabbitDispatchFacade;
 
 /**
  * rabbitmq接收消息service
@@ -24,17 +27,22 @@ public class RabbitReceiverService {
 
     private static final Logger logger = LoggerFactory.getLogger(RabbitReceiverService.class);
 
+    public static final String MONITOR_APP_ID = "monitor.mq.iapi.ymatou.com";
+
     @Autowired
     private MessageConfigService messageConfigService;
 
     @Autowired
-    private FileQueueProcessorService fileQueueProcessorService;
+    private MessageFileQueueService messageFileQueueService;
 
-    @Autowired
-    private RabbitDispatchFacade rabbitDispatchFacade;
+    @Reference
+    private MessageDispatchFacade messageDispatchFacade;
 
     @Autowired
     private RabbitConfig rabbitConfig;
+
+    @Autowired
+    private ReceiverConfig receiverConfig;
 
     @Autowired
     private RabbitProducer rabbitProducer;
@@ -45,32 +53,38 @@ public class RabbitReceiverService {
      * @return
      */
     public void receiveAndPublish(Message msg){
+        long startTime = System.currentTimeMillis();
         //验证队列有效性
         this.validQueue(msg.getAppId(),msg.getQueueCode());
+
         //若rabbit master/slave都没开启，则直接调分发站
-        if(!isEnableRabbit(rabbitConfig)){
-            invokeDispatch(msg);
+        if(!isEnableRabbit()){
+            dispatchMessage(msg);
         }else{
             try {
                 //发布消息
-                rabbitProducer.publish(msg.getQueueCode(),msg);
+                rabbitProducer.publish(String.format("%s_%s",msg.getAppId(),msg.getQueueCode()),msg);
                 //若发MQ成功，则异步写消息到文件队列
-                fileQueueProcessorService.saveMessageToFileDb(msg);
+                messageFileQueueService.saveMessageToFileDb(msg);
             } catch (Exception e) {
                 //若发布出现exception，则调用分发站
                 logger.error("recevie and publish msg:{} occur exception.",msg,e);
-                this.invokeDispatch(msg);
+                dispatchMessage(msg);
             }
 
         }
+
+        // 上报接收消息性能数据
+        long consumedTime = System.currentTimeMillis() - startTime;
+        PerformanceStatisticContainer.add(consumedTime, String.format("%s_%s.receiver", msg.getAppId(),msg.getQueueCode()),
+                MONITOR_APP_ID);
     }
 
     /**
      * rabbit master/slave是否开启
-     * @param rabbitConfig
      */
-    boolean isEnableRabbit(RabbitConfig rabbitConfig){
-        if(rabbitConfig.isMasterEnable() || rabbitConfig.isSlaveEnable()){
+    boolean isEnableRabbit(){
+        if(receiverConfig.isMasterEnable() || receiverConfig.isSlaveEnable()){
             return true;
         }
         return false;
@@ -80,14 +94,33 @@ public class RabbitReceiverService {
      * 直接调用分发站发送
      * @param message
      */
-    void invokeDispatch(Message message){
+    void dispatchMessage(Message message){
         try {
             //若发MQ失败，则直接调用dispatch分发站接口发送
-            rabbitDispatchFacade.dispatchMessage(message);
+            DispatchMessageResp resp = messageDispatchFacade.dispatch(this.toDispatchMessageReq(message));
+            if(!resp.isSuccess()){
+                throw new BizException(ErrorCode.FAIL,resp.getErrorMessage());
+            }
         } catch (Exception ex) {
             //发MQ失败->调分发站失败则返回失败信息
-            throw new BizException(ErrorCode.FAIL,"invoke dispatcher send msg error",ex);
+            throw new BizException(ErrorCode.FAIL,"dispatch message error",ex);
         }
+    }
+
+    /**
+     * 转化为DispatchMessageReq
+     * @param message
+     * @return
+     */
+    DispatchMessageReq toDispatchMessageReq(Message message){
+        DispatchMessageReq req = new DispatchMessageReq();
+        req.setId(message.getId());
+        req.setApp(message.getAppId());
+        req.setCode(message.getQueueCode());
+        req.setMsgUniqueId(message.getBizId());
+        req.setBody(message.getBody());
+        req.setIp(message.getClientIp());
+        return req;
     }
 
     /**
@@ -97,6 +130,9 @@ public class RabbitReceiverService {
         QueueConfig queueConfig = messageConfigService.getQueueConfig(appId, queueCode);
         if(queueConfig == null){
             throw new BizException(ErrorCode.QUEUE_CONFIG_NOT_EXIST,String.format("appId:[%s],queueCode:[%s] not exist.",appId, queueCode));
+        }
+        if(!queueConfig.getEnable()){
+            throw new BizException(ErrorCode.QUEUE_CONFIG_NOT_ENABLE,String.format("appId:[%s],queueCode:[%s] not enabled.",appId, queueCode));
         }
     }
 

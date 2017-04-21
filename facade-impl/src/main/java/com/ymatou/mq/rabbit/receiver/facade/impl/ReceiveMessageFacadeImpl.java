@@ -9,15 +9,17 @@ package com.ymatou.mq.rabbit.receiver.facade.impl;
 
 import java.util.Date;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ymatou.messagebus.facade.PublishMessageFacade;
-import com.ymatou.messagebus.facade.model.PublishMessageReq;
-import com.ymatou.messagebus.facade.model.PublishMessageResp;
+import com.ymatou.messagebus.facade.ReceiveMessageFacade;
+import com.ymatou.messagebus.facade.model.ReceiveMessageReq;
+import com.ymatou.messagebus.facade.model.ReceiveMessageResp;
 import com.ymatou.mq.infrastructure.model.Message;
 import com.ymatou.mq.infrastructure.util.NetUtil;
 import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
@@ -26,17 +28,17 @@ import com.ymatou.mq.rabbit.receiver.service.RabbitReceiverService;
 /**
  * @author luoshiqian 2016/8/31 14:13
  */
-//@Service(protocol = "dubbo")
+@Service(protocol = "dubbo")
 @Component
-public class PublishMessageFacadeImpl implements PublishMessageFacade {
+public class ReceiveMessageFacadeImpl implements ReceiveMessageFacade {
 
-    private static final Logger logger = LoggerFactory.getLogger(PublishMessageFacadeImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReceiveMessageFacadeImpl.class);
 
     @Autowired
     private RabbitReceiverService rabbitReceiverService;
 
     @Override
-    public PublishMessageResp publish(PublishMessageReq req) {
+    public ReceiveMessageResp publish(ReceiveMessageReq req) {
         //构造请求消息
         Message msg = this.buildMessage(req);
 
@@ -44,7 +46,7 @@ public class PublishMessageFacadeImpl implements PublishMessageFacade {
         rabbitReceiverService.receiveAndPublish(msg);
 
         //返回
-        PublishMessageResp resp = new PublishMessageResp();
+        ReceiveMessageResp resp = new ReceiveMessageResp();
         resp.setUuid(msg.getId());
         resp.setSuccess(true);
         return resp;
@@ -55,7 +57,7 @@ public class PublishMessageFacadeImpl implements PublishMessageFacade {
      * @param req
      * @return
      */
-    Message buildMessage(PublishMessageReq req){
+    Message buildMessage(ReceiveMessageReq req){
         Message msg = new Message();
         msg.setAppId(req.getAppId());
         msg.setQueueCode(req.getCode());
