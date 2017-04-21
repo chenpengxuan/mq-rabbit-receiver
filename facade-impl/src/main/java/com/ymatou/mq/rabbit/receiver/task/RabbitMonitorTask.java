@@ -3,14 +3,13 @@ package com.ymatou.mq.rabbit.receiver.task;
 import com.rabbitmq.client.Channel;
 import com.ymatou.mq.rabbit.RabbitChannelFactory;
 import com.ymatou.mq.rabbit.support.ChannelWrapper;
+import com.ymatou.mq.rabbit.support.RabbitConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.concurrent.TimeoutException;
@@ -27,7 +26,7 @@ public class RabbitMonitorTask extends TimerTask {
     @Override
     public void run() {
         try {
-            logger.debug("schedual invoke scanChannelAndProcess...");
+            logger.debug("scanChannelAndProcess...");
             this.scanChannelAndProcess();
         } catch (Exception e) {
             logger.error("scanChannelAndProcess error.",e);
@@ -38,29 +37,27 @@ public class RabbitMonitorTask extends TimerTask {
      * 扫描channel并处理
      */
     public void scanChannelAndProcess(){
-        List<ChannelWrapper> channelWrapperList = RabbitChannelFactory.getChannelWrapperList();
-        if(CollectionUtils.isEmpty(channelWrapperList)){
-            return;
-        }
-        try {
-            logger.info("current channel num:{}.",channelWrapperList.size());
-            for(ChannelWrapper channelWrapper:channelWrapperList){
-                Channel channel = channelWrapper.getChannel();
-                Thread thread = channelWrapper.getThread();
-                if(thread == null || !thread.isAlive()){
-                    logger.debug("thread:{} is not alive,channel status:{}.",thread,channel != null?channel.isOpen():"null");
-                    if(channel != null && channel.isOpen()){
-                        channel.close();
-                        //conn.channel计数-1
-                        channelWrapper.getConnectionWrapper().decCount();
-                        channelWrapperList.remove(channelWrapper);
+        String[] clusters = {RabbitConstants.CLUSTER_MASTER,RabbitConstants.CLUSTER_SLAVE};
+        for(String cluster:clusters){
+            List<ChannelWrapper> channelWrapperList = RabbitChannelFactory.getChannelWrapperList(cluster);
+            if(CollectionUtils.isEmpty(channelWrapperList)){
+                continue;
+            }
+            try {
+                logger.info("current cluster:{} channel num:{}.",cluster,channelWrapperList.size());
+                for(ChannelWrapper channelWrapper:channelWrapperList){
+                    Channel channel = channelWrapper.getChannel();
+                    Thread thread = channelWrapper.getThread();
+                    if(thread == null || !thread.isAlive()){
+                        logger.info("thread:{} is not alive,channel status:{}.",thread,channel != null?channel.isOpen():"null");
+                        if(channel != null && channel.isOpen()){
+                            RabbitChannelFactory.releaseChannelWrapper(cluster,channelWrapper);
+                        }
                     }
                 }
+            } catch (Exception e) {
+                logger.error("scanAndProcess occur error.",e);
             }
-        } catch (IOException e) {
-            logger.error("scanAndProcess occur error.",e);
-        } catch (TimeoutException e) {
-            logger.error("scanAndProcess occur error.",e);
         }
     }
 
