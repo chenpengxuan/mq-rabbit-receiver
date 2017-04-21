@@ -78,6 +78,7 @@ public class MessageFileQueueService implements Function<Pair<String, String>, B
         Boolean success = Boolean.FALSE;
         try {
             Message message = Message.fromJson(pair.getValue());
+            logger.info("consume message from fileDb,message:{}.",message);
             success = messageService.saveMessage(message);
         } catch (Exception e) {
             logger.error("save message to mongo error", e);
@@ -94,7 +95,6 @@ public class MessageFileQueueService implements Function<Pair<String, String>, B
      */
     @Override
     public void handleException(String key, String value, Optional<Throwable> throwable) {
-
         logger.warn("key:{},value:{} can not save to filedb ", key, value,
                 throwable.isPresent() ? throwable.get() : "");
 

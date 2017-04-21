@@ -83,7 +83,7 @@ public class RabbitProducer {
         String routeKey = getRouteKey(message.getAppId(),message.getQueueCode());
         if(StringUtils.isNoneBlank(routeKey)){
             logger.info("publish message to MQ,exchange:{},routeKey:{},message:{}",exchange,routeKey,message);
-            channel.basicPublish(exchange, routeKey, basicProps, toBytesByJava(message));
+            channel.basicPublish(exchange, routeKey, basicProps, toBytesByFastJson(message));
         }
     }
 
@@ -93,8 +93,6 @@ public class RabbitProducer {
      * @return
      */
     byte[] toBytesByJava(Message message){
-        //FIXME:中文等非Ascii码传输，有编码问题吗
-        //TODO 设置编码
         return SerializationUtils.serialize(message);
     }
 
@@ -104,8 +102,9 @@ public class RabbitProducer {
      * @return
      */
     byte[] toBytesByFastJson(Message message){
+        //默认UTF-8 byte编码
         SerializeConfig serializeConfig = new SerializeConfig();
-        SerializerFeature[] serializerFeatures = {SerializerFeature.WriteClassName};
+        SerializerFeature[] serializerFeatures = {};
         return  JSON.toJSONBytes(message,serializeConfig,serializerFeatures);
     }
 
