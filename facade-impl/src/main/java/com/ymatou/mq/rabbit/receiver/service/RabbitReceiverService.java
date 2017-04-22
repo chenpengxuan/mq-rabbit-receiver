@@ -53,8 +53,8 @@ public class RabbitReceiverService {
      * @return
      */
     public void receiveAndPublish(Message message){
-        logger.info("receive message:{}.", message);
-        long startTime = System.currentTimeMillis();
+        logger.debug("receive message:{}.", message);
+
         //验证队列有效性
         this.validQueue(message.getAppId(), message.getQueueCode());
 
@@ -74,11 +74,6 @@ public class RabbitReceiverService {
             }
 
         }
-
-        // 上报接收消息性能数据
-        long consumedTime = System.currentTimeMillis() - startTime;
-        PerformanceStatisticContainer.add(consumedTime, String.format("%s_%s.receiver", message.getAppId(), message.getQueueCode()),
-                MONITOR_APP_ID);
     }
 
     /**
