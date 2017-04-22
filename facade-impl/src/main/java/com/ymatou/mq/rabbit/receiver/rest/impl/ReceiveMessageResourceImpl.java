@@ -28,7 +28,7 @@ import javax.ws.rs.Produces;
 @Component("publishMessageResource")
 @Produces({"application/json; charset=UTF-8"})
 @Service(protocol = "rest")
-@Path("/{api:(?i:api)}")
+@Path("/{message:(?i:message)}")
 public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
 
     public static final Logger logger = LoggerFactory.getLogger(ReceiveMessageResourceImpl.class);
