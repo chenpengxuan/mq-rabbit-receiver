@@ -95,7 +95,10 @@ public class RabbitProducer {
      * @return
      */
     byte[] toBytesByJava(Message message){
-        return SerializationUtils.serialize(message);
+        long startTime = System.currentTimeMillis();
+        byte[] bytes = SerializationUtils.serialize(message);
+        logger.info("seriable bytes by java consume:{}.",System.currentTimeMillis()-startTime);
+        return bytes;
     }
 
     /**
@@ -109,7 +112,7 @@ public class RabbitProducer {
         SerializeConfig serializeConfig = new SerializeConfig();
         SerializerFeature[] serializerFeatures = {};
         byte[] bytes =  JSON.toJSONBytes(message,serializeConfig,serializerFeatures);
-        logger.info("seriable bytes consume:{}.",System.currentTimeMillis()-startTime);
+        logger.info("seriable bytes by fastjson consume:{}.",System.currentTimeMillis()-startTime);
         return bytes;
     }
 
