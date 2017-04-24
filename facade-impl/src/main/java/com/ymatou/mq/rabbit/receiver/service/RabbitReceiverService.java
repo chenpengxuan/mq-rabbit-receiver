@@ -53,6 +53,7 @@ public class RabbitReceiverService {
      * @return
      */
     public void receiveAndPublish(Message message){
+        long startTime = System.currentTimeMillis();
         logger.debug("receive message:{}.", message);
 
         //验证队列有效性
@@ -74,6 +75,7 @@ public class RabbitReceiverService {
             }
 
         }
+        logger.info("receiveAndPublish consume:{}.",System.currentTimeMillis()-startTime);
     }
 
     /**

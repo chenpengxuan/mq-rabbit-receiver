@@ -83,7 +83,9 @@ public class RabbitProducer {
         String routeKey = getRouteKey(message.getAppId(),message.getQueueCode());
         if(StringUtils.isNoneBlank(routeKey)){
             logger.debug("publish message to MQ,exchange:{},routeKey:{},message:{}",exchange,routeKey,message);
-            channel.basicPublish(exchange, routeKey, basicProps, toBytesByFastJson(message));
+            long startTime = System.currentTimeMillis();
+            channel.basicPublish(exchange, routeKey, basicProps, toBytesByJava(message));
+            logger.info("publish consume:{}.", System.currentTimeMillis()-startTime);
         }
     }
 
@@ -102,10 +104,13 @@ public class RabbitProducer {
      * @return
      */
     byte[] toBytesByFastJson(Message message){
+        long startTime = System.currentTimeMillis();
         //默认UTF-8 byte编码
         SerializeConfig serializeConfig = new SerializeConfig();
         SerializerFeature[] serializerFeatures = {};
-        return  JSON.toJSONBytes(message,serializeConfig,serializerFeatures);
+        byte[] bytes =  JSON.toJSONBytes(message,serializeConfig,serializerFeatures);
+        logger.info("seriable bytes consume:{}.",System.currentTimeMillis()-startTime);
+        return bytes;
     }
 
     /**
