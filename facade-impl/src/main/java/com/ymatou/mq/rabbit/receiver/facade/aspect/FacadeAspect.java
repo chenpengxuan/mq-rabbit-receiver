@@ -25,6 +25,10 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Facade AOP.
  * <p>
@@ -41,6 +45,8 @@ import org.springframework.stereotype.Component;
 public class FacadeAspect {
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(FacadeAspect.class);
+
+    private static Map<String,AtomicInteger> countMap = new ConcurrentHashMap<String,AtomicInteger>();
 
     //@Pointcut("execution(* com.ymatou.mq.rabbit.receiver.facade.*Facade.*(*)) && args(req)")
     @Pointcut("execution(* com.ymatou.messagebus.facade.*Facade.*(*)) && args(req)")
@@ -101,6 +107,45 @@ public class FacadeAspect {
             long consumedTime = System.currentTimeMillis() - startTime;
             if (consumedTime > 300) {
                 logger.warn("slow query gt 300ms({}ms). Req:{}", consumedTime, req);
+                String key = ">300";
+                if(countMap.get(key) == null){
+                   countMap.put(key,new AtomicInteger(0));
+                }
+                countMap.get(key).incrementAndGet();
+            }else if (consumedTime > 200) {
+                String key = ">200";
+                if(countMap.get(key) == null){
+                    countMap.put(key,new AtomicInteger(0));
+                }
+                countMap.get(key).incrementAndGet();
+                logger.warn("slow query gt 200ms({}ms). Req:{}", consumedTime, req);
+            }else if (consumedTime > 100) {
+                String key = ">100";
+                if(countMap.get(key) == null){
+                    countMap.put(key,new AtomicInteger(0));
+                }
+                countMap.get(key).incrementAndGet();
+                logger.warn("slow query gt 100ms({}ms). Req:{}", consumedTime, req);
+            }else if (consumedTime > 50) {
+                String key = ">50";
+                if(countMap.get(key) == null){
+                    countMap.put(key,new AtomicInteger(0));
+                }
+                countMap.get(key).incrementAndGet();
+                logger.warn("slow query gt 50ms({}ms). Req:{}", consumedTime, req);
+            }else if (consumedTime > 20) {
+                String key = ">20";
+                if(countMap.get(key) == null){
+                    countMap.put(key,new AtomicInteger(0));
+                }
+                countMap.get(key).incrementAndGet();
+                logger.warn("slow query gt 20ms({}ms). Req:{}", consumedTime, req);
+            }else if(consumedTime < 20){
+                String key = "<20";
+                if(countMap.get(key) == null){
+                    countMap.put(key,new AtomicInteger(0));
+                }
+                countMap.get(key).incrementAndGet();
             }
             MDC.clear();
         }
@@ -125,4 +170,11 @@ public class FacadeAspect {
         return req.getClass().getSimpleName() + "|" + req.getRequestId();
     }
 
+    public static Map<String, AtomicInteger> getCountMap() {
+        return countMap;
+    }
+
+    public static void setCountMap(Map<String, AtomicInteger> countMap) {
+        FacadeAspect.countMap = countMap;
+    }
 }

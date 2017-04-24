@@ -22,6 +22,10 @@ public interface ReceiveMessageResource {
      */
     RestResp publish(ReceiveMessageReq req);
 
+    String report();
+
+    String clear();
+
     String fileStatus();
 
 
