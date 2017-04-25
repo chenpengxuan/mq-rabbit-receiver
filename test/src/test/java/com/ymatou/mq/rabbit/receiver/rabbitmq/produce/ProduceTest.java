@@ -39,35 +39,41 @@ public class ProduceTest extends ExchangeQueueBaseTest {
         final SortedSet<Long> unconfirmedSet =
                 Collections.synchronizedSortedSet(new TreeSet<Long>());
 
-        producerChannel.addConfirmListener(new ConfirmListener() {
-            @Override
-            public void handleAck(long deliveryTag, boolean multiple) throws IOException {
-                LOGGER.info("confirm send ok {},{}",deliveryTag,multiple);
-                if (multiple) {
-                    unconfirmedSet.headSet(deliveryTag + 1).clear();
-                } else {
-                    unconfirmedSet.remove(deliveryTag);
-                }
-            }
+//        producerChannel.addConfirmListener(new ConfirmListener() {
+//            @Override
+//            public void handleAck(long deliveryTag, boolean multiple) throws IOException {
+////                LOGGER.info("confirm send ok {},{}",deliveryTag,multiple);
+//                if (multiple) {
+//                    unconfirmedSet.headSet(deliveryTag + 1).clear();
+//                } else {
+//                    unconfirmedSet.remove(deliveryTag);
+//                }
+//            }
+//
+//            @Override
+//            public void handleNack(long deliveryTag, boolean multiple) throws IOException {
+//                LOGGER.info("confirm send handle nack {},{}",deliveryTag,multiple);
+//            }
+//        });
 
-            @Override
-            public void handleNack(long deliveryTag, boolean multiple) throws IOException {
-                LOGGER.info("confirm send handle nack {},{}",deliveryTag,multiple);
-            }
-        });
 
-
-        int messageCount = 1000000;
+        int messageCount = 10000000;
         int sendCount = 0;
         while (messageCount > 0){
-            long nextSeqNo = producerChannel.getNextPublishSeqNo();
-            LOGGER.info("=================================getNextPublishSeqNo:{}",nextSeqNo);
-            unconfirmedSet.add(nextSeqNo);
-            messageCount--;
+//            long nextSeqNo = producerChannel.getNextPublishSeqNo();
+////            LOGGER.info("=================================getNextPublishSeqNo:{}",nextSeqNo);
+//            unconfirmedSet.add(nextSeqNo);
+//            messageCount--;
+            long start = System.currentTimeMillis();
             try {
                 producerChannel.basicPublish("", trading_q, MessageProperties.MINIMAL_PERSISTENT_BASIC, ("message_" + messageCount).getBytes());
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+            long duration = System.currentTimeMillis() - start;
+
+            if(duration > 300){
+                LOGGER.info("slow publish :{}",duration);
             }
 
 //            TimeUnit.SECONDS.sleep(1);
