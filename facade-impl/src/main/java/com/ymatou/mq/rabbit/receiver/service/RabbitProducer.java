@@ -77,7 +77,7 @@ public class RabbitProducer {
 
         AMQP.BasicProperties basicProps = new AMQP.BasicProperties.Builder()
                 .messageId(msgId).correlationId(bizId)
-                .deliveryMode(RabbitConstants.DELIVERY_PERSISTENT)
+                .deliveryMode(RabbitConstants.DELIVERY_NON_PERSISTENT)
                 .build();
 
         String routeKey = getRouteKey(message.getAppId(),message.getQueueCode());
