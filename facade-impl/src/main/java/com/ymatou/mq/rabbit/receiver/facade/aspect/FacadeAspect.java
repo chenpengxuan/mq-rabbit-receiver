@@ -40,8 +40,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author tuwenjie
  */
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class FacadeAspect {
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(FacadeAspect.class);
