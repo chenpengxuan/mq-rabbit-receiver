@@ -7,6 +7,7 @@
 package com.ymatou.mq.rabbit.receiver.rest.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.dubbo.container.page.pages.SystemPageHandler;
 import com.alibaba.fastjson.JSON;
 import com.ymatou.messagebus.facade.ReceiveMessageFacade;
 import com.ymatou.messagebus.facade.model.ReceiveMessageReq;
@@ -51,8 +52,11 @@ public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
     @POST
     @Path("/{publish:(?i:publish)}")
     public RestResp publish(ReceiveMessageReq req) {
+        long startTime = System.currentTimeMillis();
         ReceiveMessageResp receiveMessageResp = receiveMessageFacade.publish(req);
-        return RestResp.newInstance(receiveMessageResp);
+        RestResp restResp = RestResp.newInstance(receiveMessageResp);
+        logger.info("messageResource publish cosnume:{}.",System.currentTimeMillis()-startTime);
+        return restResp;
     }
 
     @Override

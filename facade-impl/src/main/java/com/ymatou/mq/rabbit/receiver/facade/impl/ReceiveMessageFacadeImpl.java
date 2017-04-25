@@ -39,6 +39,7 @@ public class ReceiveMessageFacadeImpl implements ReceiveMessageFacade {
 
     @Override
     public ReceiveMessageResp publish(ReceiveMessageReq req) {
+        long startTime = System.currentTimeMillis();
         //构造请求消息
         Message msg = this.buildMessage(req);
 
@@ -49,6 +50,7 @@ public class ReceiveMessageFacadeImpl implements ReceiveMessageFacade {
         ReceiveMessageResp resp = new ReceiveMessageResp();
         resp.setUuid(msg.getId());
         resp.setSuccess(true);
+        logger.info("messageFacade publish cosnume:{}.",System.currentTimeMillis()-startTime);
         return resp;
     }
 
