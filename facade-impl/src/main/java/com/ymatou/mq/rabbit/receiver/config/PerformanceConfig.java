@@ -40,21 +40,20 @@ public class PerformanceConfig {
         return performanceMonitorAdvice;
     }
 
+//    @Bean(name = "performancePointcut")
+//    public AspectJExpressionPointcut aspectJExpressionPointcut() {
+//        AspectJExpressionPointcut aspectJExpressionPointcut = new AspectJExpressionPointcut();
+//
+//        aspectJExpressionPointcut.setExpression(
+//                "execution(* com.ymatou.mq.rabbit.receiver.*Facade.*(..))" +
+//                "|| execution(* com.ymatou.mq.infrastructure.repository.*Repository.*(..))"
+//                        + "|| execution(* com.ymatou.mq.rabbit.receiver.service.*.*(..))"
+//        );
+//
+//        return aspectJExpressionPointcut;
+//    }
+
     /*
-    @Bean(name = "performancePointcut")
-    public AspectJExpressionPointcut aspectJExpressionPointcut() {
-        AspectJExpressionPointcut aspectJExpressionPointcut = new AspectJExpressionPointcut();
-
-        aspectJExpressionPointcut.setExpression(
-                "execution(* com.ymatou.mq.infrastructure.repository.*Repository.*(..))"
-                        + "|| execution(* com.ymatou.mq.rabbit.receiver.service..*.*(..))"
-        );
-
-        return aspectJExpressionPointcut;
-    }
-
-
-    *//**
      * 对应xml
      * <aop:config>
      * <aop:advisor advice-ref="performanceMonitorAdvice"
@@ -62,10 +61,9 @@ public class PerformanceConfig {
      * </aop:config>
      *
      * @return
-     *//*
-    @Bean
-    public Advisor performanceMonitorAdvisor() {
-        return new DefaultPointcutAdvisor(aspectJExpressionPointcut(), performanceMonitorAdvice());
-    }
-*/
+    */
+//    @Bean
+//    public Advisor performanceMonitorAdvisor() {
+//        return new DefaultPointcutAdvisor(aspectJExpressionPointcut(), performanceMonitorAdvice());
+//    }
 }
