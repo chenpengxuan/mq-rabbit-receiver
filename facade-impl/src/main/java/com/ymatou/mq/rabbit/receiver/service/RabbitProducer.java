@@ -82,10 +82,10 @@ public class RabbitProducer {
 
         String routeKey = getRouteKey(message.getAppId(),message.getQueueCode());
         if(StringUtils.isNoneBlank(routeKey)){
-            logger.debug("publish message to MQ,exchange:{},routeKey:{},message:{}",exchange,routeKey,message);
             long startTime = System.currentTimeMillis();
             channel.basicPublish(exchange, routeKey, basicProps, toBytesByJava(message));
-            logger.info("publish consume:{}.", System.currentTimeMillis()-startTime);
+            logger.info("publish message to MQ,consume:{},exchange:{},routeKey:{},message:{}",System.currentTimeMillis()-startTime,exchange,routeKey,message);
+            //logger.debug("publish consume:{}.", System.currentTimeMillis()-startTime);
         }
     }
 

@@ -54,7 +54,7 @@ public class RabbitReceiverService {
      */
     public void receiveAndPublish(Message message){
         long startTime = System.currentTimeMillis();
-        logger.debug("receive message:{}.", message);
+        logger.info("receive message:{}.", message);
 
         //验证队列有效性
         this.validQueue(message.getAppId(), message.getQueueCode());
