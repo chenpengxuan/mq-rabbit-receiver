@@ -50,7 +50,22 @@ public class ReceiveMessageFacadeImpl implements ReceiveMessageFacade {
         ReceiveMessageResp resp = new ReceiveMessageResp();
         resp.setUuid(msg.getId());
         resp.setSuccess(true);
-        logger.info("messageFacade publish cosnume:{}.",System.currentTimeMillis()-startTime);
+        long costTime = System.currentTimeMillis()-startTime;
+        if(costTime > 1000){
+            logger.warn("messageFacade publish slow gt 1000ms message:{},consume:{}.",req,costTime);
+        }else if(costTime > 500){
+            logger.warn("messageFacade publish slow gt 500ms message:{},consume:{}.",req,costTime);
+        }else if(costTime > 200){
+            logger.warn("messageFacade publish slow gt 200ms message:{},consume:{}.",req,costTime);
+        }else if(costTime > 100){
+            logger.warn("messageFacade publish slow gt 100ms message:{},consume:{}.",req,costTime);
+        }else if(costTime > 50){
+            logger.warn("messageFacade publish slow gt 50ms message:{},consume:{}.",req,costTime);
+        }else if(costTime > 20){
+            logger.warn("messageFacade publish slow gt 20ms message:{},consume:{}.",req,costTime);
+        }else{
+            logger.info("messageFacade publish message:{},consume:{}.",req,costTime);
+        }
         return resp;
     }
 

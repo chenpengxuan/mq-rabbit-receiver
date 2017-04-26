@@ -84,8 +84,25 @@ public class RabbitProducer {
         if(StringUtils.isNoneBlank(routeKey)){
             long startTime = System.currentTimeMillis();
             channel.basicPublish(exchange, routeKey, basicProps, toBytesByJava(message));
-            logger.info("publish message to MQ,consume:{},exchange:{},routeKey:{},message:{}",System.currentTimeMillis()-startTime,exchange,routeKey,message);
-            //logger.debug("publish consume:{}.", System.currentTimeMillis()-startTime);
+            long costTime = System.currentTimeMillis()-startTime;
+
+            if(costTime > 1000){
+                logger.warn("publish message to MQ slow gt 1000ms,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
+            }else if(costTime > 500){
+                logger.warn("publish message to MQ slow gt 500ms,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
+            }else if(costTime > 200){
+                logger.warn("publish message to MQ slow gt 200ms,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
+            }else if(costTime > 100){
+                logger.warn("publish message to MQ slow gt 100ms,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
+            }else if(costTime > 50){
+                logger.warn("publish message to MQ slow gt 50ms,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
+            }else if(costTime > 20){
+                logger.warn("publish message to MQ slow gt 20ms,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
+            }else if(costTime > 10){
+                logger.warn("publish message to MQ slow gt 10ms,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
+            }else {
+                logger.info("publish message to MQ,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
+            }
         }
     }
 

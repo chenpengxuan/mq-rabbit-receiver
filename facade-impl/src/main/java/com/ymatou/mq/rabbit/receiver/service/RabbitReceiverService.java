@@ -75,7 +75,22 @@ public class RabbitReceiverService {
             }
 
         }
-        logger.info("receiveAndPublish consume:{}.",System.currentTimeMillis()-startTime);
+        long costTime = System.currentTimeMillis()-startTime;
+        if(costTime > 1000){
+            logger.warn("receiveAndPublish slow gt 1000ms consume:{}.",costTime);
+        }else if(costTime > 500){
+            logger.warn("receiveAndPublish slow gt 500ms consume:{}.",costTime);
+        }else if(costTime > 200){
+            logger.warn("receiveAndPublish slow gt 200ms consume:{}.",costTime);
+        }else if(costTime > 100){
+            logger.warn("receiveAndPublish slow gt 100ms consume:{}.",costTime);
+        }else if(costTime > 50){
+            logger.warn("receiveAndPublish slow gt 50ms consume:{}.",costTime);
+        }else if(costTime > 20){
+            logger.warn("receiveAndPublish slow gt 20ms consume:{}.",costTime);
+        }else{
+            logger.info("receiveAndPublish consume:{}.",costTime);
+        }
     }
 
     /**
