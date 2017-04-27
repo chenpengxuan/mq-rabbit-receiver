@@ -40,16 +40,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author tuwenjie
  */
-//@Aspect
-//@Component
+@Aspect
+@Component
 public class FacadeAspect {
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(FacadeAspect.class);
 
     private static Map<String,AtomicInteger> countMap = new ConcurrentHashMap<String,AtomicInteger>();
 
-    //@Pointcut("execution(* com.ymatou.mq.rabbit.receiver.facade.*Facade.*(*)) && args(req)")
-    @Pointcut("execution(* com.ymatou.messagebus.facade.*Facade.*(*)) && args(req)")
+    @Pointcut("execution(* com.ymatou.mq.rabbit.receiver.facade.*Facade.*(*)) && args(req)")
     public void executeFacade(BaseRequest req) {
     }
 
