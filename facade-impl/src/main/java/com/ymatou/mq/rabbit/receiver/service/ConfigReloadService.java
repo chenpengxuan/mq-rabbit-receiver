@@ -73,6 +73,7 @@ public class ConfigReloadService implements ConfigReloadListener {
 
     @Override
     public void callback() {
+        logger.info("declareExchangeAndQueue begin");
         declareExchangeAndQueue();
         /*deleteExchangeAndQueue();*/
     }
