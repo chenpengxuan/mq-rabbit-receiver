@@ -59,7 +59,7 @@ public class RabbitProducer {
         String msgId = message.getId();
         String bizId = message.getBizId();
         //获取channel
-        ChannelWrapper channelWrapper = RabbitChannelFactory.getChannelWrapper(receiverConfig.getCurrentCluster(),rabbitConfig);
+        ChannelWrapper channelWrapper = RabbitChannelFactory.getChannelWrapperByThreadContext(receiverConfig.getCurrentCluster(),rabbitConfig);
         Channel channel = channelWrapper.getChannel();
         //若是第一次创建channel，则初始化ack相关
         if(channelWrapper.getUnconfirmedMap() == null){
@@ -114,7 +114,7 @@ public class RabbitProducer {
     byte[] toBytesByJava(Message message){
         long startTime = System.currentTimeMillis();
         byte[] bytes = SerializationUtils.serialize(message);
-        logger.info("seriable bytes by java consume:{}.",System.currentTimeMillis()-startTime);
+        logger.debug("seriable bytes by java consume:{}.",System.currentTimeMillis()-startTime);
         return bytes;
     }
 
@@ -129,7 +129,7 @@ public class RabbitProducer {
         SerializeConfig serializeConfig = new SerializeConfig();
         SerializerFeature[] serializerFeatures = {};
         byte[] bytes =  JSON.toJSONBytes(message,serializeConfig,serializerFeatures);
-        logger.info("seriable bytes by fastjson consume:{}.",System.currentTimeMillis()-startTime);
+        logger.debug("seriable bytes by fastjson consume:{}.",System.currentTimeMillis()-startTime);
         return bytes;
     }
 
