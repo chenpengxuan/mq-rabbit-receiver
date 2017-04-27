@@ -52,26 +52,8 @@ public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
     @POST
     @Path("/{publish:(?i:publish)}")
     public RestResp publish(ReceiveMessageReq req) {
-        long startTime = System.currentTimeMillis();
         ReceiveMessageResp receiveMessageResp = receiveMessageFacade.publish(req);
-        RestResp restResp = RestResp.newInstance(receiveMessageResp);
-        long costTime = System.currentTimeMillis()-startTime;
-        if(costTime > 1000){
-            logger.warn("messageResource publish slow gt 1000ms,message:{},cosnume:{}.",req,costTime);
-        }else if(costTime > 500){
-            logger.warn("messageResource publish slow gt 500ms,message:{},cosnume:{}.",req,costTime);
-        }else if(costTime > 200){
-            logger.warn("messageResource publish slow gt 200ms,message:{},cosnume:{}.",req,costTime);
-        }else if(costTime > 100){
-            logger.warn("messageResource publish slow gt 100ms,message:{},cosnume:{}.",req,costTime);
-        }else if(costTime > 50){
-            logger.warn("messageResource publish slow gt 50ms,message:{},cosnume:{}.",req,costTime);
-        }else if(costTime > 20){
-            logger.warn("messageResource publish slow gt 20ms,message:{},cosnume:{}.",req,costTime);
-        }else{
-            logger.info("messageResource publish message:{},cosnume:{}.",req,costTime);
-        }
-        return restResp;
+        return RestResp.newInstance(receiveMessageResp);
     }
 
     @Override
