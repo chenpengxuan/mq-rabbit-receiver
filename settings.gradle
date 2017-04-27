@@ -2,5 +2,5 @@ rootProject.name = 'mq-rabbit-receiver'
 
 include 'facade-interface','facade-impl','web','test'
 
-includeFlat 'mq-rabbit-common' ,'mq-infrastructure'
+//includeFlat 'mq-rabbit-common' ,'mq-infrastructure'
 
