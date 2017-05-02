@@ -80,6 +80,8 @@ public class RabbitReceiverService {
             logger.warn("receiveAndPublish slow gt 1000ms consume:{}.",costTime);
         }else if(costTime > 500){
             logger.warn("receiveAndPublish slow gt 500ms consume:{}.",costTime);
+        }else if(costTime > 300){
+            logger.warn("receiveAndPublish slow gt 300ms consume:{}.",costTime);
         }else if(costTime > 200){
             logger.warn("receiveAndPublish slow gt 200ms consume:{}.",costTime);
         }else if(costTime > 100){

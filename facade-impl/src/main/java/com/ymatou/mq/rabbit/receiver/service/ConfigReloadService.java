@@ -8,6 +8,7 @@ package com.ymatou.mq.rabbit.receiver.service;
 
 import javax.annotation.PostConstruct;
 
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.ymatou.mq.infrastructure.model.AppConfig;
 import com.ymatou.mq.infrastructure.model.CallbackConfig;
 import com.ymatou.mq.infrastructure.model.QueueConfig;
@@ -79,34 +80,15 @@ public class ConfigReloadService implements ConfigReloadListener {
     }
 
     /**
-     * 删除交换器、队列
-     */
-    void deleteExchangeAndQueue(){
-        try {
-            for(AppConfig appConfig:MessageConfigService.appConfigMap.values()){
-                for(QueueConfig queueConfig:appConfig.getMessageCfgList()){
-                    String exchange = String.format("%s_%s",appConfig.getAppId(),queueConfig.getCode());
-                    //删除exchange
-                    primaryChannel.exchangeDelete(exchange);
-                    secondaryChannel.exchangeDelete(exchange);
-                    for(CallbackConfig callbackConfig:queueConfig.getCallbackCfgList()){
-                        String callbackKey = callbackConfig.getCallbackKey();
-                        //删除queue
-                        primaryChannel.queueDelete(callbackKey);
-                        secondaryChannel.queueDelete(callbackKey);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            logger.error("delete exchange and queue error.",e);
-        }
-    }
-
-    /**
      * 声明交换器、队列
      */
     void declareExchangeAndQueue(){
         for(AppConfig appConfig:MessageConfigService.appConfigMap.values()){
+            String dispatchGroup = appConfig.getDispatchGroup();
+            //若分发组为空或者为'k'，则跳过
+            if(StringUtils.isBlank(dispatchGroup) || "k".equalsIgnoreCase(dispatchGroup)){
+                continue;
+            }
             for(QueueConfig queueConfig:appConfig.getMessageCfgList()){
                 String exchange = String.format("%s_%s",appConfig.getAppId(),queueConfig.getCode());
                 //声明exchange
@@ -164,5 +146,34 @@ public class ConfigReloadService implements ConfigReloadListener {
         String routeKey = String.format("#.%s.#",callbackNo);
         logger.debug("routeKey:{},callbackKey:{}",routeKey,callbackKey);
         return routeKey;
+    }
+
+    /**
+     * 删除交换器、队列
+     */
+    void deleteExchangeAndQueue(){
+        try {
+            for(AppConfig appConfig:MessageConfigService.appConfigMap.values()){
+                String dispatchGroup = appConfig.getDispatchGroup();
+                //若分发组为空或者为'k'，则跳过
+                if(StringUtils.isBlank(dispatchGroup) || "k".equalsIgnoreCase(dispatchGroup)){
+                    continue;
+                }
+                for(QueueConfig queueConfig:appConfig.getMessageCfgList()){
+                    String exchange = String.format("%s_%s",appConfig.getAppId(),queueConfig.getCode());
+                    //删除exchange
+                    primaryChannel.exchangeDelete(exchange);
+                    secondaryChannel.exchangeDelete(exchange);
+                    for(CallbackConfig callbackConfig:queueConfig.getCallbackCfgList()){
+                        String callbackKey = callbackConfig.getCallbackKey();
+                        //删除queue
+                        primaryChannel.queueDelete(callbackKey);
+                        secondaryChannel.queueDelete(callbackKey);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            logger.error("delete exchange and queue error.",e);
+        }
     }
 }

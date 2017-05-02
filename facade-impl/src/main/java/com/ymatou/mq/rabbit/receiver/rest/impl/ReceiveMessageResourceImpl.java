@@ -56,31 +56,6 @@ public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
         return RestResp.newInstance(receiveMessageResp);
     }
 
-    @Override
-    @GET
-    @Path("/{report:(?i:report)}")
-    @Produces({MediaType.TEXT_PLAIN})
-    public String report() {
-        Map<String, AtomicInteger> countMap = FacadeAspect.getCountMap();
-        Iterator ite =countMap.keySet().iterator();
-        while (ite.hasNext()){
-            String key = (String)ite.next();
-            logger.info("Key:{},count:{}.",key,countMap.get(key).get());
-        }
-        return JSON.toJSONString(countMap);
-    }
-
-    @Override
-    @GET
-    @Path("/{clear:(?i:clear)}")
-    @Produces({MediaType.TEXT_PLAIN})
-    public String clear() {
-        Map<String, AtomicInteger> countMap = FacadeAspect.getCountMap();
-        countMap.clear();
-        logger.info("clear ok,size:{}.",countMap.size());
-        return String.valueOf(countMap.size());
-    }
-
     @GET
     @Path("/{filestatus:(?i:filestatus)}")
     @Override

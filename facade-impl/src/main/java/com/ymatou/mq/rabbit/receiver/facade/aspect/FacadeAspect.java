@@ -46,9 +46,8 @@ public class FacadeAspect {
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(FacadeAspect.class);
 
-    private static Map<String,AtomicInteger> countMap = new ConcurrentHashMap<String,AtomicInteger>();
-
-    @Pointcut("execution(* com.ymatou.mq.rabbit.receiver.facade.*Facade.*(*)) && args(req)")
+    @Pointcut("execution(* com.ymatou.messagebus.facade.*Facade.*(*)) && args(req)")
+    //@Pointcut("execution(* com.ymatou.mq.rabbit.receiver.facade.*Facade.*(*)) && args(req)")
     public void executeFacade(BaseRequest req) {
     }
 
@@ -103,48 +102,21 @@ public class FacadeAspect {
         } finally {
             logger.debug("Resp:" + resp);
 
-            long consumedTime = System.currentTimeMillis() - startTime;
-            if (consumedTime > 300) {
-                logger.warn("slow query gt 300ms({}ms). Req:{}", consumedTime, req);
-                String key = ">300";
-                if(countMap.get(key) == null){
-                   countMap.put(key,new AtomicInteger(0));
-                }
-                countMap.get(key).incrementAndGet();
-            }else if (consumedTime > 200) {
-                String key = ">200";
-                if(countMap.get(key) == null){
-                    countMap.put(key,new AtomicInteger(0));
-                }
-                countMap.get(key).incrementAndGet();
-                logger.warn("slow query gt 200ms({}ms). Req:{}", consumedTime, req);
-            }else if (consumedTime > 100) {
-                String key = ">100";
-                if(countMap.get(key) == null){
-                    countMap.put(key,new AtomicInteger(0));
-                }
-                countMap.get(key).incrementAndGet();
-                logger.warn("slow query gt 100ms({}ms). Req:{}", consumedTime, req);
-            }else if (consumedTime > 50) {
-                String key = ">50";
-                if(countMap.get(key) == null){
-                    countMap.put(key,new AtomicInteger(0));
-                }
-                countMap.get(key).incrementAndGet();
-                logger.warn("slow query gt 50ms({}ms). Req:{}", consumedTime, req);
-            }else if (consumedTime > 20) {
-                String key = ">20";
-                if(countMap.get(key) == null){
-                    countMap.put(key,new AtomicInteger(0));
-                }
-                countMap.get(key).incrementAndGet();
-                logger.warn("slow query gt 20ms({}ms). Req:{}", consumedTime, req);
-            }else if(consumedTime < 20){
-                String key = "<20";
-                if(countMap.get(key) == null){
-                    countMap.put(key,new AtomicInteger(0));
-                }
-                countMap.get(key).incrementAndGet();
+            long costTime = System.currentTimeMillis() - startTime;
+            if (costTime > 1000) {
+                logger.warn("slow publish gt 1000ms({}ms). Req:{}", costTime, req);
+            }else if (costTime > 500) {
+                logger.warn("slow publish gt 500ms({}ms). Req:{}", costTime, req);
+            }else if (costTime > 300) {
+                logger.warn("slow publish gt 300ms({}ms). Req:{}", costTime, req);
+            }else if (costTime > 200) {
+                logger.warn("slow publish gt 200ms({}ms). Req:{}", costTime, req);
+            }else if (costTime > 100) {
+                logger.warn("slow publish gt 100ms({}ms). Req:{}", costTime, req);
+            }else if (costTime > 50) {
+                logger.warn("slow publish gt 50ms({}ms). Req:{}", costTime, req);
+            }else if (costTime > 20) {
+                logger.warn("slow publish gt 20ms({}ms). Req:{}", costTime, req);
             }
             MDC.clear();
         }
@@ -169,11 +141,4 @@ public class FacadeAspect {
         return req.getClass().getSimpleName() + "|" + req.getRequestId();
     }
 
-    public static Map<String, AtomicInteger> getCountMap() {
-        return countMap;
-    }
-
-    public static void setCountMap(Map<String, AtomicInteger> countMap) {
-        FacadeAspect.countMap = countMap;
-    }
 }
