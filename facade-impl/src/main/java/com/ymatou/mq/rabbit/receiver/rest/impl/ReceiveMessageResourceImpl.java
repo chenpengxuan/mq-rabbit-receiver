@@ -15,6 +15,7 @@ import com.ymatou.messagebus.facade.model.ReceiveMessageResp;
 import com.ymatou.mq.rabbit.receiver.facade.aspect.FacadeAspect;
 import com.ymatou.mq.rabbit.receiver.rest.ReceiveMessageResource;
 import com.ymatou.mq.rabbit.receiver.rest.RestResp;
+import com.ymatou.mq.rabbit.receiver.service.ConfigReloadService;
 import com.ymatou.mq.rabbit.receiver.service.MessageFileQueueService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +41,14 @@ public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
 
     public static final Logger logger = LoggerFactory.getLogger(ReceiveMessageResourceImpl.class);
 
-    //private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
     @Resource
     ReceiveMessageFacade receiveMessageFacade;
 
     @Autowired
     MessageFileQueueService messageFileQueueService;
+
+    @Autowired
+    ConfigReloadService configReloadService;
 
     @Override
     @POST
@@ -61,5 +63,13 @@ public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
     @Override
     public String fileStatus() {
         return messageFileQueueService.getFileDb().status();
+    }
+
+    @GET
+    @Path("/{deleteKafkaQueue:(?i:deleteKafkaQueue)}")
+    @Override
+    public String deleteKafkaQueue() {
+        configReloadService.deleteExchangeAndQueueOfKafka();
+        return "ok";
     }
 }

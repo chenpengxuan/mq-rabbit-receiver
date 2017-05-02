@@ -24,5 +24,11 @@ public interface ReceiveMessageResource {
 
     String fileStatus();
 
+    /**
+     * 删除kafka类型的队列声明
+     * @return
+     */
+    String deleteKafkaQueue();
+
 
 }

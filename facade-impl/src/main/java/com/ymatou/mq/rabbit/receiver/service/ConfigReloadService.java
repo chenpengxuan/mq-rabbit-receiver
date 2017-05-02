@@ -151,24 +151,25 @@ public class ConfigReloadService implements ConfigReloadListener {
     /**
      * 删除交换器、队列
      */
-    void deleteExchangeAndQueue(){
+    public void deleteExchangeAndQueueOfKafka(){
         try {
             for(AppConfig appConfig:MessageConfigService.appConfigMap.values()){
                 String dispatchGroup = appConfig.getDispatchGroup();
-                //若分发组为空或者为'k'，则跳过
+                //若分发组为空或者为'k'
                 if(StringUtils.isBlank(dispatchGroup) || "k".equalsIgnoreCase(dispatchGroup)){
-                    continue;
-                }
-                for(QueueConfig queueConfig:appConfig.getMessageCfgList()){
-                    String exchange = String.format("%s_%s",appConfig.getAppId(),queueConfig.getCode());
-                    //删除exchange
-                    primaryChannel.exchangeDelete(exchange);
-                    secondaryChannel.exchangeDelete(exchange);
-                    for(CallbackConfig callbackConfig:queueConfig.getCallbackCfgList()){
-                        String callbackKey = callbackConfig.getCallbackKey();
-                        //删除queue
-                        primaryChannel.queueDelete(callbackKey);
-                        secondaryChannel.queueDelete(callbackKey);
+                    for(QueueConfig queueConfig:appConfig.getMessageCfgList()){
+                        String exchange = String.format("%s_%s",appConfig.getAppId(),queueConfig.getCode());
+                        logger.info("delete exchange:{}.",exchange);
+                        //删除exchange
+                        primaryChannel.exchangeDelete(exchange);
+                        secondaryChannel.exchangeDelete(exchange);
+                        for(CallbackConfig callbackConfig:queueConfig.getCallbackCfgList()){
+                            String callbackKey = callbackConfig.getCallbackKey();
+                            logger.info("delete queue:{}.",callbackKey);
+                            //删除queue
+                            primaryChannel.queueDelete(callbackKey);
+                            secondaryChannel.queueDelete(callbackKey);
+                        }
                     }
                 }
             }
