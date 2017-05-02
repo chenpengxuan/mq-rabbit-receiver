@@ -75,8 +75,8 @@ public class ConfigReloadService implements ConfigReloadListener {
     @Override
     public void callback() {
         logger.info("declareExchangeAndQueue begin");
+        //启动时声明交换器、队列
         declareExchangeAndQueue();
-        /*deleteExchangeAndQueue();*/
     }
 
     /**
