@@ -65,7 +65,7 @@ public class TestConsumer implements Consumer {
         LOGGER.info("deliveryTag:{},queue:{}Delivery:{},consumerTag:{}",
                 deliveryTag,queue,new String(body, Charset.forName("utf-8")),consumerTag);
         try {
-            TimeUnit.SECONDS.sleep(1);
+            TimeUnit.MILLISECONDS.sleep(300);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

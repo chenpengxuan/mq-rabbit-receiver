@@ -24,7 +24,7 @@ import java.util.concurrent.TimeoutException;
 public class RabbitMqBaseTest {
 
     public static final String trading_ex = "ex_trading";
-    public static final String trading_q = "test_javaV2_stress_c0";
+    public static final String trading_q = "q_trading";
     public static final String paygateway_ex = "ex_paygateway";
     public static final String paygateway_q = "q_paygateway";
 
@@ -32,14 +32,17 @@ public class RabbitMqBaseTest {
 
     public ConnectionFactory factory;
     public List<Address> addressList = Lists.newArrayList(
-            new Address("172.16.103.127", 5672));
+            new Address("172.16.103.127", 5672),
+            new Address("172.16.103.128", 5672),
+            new Address("172.16.103.129", 5672)
+    );
 
     @Before
     public void before() {
         factory = new ConnectionFactory();
         factory.setUsername("admin");
         factory.setPassword("admin");
-        factory.setVirtualHost("javamqv2");
+        factory.setVirtualHost("/");
 
         factory.setAutomaticRecoveryEnabled(true);
         factory.setHeartbeatExecutor(ScheduledExecutorHelper.newScheduledThreadPool(3, "rabbitmq-heartbeat-thread"));

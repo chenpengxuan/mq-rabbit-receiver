@@ -5,21 +5,17 @@
  */
 package com.ymatou.mq.rabbit.receiver.rest.impl;
 
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.ymatou.mq.rabbit.receiver.rest.WarmUpResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.ymatou.mq.rabbit.receiver.rest.WarmUpResource;
 import com.ymatou.mq.rabbit.receiver.util.Utils;
 
 /**
@@ -51,12 +47,6 @@ public class WarmUpResourceImpl implements WarmUpResource {
     @Path("/{version:(?i:version)}")
     @Produces({MediaType.TEXT_PLAIN})
     public String version() {
-        try {
-            return new String(Files.readAllBytes(
-                    Paths.get(Utils.class.getResource("/version.txt").toURI())), Charset.forName("UTF-8"));
-        } catch (Exception e) {
-            LOGGER.error("Failed to read version. {}", e.getMessage(), e);
-            return "Failed to read version:" + e.getMessage();
-        }
+        return Utils.readVersion();
     }
 }

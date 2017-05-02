@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author luoshiqian 2017/3/13 18:18
@@ -75,6 +76,8 @@ public class ProduceTest extends ExchangeQueueBaseTest {
             if(duration > 300){
                 LOGGER.info("slow publish :{}",duration);
             }
+
+            TimeUnit.MILLISECONDS.sleep(100);
 
 //            TimeUnit.SECONDS.sleep(1);
             sendCount++;
