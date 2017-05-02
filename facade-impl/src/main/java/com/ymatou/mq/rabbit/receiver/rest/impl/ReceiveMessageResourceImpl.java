@@ -68,6 +68,7 @@ public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
     @GET
     @Path("/{deleteKafkaQueue:(?i:deleteKafkaQueue)}")
     @Override
+    @Produces({MediaType.TEXT_PLAIN})
     public String deleteKafkaQueue() {
         configReloadService.deleteExchangeAndQueueOfKafka();
         return "ok";
