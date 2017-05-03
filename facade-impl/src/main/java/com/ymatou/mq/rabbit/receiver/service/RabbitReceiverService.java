@@ -53,7 +53,6 @@ public class RabbitReceiverService {
      * @return
      */
     public void receiveAndPublish(Message message){
-        long startTime = System.currentTimeMillis();
         logger.info("receive message:{}.", message);
 
         //验证队列有效性
@@ -74,24 +73,6 @@ public class RabbitReceiverService {
                 dispatchMessage(message);
             }
 
-        }
-        long costTime = System.currentTimeMillis()-startTime;
-        if(costTime > 1000){
-            logger.warn("receiveAndPublish slow gt 1000ms consume:{}.",costTime);
-        }else if(costTime > 500){
-            logger.warn("receiveAndPublish slow gt 500ms consume:{}.",costTime);
-        }else if(costTime > 300){
-            logger.warn("receiveAndPublish slow gt 300ms consume:{}.",costTime);
-        }else if(costTime > 200){
-            logger.warn("receiveAndPublish slow gt 200ms consume:{}.",costTime);
-        }else if(costTime > 100){
-            logger.warn("receiveAndPublish slow gt 100ms consume:{}.",costTime);
-        }else if(costTime > 50){
-            logger.warn("receiveAndPublish slow gt 50ms consume:{}.",costTime);
-        }else if(costTime > 20){
-            logger.warn("receiveAndPublish slow gt 20ms consume:{}.",costTime);
-        }else{
-            logger.info("receiveAndPublish consume:{}.",costTime);
         }
     }
 

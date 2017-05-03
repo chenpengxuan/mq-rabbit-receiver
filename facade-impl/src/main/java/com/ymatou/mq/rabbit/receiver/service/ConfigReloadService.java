@@ -85,8 +85,9 @@ public class ConfigReloadService implements ConfigReloadListener {
     void declareExchangeAndQueue(){
         for(AppConfig appConfig:MessageConfigService.appConfigMap.values()){
             String dispatchGroup = appConfig.getDispatchGroup();
-            //若分发组为空或者为'k'，则跳过
-            if(StringUtils.isBlank(dispatchGroup) || "k".equalsIgnoreCase(dispatchGroup)){
+            //若MQ类型为kafka则不声明
+            Integer mqType = appConfig.getMqType();
+            if(mqType == 1){
                 continue;
             }
             for(QueueConfig queueConfig:appConfig.getMessageCfgList()){
@@ -154,9 +155,9 @@ public class ConfigReloadService implements ConfigReloadListener {
     public void deleteExchangeAndQueueOfKafka(){
         try {
             for(AppConfig appConfig:MessageConfigService.appConfigMap.values()){
-                String dispatchGroup = appConfig.getDispatchGroup();
-                //若分发组为空或者为'k'
-                if(StringUtils.isBlank(dispatchGroup) || "k".equalsIgnoreCase(dispatchGroup)){
+                Integer mqType = appConfig.getMqType();
+                //若MQ类型为kafka则删除
+                if(mqType == 1){
                     for(QueueConfig queueConfig:appConfig.getMessageCfgList()){
                         String exchange = String.format("%s_%s",appConfig.getAppId(),queueConfig.getCode());
                         logger.info("delete exchange:{}.",exchange);
