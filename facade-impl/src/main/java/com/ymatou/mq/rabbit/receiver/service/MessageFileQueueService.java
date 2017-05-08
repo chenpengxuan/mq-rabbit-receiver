@@ -84,7 +84,7 @@ public class MessageFileQueueService implements Function<Pair<String, String>, B
         try {
             success = messageService.saveMessage(message);
         } catch (Exception e) {
-            logger.error("save message to mongo error", e);
+            logger.error("save message:{} to mongo error",message,e);
         }
         return success;
     }
@@ -107,7 +107,7 @@ public class MessageFileQueueService implements Function<Pair<String, String>, B
         try {
             messageService.saveMessage(message);
         } catch (Exception e) {
-            logger.error("filedb handleException error,save message to mongo.", e);
+            logger.error("filedb handleException error,save message:{} to mongo.",message,e);
         }
     }
 
