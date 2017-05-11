@@ -16,6 +16,7 @@ import javax.ws.rs.core.FeatureContext;
 public class DynamicTraceBinding implements DynamicFeature {
 
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
-        context.register(DynamicTraceInterceptor.class);
+        //需要找请求参数是打开
+//        context.register(DynamicTraceInterceptor.class);
     }
 }

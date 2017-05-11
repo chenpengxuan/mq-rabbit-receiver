@@ -62,13 +62,13 @@ public class TestConsumer implements Consumer {
             throws IOException {
         long deliveryTag = envelope.getDeliveryTag();
 
-        LOGGER.info("deliveryTag:{},queue:{}Delivery:{},consumerTag:{}",
-                deliveryTag,queue,new String(body, Charset.forName("utf-8")),consumerTag);
-        try {
-            TimeUnit.MILLISECONDS.sleep(300);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        LOGGER.info("deliveryTag:{},queue:{}Delivery:{},consumerTag:{}",
+//                deliveryTag,queue,new String(body, Charset.forName("utf-8")),consumerTag);
+//        try {
+//            TimeUnit.MILLISECONDS.sleep(300);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         channel.basicAck(deliveryTag, false);
     }
 }

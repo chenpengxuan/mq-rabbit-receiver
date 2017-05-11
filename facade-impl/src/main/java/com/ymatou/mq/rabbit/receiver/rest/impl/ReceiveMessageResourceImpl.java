@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSON;
 import com.ymatou.messagebus.facade.ReceiveMessageFacade;
 import com.ymatou.messagebus.facade.model.ReceiveMessageReq;
 import com.ymatou.messagebus.facade.model.ReceiveMessageResp;
+import com.ymatou.messagebus.facade.model.ReceiveMessageRestReq;
 import com.ymatou.mq.rabbit.receiver.facade.aspect.FacadeAspect;
 import com.ymatou.mq.rabbit.receiver.rest.ReceiveMessageResource;
 import com.ymatou.mq.rabbit.receiver.rest.RestResp;
@@ -19,6 +20,7 @@ import com.ymatou.mq.rabbit.receiver.service.ConfigReloadService;
 import com.ymatou.mq.rabbit.receiver.service.MessageFileQueueService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -51,9 +53,16 @@ public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
     @Override
     @POST
     @Path("/{publish:(?i:publish)}")
-    public RestResp publish(ReceiveMessageReq req) {
-        logger.info("receive:req:{}",req);
-        ReceiveMessageResp receiveMessageResp = receiveMessageFacade.publish(req);
+    public RestResp publish(ReceiveMessageRestReq req) {
+
+        ReceiveMessageReq receiveMessageReq = new ReceiveMessageReq();
+        receiveMessageReq.setAppId(req.getAppId());
+        receiveMessageReq.setIp(req.getIp());
+        receiveMessageReq.setCode(req.getCode());
+        receiveMessageReq.setMsgUniqueId(req.getMsgUniqueId());
+        receiveMessageReq.setBody(JSON.toJSONString(req.getBody()));
+
+        ReceiveMessageResp receiveMessageResp = receiveMessageFacade.publish(receiveMessageReq);
         return RestResp.newInstance(receiveMessageResp);
     }
 

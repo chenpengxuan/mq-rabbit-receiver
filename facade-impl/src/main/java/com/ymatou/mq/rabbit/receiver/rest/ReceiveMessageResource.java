@@ -7,7 +7,7 @@
 
 package com.ymatou.mq.rabbit.receiver.rest;
 
-import com.ymatou.messagebus.facade.model.ReceiveMessageReq;
+import com.ymatou.messagebus.facade.model.ReceiveMessageRestReq;
 
 /**
  * @author luoshiqian 2016/8/31 14:12
@@ -20,7 +20,7 @@ public interface ReceiveMessageResource {
      * @param req
      * @return
      */
-    RestResp publish(ReceiveMessageReq req);
+    RestResp publish(ReceiveMessageRestReq req);
 
     String fileStatus();
 

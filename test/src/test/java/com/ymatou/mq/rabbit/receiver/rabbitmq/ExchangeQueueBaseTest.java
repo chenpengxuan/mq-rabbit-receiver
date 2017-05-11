@@ -74,7 +74,7 @@ public class ExchangeQueueBaseTest extends RabbitMqBaseTest {
 
     public void bindExchangeForConsumer(Channel channel, String exchange, String queue) throws Exception {
 //        channel.queueBind(queue, exchange, queue);
-        channel.basicQos(10);
+        channel.basicQos(1000);
     }
 
 

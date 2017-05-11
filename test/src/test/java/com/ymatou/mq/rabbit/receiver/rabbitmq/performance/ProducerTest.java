@@ -50,7 +50,7 @@ public class ProducerTest extends RabbitMqBaseTest {
         }
 
 
-        sleep(10000);
+        sleep(100000);
 
         System.out.println("totalCount="+totalCount.get());
         System.out.println("tps="+(totalCount.get()/60) +"/s" );
@@ -79,7 +79,7 @@ public class ProducerTest extends RabbitMqBaseTest {
         }
 
 
-        sleep(10000);
+        sleep(100000);
 
         System.out.println("totalCount="+totalCount.get());
         System.out.println("tps="+(totalCount.get()/60) +"/s" );
