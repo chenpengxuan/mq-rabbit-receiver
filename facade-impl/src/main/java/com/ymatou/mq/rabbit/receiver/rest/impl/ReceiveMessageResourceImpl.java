@@ -23,10 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.Iterator;
 import java.util.Map;
@@ -34,9 +31,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Component("publishMessageResource")
-@Produces({"application/json; charset=UTF-8"})
 @Service(protocol = "rest")
 @Path("/{message:(?i:message)}")
+@Produces({"application/json; charset=UTF-8"})
+@Consumes({MediaType.APPLICATION_JSON})
 public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
 
     public static final Logger logger = LoggerFactory.getLogger(ReceiveMessageResourceImpl.class);
@@ -54,6 +52,7 @@ public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
     @POST
     @Path("/{publish:(?i:publish)}")
     public RestResp publish(ReceiveMessageReq req) {
+        logger.info("receive:req:{}",req);
         ReceiveMessageResp receiveMessageResp = receiveMessageFacade.publish(req);
         return RestResp.newInstance(receiveMessageResp);
     }
