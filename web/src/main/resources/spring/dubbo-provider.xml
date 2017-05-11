@@ -47,6 +47,9 @@
     <dubbo:protocol name="dubbo" port="${dubbo.port}" />
 
     <dubbo:protocol name="rest" server="tomcat" port="${server.port}"
-                    extension="com.ymatou.mq.rabbit.receiver.util.JacksonConfig"/>
+                    extension="com.ymatou.mq.rabbit.receiver.util.JacksonConfig
+                    com.ymatou.mq.rabbit.receiver.facade.DynamicTraceBinding,
+                    com.ymatou.mq.rabbit.receiver.facade.CustomExceptionMapper"
+    />
 
 </beans>
