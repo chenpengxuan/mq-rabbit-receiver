@@ -66,7 +66,22 @@ public class MessageFileQueueService implements Function<Pair<String, String>, B
      * @param message
      */
     public void saveMessageToFileDb(Message message) {
+        long startTime = System.currentTimeMillis();
         fileDb.put(message.getId(), Message.toJsonString(message));
+        long costTime = System.currentTimeMillis()-startTime;
+        if(costTime > 1000){
+            logger.warn("save message to fileQueue slow gt 1000ms,consume:{}.",costTime);
+        }else if(costTime > 500){
+            logger.warn("save message to fileQueue slow gt 500ms,consume:{}.",costTime);
+        }else if(costTime > 200){
+            logger.warn("save message to fileQueue slow gt 200ms,consume:{}.",costTime);
+        }else if(costTime > 100){
+            logger.warn("save message to fileQueue slow gt 100ms,consume:{}.",costTime);
+        }else if(costTime > 50){
+            logger.warn("save message to fileQueue slow gt 50ms,consume:{}.",costTime);
+        }else if(costTime > 20){
+            logger.warn("save message to fileQueue slow gt 20ms,consume:{}.",costTime);
+        }
     }
 
     /**

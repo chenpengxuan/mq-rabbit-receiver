@@ -59,7 +59,25 @@ public class RabbitProducer {
         String msgId = message.getId();
         String bizId = message.getBizId();
         //获取channel
+        long startTime = System.currentTimeMillis();
         ChannelWrapper channelWrapper = RabbitChannelFactory.getChannelWrapperByThreadContext(receiverConfig.getCurrentCluster(),rabbitConfig);
+        long costTime = System.currentTimeMillis()-startTime;
+        if(costTime > 1000){
+            logger.warn("getChannel from MQ slow gt 1000ms,consume:{},thread:{},channel:{}.",costTime,Thread.currentThread(),channelWrapper.getChannel());
+        }else if(costTime > 500){
+            logger.warn("getChannel from MQ slow gt 500ms,consume:{},thread:{},channel:{}.",costTime,Thread.currentThread(),channelWrapper.getChannel());
+        }else if(costTime > 200){
+            logger.warn("getChannel from MQ slow gt 200ms,consume:{},thread:{},channel:{}.",costTime,Thread.currentThread(),channelWrapper.getChannel());
+        }else if(costTime > 100){
+            logger.warn("getChannel from MQ slow gt 100ms,consume:{},thread:{},channel:{}.",costTime,Thread.currentThread(),channelWrapper.getChannel());
+        }else if(costTime > 50){
+            logger.warn("getChannel from MQ slow gt 50ms,consume:{},thread:{},channel:{}.",costTime,Thread.currentThread(),channelWrapper.getChannel());
+        }else if(costTime > 20){
+            logger.warn("getChannel from MQ slow gt 20ms,consume:{},thread:{},channel:{}.",costTime,Thread.currentThread(),channelWrapper.getChannel());
+        }else if(costTime > 10){
+            logger.warn("getChannel from MQ slow gt 10ms,consume:{},thread:{},channel:{}.",costTime,Thread.currentThread(),channelWrapper.getChannel());
+        }
+
         Channel channel = channelWrapper.getChannel();
         //若是第一次创建channel，则初始化ack相关
         if(channelWrapper.getUnconfirmedMap() == null){
@@ -82,9 +100,9 @@ public class RabbitProducer {
 
         String routeKey = getRouteKey(message.getAppId(),message.getQueueCode());
         if(StringUtils.isNoneBlank(routeKey)){
-            long startTime = System.currentTimeMillis();
+            startTime = System.currentTimeMillis();
             channel.basicPublish(exchange, routeKey, basicProps, toBytesByJava(message));
-            long costTime = System.currentTimeMillis()-startTime;
+            costTime = System.currentTimeMillis()-startTime;
 
             if(costTime > 1000){
                 logger.warn("publish message to MQ slow gt 1000ms,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
