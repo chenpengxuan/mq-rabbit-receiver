@@ -22,8 +22,8 @@ public class RabbitMonitorTaskTimer {
 
     @PostConstruct
     public void init(){
-        Timer timer = new Timer(true);
-        timer.schedule(channelMonitorTask, 60, 1000 * 120);
+        //Timer timer = new Timer(true);
+        //timer.schedule(channelMonitorTask, 60, 1000 * 120);
         logger.info("monitor channel timer started.");
     }
 }
