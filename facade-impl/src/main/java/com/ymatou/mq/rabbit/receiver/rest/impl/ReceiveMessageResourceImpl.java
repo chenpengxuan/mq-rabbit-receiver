@@ -78,6 +78,8 @@ public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
             logger.warn("rest publish slow gt 100ms({}ms). Req:{}", costTime, req);
         }else if (costTime > 50) {
             logger.warn("rest publish slow gt 50ms({}ms). Req:{}", costTime, req);
+        }else if (costTime > 20) {
+            logger.warn("rest publish slow gt 20ms({}ms). Req:{}", costTime, req);
         }
         return restResp;
     }
