@@ -111,11 +111,38 @@
         <appender-ref ref="FACADE-APPENDER"/>
     </appender>
 
+    <appender name="RABBITMQ-APPENDER"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${baseDir}/rabbitmq.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${baseDir}/rabbitmq.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>${charset}</charset>
+            <pattern>${pattern}</pattern>
+            <immediateFlush>${immediateFlush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC-RABBITMQ-APPENDER" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>${queueSize}</queueSize>
+        <appender-ref ref="RABBITMQ-APPENDER"/>
+    </appender>
+
 
     <!-- facade -->
     <logger name="${basePackage}.facade" additivity="false">
         <level value="${level}"/>
         <appender-ref ref="ASYNC-FACADE-APPENDER"/>
+        <appender-ref ref="ASYNC-ERROR-APPENDER"/>
+        <appender-ref ref="HTTP-POST-ERROR-APPENDER"/>
+    </logger>
+
+    <!-- rabbitmq -->
+    <logger name="rabbitmq" additivity="false">
+        <level value="${level}"/>
+        <appender-ref ref="ASYNC-RABBITMQ-APPENDER"/>
         <appender-ref ref="ASYNC-ERROR-APPENDER"/>
         <appender-ref ref="HTTP-POST-ERROR-APPENDER"/>
     </logger>

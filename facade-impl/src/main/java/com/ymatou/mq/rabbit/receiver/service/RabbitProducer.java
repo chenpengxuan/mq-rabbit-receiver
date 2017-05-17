@@ -32,7 +32,7 @@ import java.util.*;
 @Component("rabbitProducer")
 public class RabbitProducer {
 
-    private static final Logger logger = LoggerFactory.getLogger(RabbitProducer.class);
+    private static final Logger logger = LoggerFactory.getLogger("rabbitmq");
 
     /**
      * rabbit配置信息
