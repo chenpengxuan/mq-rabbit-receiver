@@ -118,8 +118,6 @@ public class RabbitProducer {
                 logger.warn("publish message to MQ slow gt 20ms,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
             }else if(costTime > 10){
                 logger.warn("publish message to MQ slow gt 10ms,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
-            }else {
-                logger.info("publish message to MQ,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
             }
         }
     }
