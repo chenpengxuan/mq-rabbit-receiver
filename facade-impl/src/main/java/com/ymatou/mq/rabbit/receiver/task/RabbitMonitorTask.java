@@ -51,7 +51,7 @@ public class RabbitMonitorTask extends TimerTask {
                     if(thread == null || !thread.isAlive()){
                         logger.info("thread:{} is not alive,channel status:{}.",thread,channel != null?channel.isOpen():"null");
                         if(channel != null && channel.isOpen()){
-                            RabbitChannelFactory.releaseChannelWrapper(cluster,channelWrapper,false);
+                            RabbitChannelFactory.releaseChannelWrapper(cluster,channelWrapper);
                         }
                     }
                 }
