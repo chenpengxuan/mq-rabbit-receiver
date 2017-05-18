@@ -18,6 +18,8 @@ import com.ymatou.mq.infrastructure.model.QueueConfig;
 import com.ymatou.mq.infrastructure.service.MessageConfigService;
 import com.ymatou.mq.rabbit.config.RabbitConfig;
 
+import java.util.Random;
+
 /**
  * rabbitmq接收消息service
  * Created by zhangzhihua on 2017/3/23.
@@ -65,6 +67,7 @@ public class RabbitReceiverService {
             try {
                 //发布消息
                 rabbitProducer.publish(String.format("%s_%s", message.getAppId(), message.getQueueCode()), message);
+                Thread.sleep(new Random().nextInt(100));
                 //若发MQ成功，则异步写消息到文件队列
                 //messageFileQueueService.saveMessageToFileDb(message);
             } catch (Exception e) {
