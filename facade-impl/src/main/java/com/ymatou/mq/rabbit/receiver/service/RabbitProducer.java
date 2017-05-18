@@ -77,7 +77,7 @@ public class RabbitProducer {
         }else if(costTime > 10){
             logger.warn("getChannel from MQ slow gt 10ms,consume:{},thread:{},channel:{}.",costTime,Thread.currentThread(),channelWrapper.getChannel());
         }else{
-            if(new Random().nextInt(10000) > 9800){
+            if(new Random().nextInt(100000) > 98000){
                 logger.warn("getChannel from MQ,consume:{},thread:{},channel:{}.",costTime,Thread.currentThread(),channelWrapper.getChannel());
             }
         }
@@ -123,7 +123,7 @@ public class RabbitProducer {
             }else if(costTime > 10){
                 logger.warn("publish message to MQ slow gt 10ms,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
             }else{
-                if(new Random().nextInt(10000) > 9800){
+                if(new Random().nextInt(100000) > 98000){
                     logger.warn("publish message to MQ,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
                 }
             }
