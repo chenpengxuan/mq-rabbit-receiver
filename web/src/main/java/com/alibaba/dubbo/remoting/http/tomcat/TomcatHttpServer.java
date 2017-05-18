@@ -41,6 +41,10 @@ public class TomcatHttpServer extends AbstractHttpServer {
         tomcat.getConnector().setProperty("URIEncoding", tomcatConfig.getUriEncoding());
         tomcat.getConnector().setProperty("connectionTimeout", tomcatConfig.getConnectionTimeout());
         tomcat.getConnector().setProperty("acceptCount", tomcatConfig.getAcceptCount());
+        tomcat.getConnector().setProperty("acceptCount", tomcatConfig.getAcceptCount());
+        tomcat.getConnector().setProperty("bufferSize", "2048");
+        tomcat.getConnector().setProperty("socketBuffer", "9000");
+
 
         Context context = tomcat.addContext("/", baseDir);
         Tomcat.addServlet(context, "dispatcher", new DispatcherServlet());
