@@ -77,25 +77,25 @@ public class RabbitProducer {
         }else if(costTime > 10){
             logger.warn("getChannel from MQ slow gt 10ms,consume:{},thread:{},channel:{}.",costTime,Thread.currentThread(),channelWrapper.getChannel());
         }else{
-            if(new Random().nextInt(100000) > 98000){
+            if(new Random().nextInt(10000) > 9995){
                 logger.warn("getChannel from MQ,consume:{},thread:{},channel:{}.",costTime,Thread.currentThread(),channelWrapper.getChannel());
             }
         }
 
         Channel channel = channelWrapper.getChannel();
-        //若是第一次创建channel，则初始化ack相关
-        if(channelWrapper.getUnconfirmedMap() == null){
-            //设置channel对应的unconfirmedSet、acklistener信息
-            SortedMap<Long, Object> unconfirmedSet = Collections.synchronizedSortedMap(new TreeMap<Long, Object>());
-            channelWrapper.setUnconfirmedMap(unconfirmedSet);
-
-            RabbitAckListener rabbitAckListener = new RabbitAckListener(channelWrapper,messageDispatchFacade);
-            channel.addConfirmListener(rabbitAckListener);
-            channel.confirmSelect();
-        }
-
-        //设置ack关联数据
-        channelWrapper.getUnconfirmedMap().put(channel.getNextPublishSeqNo(),message);
+//        //若是第一次创建channel，则初始化ack相关
+//        if(channelWrapper.getUnconfirmedMap() == null){
+//            //设置channel对应的unconfirmedSet、acklistener信息
+//            SortedMap<Long, Object> unconfirmedSet = Collections.synchronizedSortedMap(new TreeMap<Long, Object>());
+//            channelWrapper.setUnconfirmedMap(unconfirmedSet);
+//
+//            RabbitAckListener rabbitAckListener = new RabbitAckListener(channelWrapper,messageDispatchFacade);
+//            channel.addConfirmListener(rabbitAckListener);
+//            channel.confirmSelect();
+//        }
+//
+//        //设置ack关联数据
+//        channelWrapper.getUnconfirmedMap().put(channel.getNextPublishSeqNo(),message);
 
         AMQP.BasicProperties basicProps = new AMQP.BasicProperties.Builder()
                 .messageId(msgId).correlationId(bizId)
@@ -123,7 +123,7 @@ public class RabbitProducer {
             }else if(costTime > 10){
                 logger.warn("publish message to MQ slow gt 10ms,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
             }else{
-                if(new Random().nextInt(100000) > 98000){
+                if(new Random().nextInt(10000) > 9995){
                     logger.warn("publish message to MQ,consume:{},exchange:{},routeKey:{}.",costTime,exchange,routeKey);
                 }
             }

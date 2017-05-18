@@ -23,8 +23,8 @@ import javax.validation.Valid;
  *
  * @author luoshiqian
  */
-@Aspect
-@Configuration
+//@Aspect
+//@Configuration
 public class PerformanceConfig {
 
     @Value("${performance.server.url}")
