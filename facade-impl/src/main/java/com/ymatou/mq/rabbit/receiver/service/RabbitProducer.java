@@ -83,19 +83,19 @@ public class RabbitProducer {
         }
 
         Channel channel = channelWrapper.getChannel();
-//        //若是第一次创建channel，则初始化ack相关
-//        if(channelWrapper.getUnconfirmedMap() == null){
-//            //设置channel对应的unconfirmedSet、acklistener信息
-//            SortedMap<Long, Object> unconfirmedSet = Collections.synchronizedSortedMap(new TreeMap<Long, Object>());
-//            channelWrapper.setUnconfirmedMap(unconfirmedSet);
-//
-//            RabbitAckListener rabbitAckListener = new RabbitAckListener(channelWrapper,messageDispatchFacade);
-//            channel.addConfirmListener(rabbitAckListener);
-//            channel.confirmSelect();
-//        }
-//
-//        //设置ack关联数据
-//        channelWrapper.getUnconfirmedMap().put(channel.getNextPublishSeqNo(),message);
+        //若是第一次创建channel，则初始化ack相关
+        if(channelWrapper.getUnconfirmedMap() == null){
+            //设置channel对应的unconfirmedSet、acklistener信息
+            SortedMap<Long, Object> unconfirmedSet = Collections.synchronizedSortedMap(new TreeMap<Long, Object>());
+            channelWrapper.setUnconfirmedMap(unconfirmedSet);
+
+            RabbitAckListener rabbitAckListener = new RabbitAckListener(channelWrapper,messageDispatchFacade);
+            channel.addConfirmListener(rabbitAckListener);
+            channel.confirmSelect();
+        }
+
+        //设置ack关联数据
+        channelWrapper.getUnconfirmedMap().put(channel.getNextPublishSeqNo(),message);
 
         AMQP.BasicProperties basicProps = new AMQP.BasicProperties.Builder()
                 .messageId(msgId).correlationId(bizId)
