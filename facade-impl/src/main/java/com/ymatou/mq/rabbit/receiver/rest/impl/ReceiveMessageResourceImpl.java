@@ -54,7 +54,6 @@ public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
     @POST
     @Path("/{publish:(?i:publish)}")
     public RestResp publish(ReceiveMessageRestReq req) {
-        long startTime = System.currentTimeMillis();
 
         ReceiveMessageReq receiveMessageReq = new ReceiveMessageReq();
         receiveMessageReq.setAppId(req.getAppId());
@@ -64,24 +63,7 @@ public class ReceiveMessageResourceImpl implements ReceiveMessageResource {
         receiveMessageReq.setBody(JSON.toJSONString(req.getBody()));
 
         ReceiveMessageResp receiveMessageResp = receiveMessageFacade.publish(receiveMessageReq);
-        RestResp restResp = RestResp.newInstance(receiveMessageResp);
-        long costTime = System.currentTimeMillis() - startTime;
-        if (costTime > 1000) {
-            logger.warn("rest publish slow gt 1000ms({}ms). Req:{}", costTime, req);
-        }else if (costTime > 500) {
-            logger.warn("rest publish slow gt 500ms({}ms). Req:{}", costTime, req);
-        }else if (costTime > 300) {
-            logger.warn("rest publish slow gt 300ms({}ms). Req:{}", costTime, req);
-        }else if (costTime > 200) {
-            logger.warn("rest publish slow gt 200ms({}ms). Req:{}", costTime, req);
-        }else if (costTime > 100) {
-            logger.warn("rest publish slow gt 100ms({}ms). Req:{}", costTime, req);
-        }else if (costTime > 50) {
-            logger.warn("rest publish slow gt 50ms({}ms). Req:{}", costTime, req);
-        }else if (costTime > 20) {
-            logger.warn("rest publish slow gt 20ms({}ms). Req:{}", costTime, req);
-        }
-        return restResp;
+        return RestResp.newInstance(receiveMessageResp);
     }
 
     @GET

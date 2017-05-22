@@ -111,6 +111,7 @@
         <appender-ref ref="FACADE-APPENDER"/>
     </appender>
 
+    <!--
     <appender name="RABBITMQ-APPENDER"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${baseDir}/rabbitmq.log</file>
@@ -148,6 +149,7 @@
         <queueSize>${queueSize}</queueSize>
         <appender-ref ref="CHANNEL-APPENDER"/>
     </appender>
+    -->
 
 
     <!-- facade -->
@@ -158,7 +160,7 @@
         <appender-ref ref="HTTP-POST-ERROR-APPENDER"/>
     </logger>
 
-    <!-- rabbitmq -->
+    <!--
     <logger name="rabbitmq" additivity="false">
         <level value="${level}"/>
         <appender-ref ref="ASYNC-RABBITMQ-APPENDER"/>
@@ -166,13 +168,13 @@
         <appender-ref ref="HTTP-POST-ERROR-APPENDER"/>
     </logger>
 
-    <!-- channel -->
     <logger name="channel" additivity="false">
         <level value="${level}"/>
         <appender-ref ref="ASYNC-CHANNEL-APPENDER"/>
         <appender-ref ref="ASYNC-ERROR-APPENDER"/>
         <appender-ref ref="HTTP-POST-ERROR-APPENDER"/>
     </logger>
+    -->
 
     <!-- biz -->
     <logger name="${basePackage}" additivity="false">

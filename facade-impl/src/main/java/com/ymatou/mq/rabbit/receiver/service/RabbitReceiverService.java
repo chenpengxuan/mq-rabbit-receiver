@@ -67,9 +67,8 @@ public class RabbitReceiverService {
             try {
                 //发布消息
                 rabbitProducer.publish(String.format("%s_%s", message.getAppId(), message.getQueueCode()), message);
-                //Thread.sleep(new Random().nextInt(10));
                 //若发MQ成功，则异步写消息到文件队列
-                //messageFileQueueService.saveMessageToFileDb(message);
+                messageFileQueueService.saveMessageToFileDb(message);
             } catch (Exception e) {
                 //若发布出现exception，则调用分发站
                 logger.error("recevie and publish msg:{} occur exception.", message,e);
